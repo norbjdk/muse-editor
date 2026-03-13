@@ -26,6 +26,8 @@ public class MuseEditorApp extends Application {
         primaryStage.setScene(mainWindow.getScene());
         primaryStage.setMinWidth(MIN_WIDTH);
         primaryStage.setMinHeight(MIN_HEIGHT);
+
+        primaryStage.show();
     }
 
     public static void main(String [] args) {
