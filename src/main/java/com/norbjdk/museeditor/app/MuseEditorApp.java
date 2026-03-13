@@ -20,7 +20,10 @@ public class MuseEditorApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        final MainWindow mainWindow = new MainWindow();
+
         primaryStage.setTitle("Muse Workspace");
+        primaryStage.setScene(mainWindow.getScene());
         primaryStage.setMinWidth(MIN_WIDTH);
         primaryStage.setMinHeight(MIN_HEIGHT);
     }
