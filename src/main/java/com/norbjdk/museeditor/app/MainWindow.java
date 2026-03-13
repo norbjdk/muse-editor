@@ -1,5 +1,6 @@
 package com.norbjdk.museeditor.app;
 
+import com.norbjdk.museeditor.ui.component.NavigationBar;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 
@@ -10,8 +11,14 @@ public class MainWindow {
     private final BorderPane root;
     private final Scene scene;
 
+    private final NavigationBar navigationBar;
+
     public MainWindow() {
+        navigationBar = new NavigationBar();
+
         root = new BorderPane();
+        root.setTop(navigationBar);
+
         scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
     }
 
