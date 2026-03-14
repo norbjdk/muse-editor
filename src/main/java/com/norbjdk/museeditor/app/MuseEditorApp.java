@@ -1,7 +1,10 @@
 package com.norbjdk.museeditor.app;
 
 import javafx.application.Application;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
+
+import java.util.Objects;
 
 /**
  * Muse Editor Application
@@ -24,6 +27,7 @@ public class MuseEditorApp extends Application {
 
         primaryStage.setTitle("Muse Workspace");
         primaryStage.setScene(mainWindow.getScene());
+        primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResource("/com/norbjdk/museeditor/assets/images/logo.png")).toExternalForm()));
         primaryStage.setMinWidth(MIN_WIDTH);
         primaryStage.setMinHeight(MIN_HEIGHT);
 
