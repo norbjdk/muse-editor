@@ -1,7 +1,9 @@
 package com.norbjdk.museeditor.ui.manager;
 
+import com.norbjdk.museeditor.core.EventBus;
 import com.norbjdk.museeditor.model.dto.internal.ViewRequest;
 import com.norbjdk.museeditor.model.dto.internal.ViewResponse;
+import com.norbjdk.museeditor.model.event.ViewChangedEvent;
 import com.norbjdk.museeditor.ui.model.ViewName;
 import com.norbjdk.museeditor.ui.model.Viewable;
 import com.norbjdk.museeditor.ui.view.HomeView;
@@ -71,6 +73,7 @@ public class ViewManager {
             currentView = newView;
 
             final ViewResponse response = new ViewResponse(currentView);
+            EventBus.getInstance().publish(new ViewChangedEvent(response));
         }
     }
 }
