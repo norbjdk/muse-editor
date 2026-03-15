@@ -3,11 +3,13 @@ package com.norbjdk.museeditor.ui.manager;
 import com.norbjdk.museeditor.core.EventBus;
 import com.norbjdk.museeditor.model.dto.internal.ViewRequest;
 import com.norbjdk.museeditor.model.dto.internal.ViewResponse;
+import com.norbjdk.museeditor.model.event.ChangeViewRequestedEvent;
 import com.norbjdk.museeditor.model.event.ViewChangedEvent;
 import com.norbjdk.museeditor.ui.model.ViewName;
 import com.norbjdk.museeditor.ui.model.Viewable;
 import com.norbjdk.museeditor.ui.view.HomeView;
 import com.norbjdk.museeditor.ui.view.NewProjectView;
+import com.norbjdk.museeditor.ui.view.ProjectView;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +30,7 @@ public class ViewManager {
         views = new HashMap<>();
 
         initViews();
+        setupEventListener();
     }
 
     public static ViewManager getInstance() {
@@ -45,6 +48,7 @@ public class ViewManager {
     private void initViews() {
         addView(ViewName.HOME, new HomeView());
         addView(ViewName.NEW_PROJECT, new NewProjectView());
+        addView(ViewName.PROJECT, new ProjectView());
     }
 
     /**
@@ -59,6 +63,14 @@ public class ViewManager {
         if (view != null && !views.containsKey(name)) {
             views.put(name, view);
         }
+    }
+
+    private void setupEventListener() {
+        EventBus.getInstance().subscribe(ChangeViewRequestedEvent.class, changeViewRequestedEvent -> {
+            if (changeViewRequestedEvent.getRequest() != null) {
+                changeView(changeViewRequestedEvent.getRequest());
+            }
+        });
     }
 
     /**
