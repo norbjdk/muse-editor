@@ -77,6 +77,45 @@
 }
 
 /*
+================ TOOL BAR ================
+ */
+
+.tool-bar {
+    -fx-background-color: #F0EDE8;
+    -fx-background-radius: 8px;
+    -fx-padding: 10px;
+    -fx-border-color: #252422;
+    -fx-border-width: 0 0 1px 0;
+    -fx-spacing: 10px;
+}
+.tool-bar-btn {
+    -fx-background-color: #e1d9cc !important;
+    -fx-border-color: #aaaaaa !important;
+    -fx-border-width: 1px !important;
+    -fx-border-radius: 12px !important;
+    -fx-background-radius: 12px !important;
+    -fx-text-fill: #000000 !important;
+    -fx-font-size: 24px !important;
+    -fx-min-width: 35px !important;
+    -fx-min-height: 35px !important;
+    -fx-pref-width: 35px !important;
+    -fx-pref-height: 35px !important;
+    -fx-text-alignment: center;
+    -fx-padding: 0px;
+    -fx-alignment: center;
+}
+
+.tool-bar-btn:hover {
+    -fx-cursor: hand;
+    -fx-padding: 1px 2px 7px 2px;
+}
+
+.separator .line {
+    -fx-border-color: #252422;
+    -fx-border-width: 0.55px;
+}
+
+/*
 ================ STATUS BAR ================
  */
 
