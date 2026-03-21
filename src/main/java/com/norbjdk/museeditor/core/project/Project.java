@@ -1,4 +1,4 @@
-package com.norbjdk.museeditor.core.document;
+package com.norbjdk.museeditor.core.project;
 
 import com.norbjdk.museeditor.core.model.score.ScorePartwise;
 import javafx.beans.property.*;

@@ -1,4 +1,4 @@
-package com.norbjdk.museeditor.core.document;
+package com.norbjdk.museeditor.core.project;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
