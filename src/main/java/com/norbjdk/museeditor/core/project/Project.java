@@ -82,4 +82,16 @@ public class Project {
     public StringProperty getTitle() {
         return title;
     }
+
+    public ObjectProperty<ScorePartwise> getScorePartwise() {
+        return getScorePartwise();
+    }
+
+    public IntegerProperty getNoteCount() {
+        return noteCount;
+    }
+
+    public IntegerProperty getMeasureCount() {
+        return measureCount;
+    }
 }
