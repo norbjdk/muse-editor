@@ -5,6 +5,7 @@ import com.norbjdk.museeditor.ui.util.ButtonFactory;
 import com.norbjdk.museeditor.ui.util.FontFactory;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -14,6 +15,7 @@ import java.util.Objects;
 
 public class ToolBox extends VBox implements Presentable {
     private Accordion toolAccordion;
+    private Label palettesLabel;
 
     private TitledPane clefs;
     private TitledPane dynamics;
@@ -44,6 +46,7 @@ public class ToolBox extends VBox implements Presentable {
     @Override
     public void initComponents() {
         toolAccordion = new Accordion();
+        palettesLabel = new Label();
         clefs = new TitledPane();
         dynamics = new TitledPane();
         tempo = new TitledPane();
@@ -61,6 +64,7 @@ public class ToolBox extends VBox implements Presentable {
 
     @Override
     public void setupComponents() {
+        palettesLabel.setText("Palettes");
         clefs.setText("Clefs");
         dynamics.setText("Dynamics");
         tempo.setText("Tempo");
@@ -95,6 +99,8 @@ public class ToolBox extends VBox implements Presentable {
     public void setupStyle() {
         this.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/norbjdk/museeditor/styles/components.css")).toExternalForm());
         this.getStyleClass().add("tool-box");
+
+        palettesLabel.getStyleClass().add("palettes-label");
     }
 
     @Override
@@ -106,7 +112,10 @@ public class ToolBox extends VBox implements Presentable {
             metre
         );
 
-        this.getChildren().add(toolAccordion);
+        this.getChildren().addAll(
+                palettesLabel,
+                toolAccordion
+        );
     }
 
     @Override
