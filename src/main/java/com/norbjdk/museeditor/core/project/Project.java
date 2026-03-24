@@ -84,7 +84,7 @@ public class Project {
     }
 
     public ObjectProperty<ScorePartwise> getScorePartwise() {
-        return getScorePartwise();
+        return scorePartwise;
     }
 
     public IntegerProperty getNoteCount() {
