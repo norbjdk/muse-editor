@@ -85,3 +85,7 @@
 /*
 ================ PROJECT VIEW ================
  */
+
+.project-view {
+    -fx-background-color: #F0EDE8;
+}
