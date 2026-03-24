@@ -3,10 +3,13 @@ package com.norbjdk.museeditor.ui.component;
 import com.norbjdk.museeditor.core.EventBus;
 import com.norbjdk.museeditor.model.dto.internal.ViewRequest;
 import com.norbjdk.museeditor.model.event.ChangeViewRequestedEvent;
+import com.norbjdk.museeditor.model.event.OpenProjectRequestedEvent;
+import com.norbjdk.museeditor.model.event.ProjectLoadedEvent;
 import com.norbjdk.museeditor.ui.model.Presentable;
 import com.norbjdk.museeditor.ui.model.ViewName;
 import com.norbjdk.museeditor.ui.util.ButtonFactory;
 import com.norbjdk.museeditor.ui.util.SpaceFactory;
+import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -50,6 +53,9 @@ public class NavigationBar extends HBox implements Presentable {
         ButtonFactory.addIcon(collectionBtn, FontAwesomeSolid.LAYER_GROUP, 15, Color.rgb(5, 5, 5));
         ButtonFactory.addIcon(learnBtn, FontAwesomeSolid.GRADUATION_CAP, 15, Color.rgb(5, 5, 5));
         ButtonFactory.addIcon(settingsBtn, FontAwesomeSolid.COG, 15, Color.rgb(5, 5, 5));
+
+        currentProjectBtn.setVisible(false);
+        currentProjectBtn.setManaged(false);
     }
 
     @Override
@@ -75,12 +81,21 @@ public class NavigationBar extends HBox implements Presentable {
 
     @Override
     public void setupEventListeners() {
+        EventBus.getInstance().subscribe(ProjectLoadedEvent.class, event -> {
+            Platform.runLater(() -> {
+                String title = event.getProject().getTitle().get();
 
+                currentProjectBtn.setText(title);
+                currentProjectBtn.setVisible(true);
+                currentProjectBtn.setManaged(true);
+            });
+        });
     }
 
     @Override
     public void setupEventHandlers() {
         homeBtn.setOnAction(actionEvent -> handleHomeButtonClicked());
+        openProjectBtn.setOnAction(actionEvent -> handleOpenButtonClicked());
         createProjectBtn.setOnAction(actionEvent -> handleNewProjectButtonClicked());
         collectionBtn.setOnAction(actionEvent -> handleCollectionButtonClicked());
         settingsBtn.setOnAction(actionEvent -> handleSettingsButtonClicked());
@@ -89,6 +104,10 @@ public class NavigationBar extends HBox implements Presentable {
 
     private void handleHomeButtonClicked() {
         EventBus.getInstance().publish(new ChangeViewRequestedEvent(new ViewRequest(ViewName.HOME)));
+    }
+
+    private void handleOpenButtonClicked() {
+        EventBus.getInstance().publish(new OpenProjectRequestedEvent());
     }
 
     private void handleSettingsButtonClicked() {
