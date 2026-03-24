@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Measure {
-    private static int id = 0;
+    private int id;
+    private static int counter = 0;
     private Attributes attributes;
     private final List<Note> notes = new ArrayList<>();
 
     public Measure() {
-        id += 1;
+        this.id = ++counter;
     }
 
     public void addNote(Note note) {

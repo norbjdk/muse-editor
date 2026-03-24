@@ -1,5 +1,6 @@
 package com.norbjdk.museeditor.app;
 
+import com.norbjdk.museeditor.core.project.ProjectService;
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -30,8 +31,9 @@ public class MuseEditorApp extends Application {
         primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResource("/com/norbjdk/museeditor/assets/images/logo.png")).toExternalForm()));
         primaryStage.setMinWidth(MIN_WIDTH);
         primaryStage.setMinHeight(MIN_HEIGHT);
-
         primaryStage.show();
+
+        ProjectService.getInstance().init(primaryStage);
     }
 
     public static void main(String [] args) {

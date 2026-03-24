@@ -43,6 +43,34 @@ public class Note {
         return new Builder(this).stemDirection(newStem).build();
     }
 
+    public char getStep() {
+        return step;
+    }
+    public int getOctave() {
+        return octave;
+    }
+    public int getDuration() {
+        return duration;
+    }
+    public int getAlter() {
+        return alter;
+    }
+    public boolean isRest() {
+        return isRest;
+    }
+    public String getType() {
+        return type;
+    }
+    public String getStem() {
+        return stem;
+    }
+    public int getVoice() {
+        return voice;
+    }
+    public int getStaff() {
+        return staff;
+    }
+
     public static class Builder {
         private boolean isRest;
         private char step;

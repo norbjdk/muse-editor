@@ -1,4 +1,4 @@
-package com.norbjdk.museeditor.core.document;
+package com.norbjdk.museeditor.core.project;
 
 import com.norbjdk.museeditor.core.model.score.ScorePartwise;
 import javafx.beans.property.*;
@@ -81,5 +81,17 @@ public class Project {
 
     public StringProperty getTitle() {
         return title;
+    }
+
+    public ObjectProperty<ScorePartwise> getScorePartwise() {
+        return scorePartwise;
+    }
+
+    public IntegerProperty getNoteCount() {
+        return noteCount;
+    }
+
+    public IntegerProperty getMeasureCount() {
+        return measureCount;
     }
 }
