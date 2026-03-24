@@ -120,11 +120,22 @@
 
 .tool-box {
     -fx-background-color: #F0EDE8;
-    -fx-padding: 10px;
+    -fx-padding: 10px 4px;
     -fx-border-color: #252422;
     -fx-border-width: 0 1px 0 0;
     -fx-background-insets: 0 0 10px 0 ;
     -fx-alignment: top-center;
+}
+
+.palettes-header {
+    -fx-text-alignment: center;
+    -fx-font-family: Serif;
+    -fx-font-size: 15px;
+    -fx-text-fill: #1e1e1e;
+    -fx-font-weight: 700;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.5, 0, 2);
+    -fx-background-color: #c3b8a8;
+    -fx-background-insets: 10px 4px;
 }
 
 .accordion {
@@ -206,4 +217,18 @@
     -fx-font-size: 13px;
     -fx-font-family: "Segoe UI", Arial, sans-serif;
     -fx-font-weight: 600;
+}
+
+/*
+================ SHEET PANE ================
+ */
+
+.sheet-pane {
+    -fx-padding: 20px 40px;
+    -fx-background-color: #F0EDE8;
+    -fx-border-color: transparent;
+}
+
+.page-container {
+    -fx-background-color: #F0EDE8;
 }
