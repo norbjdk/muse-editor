@@ -22,6 +22,34 @@ public class Attributes {
         this.line = builder.line;
     }
 
+    public int getDivisions() {
+        return divisions;
+    }
+
+    public int getFifths() {
+        return fifths;
+    }
+
+    public int getBeats() {
+        return beats;
+    }
+
+    public int getBeatType() {
+        return beatType;
+    }
+
+    public int getStaves() {
+        return staves;
+    }
+
+    public char getSign() {
+        return sign;
+    }
+
+    public int getLine() {
+        return line;
+    }
+
     public static class Builder {
         private int divisions;
         // Key
