@@ -1,6 +1,7 @@
 package com.muse.editor.app;
 
 import com.muse.editor.core.project.ProjectService;
+import com.muse.editor.core.user.UserService;
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -34,6 +35,7 @@ public class MuseEditorApp extends Application {
         primaryStage.show();
 
         ProjectService.getInstance().init(primaryStage);
+        UserService.getInstance().init(primaryStage);
     }
 
     public static void main(String [] args) {
