@@ -6,10 +6,12 @@ import com.muse.editor.model.dto.internal.ViewResponse;
 import com.muse.editor.model.event.ViewChangedEvent;
 import com.muse.editor.ui.component.MenuBar;
 import com.muse.editor.ui.component.NavigationBar;
+import com.muse.editor.ui.component.SideBar;
 import com.muse.editor.ui.component.StatusBar;
 import com.muse.editor.ui.manager.ViewManager;
 import com.muse.editor.ui.model.Presentable;
 import com.muse.editor.ui.model.ViewName;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -26,6 +28,7 @@ public class MainWindow implements Presentable {
 
     private MenuBar menuBar;
     private NavigationBar navigationBar;
+    private SideBar sideBar;
     private StatusBar statusBar;
 
     public MainWindow() {
@@ -39,6 +42,7 @@ public class MainWindow implements Presentable {
         menuBar = new MenuBar();
         navigationBar = new NavigationBar();
         statusBar = new StatusBar();
+        sideBar = new SideBar();
 
         root = new BorderPane();
         scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -46,7 +50,7 @@ public class MainWindow implements Presentable {
 
     @Override
     public void setupComponents() {
-
+        BorderPane.setMargin(sideBar, new Insets(5, 0, 5, 6));
     }
 
     @Override
@@ -58,6 +62,7 @@ public class MainWindow implements Presentable {
     @Override
     public void setupLayout() {
         root.setTop(new VBox(0, menuBar, navigationBar));
+        root.setRight(sideBar);
         root.setBottom(statusBar);
     }
 

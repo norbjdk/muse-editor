@@ -5,6 +5,9 @@ module com.norbjdk.museeditor {
     requires org.kordamp.ikonli.fontawesome5;
     requires nu.xom;
     requires java.xml;
+    requires okhttp3;
+    requires com.fasterxml.jackson.databind;
+    requires java.prefs;
 
 
     opens com.muse.editor.app to javafx.fxml;
