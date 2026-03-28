@@ -1,0 +1,234 @@
+/*
+================ MENU BAR ================
+ */
+
+.menu-bar {
+    -fx-background-color: transparent;
+    -fx-spacing: 10px;
+}
+
+.menu-bar .container {
+    -fx-background-color: transparent;
+    -fx-spacing: 8px;
+}
+
+.menu-bar .menu {
+    -fx-background-color: transparent;
+    -fx-padding: 6px 10px;
+    -fx-text-fill: #6b6358;
+    -fx-font-size: 13px;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-font-weight: 500;
+    -fx-cursor: hand;
+}
+
+.menu-bar .menu:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.51);
+    -fx-background-radius: 4px;
+}
+
+.menu-bar .menu:showing {
+    -fx-background-color: #4a90e2;
+    -fx-text-fill: white;
+}
+
+.menu-bar .menu .label {
+    -fx-text-fill: #6b6358;
+}
+
+.menu-bar .menu:hover .label,
+.menu-bar .menu:showing .label {
+    -fx-text-fill: #6b6358;
+}
+
+.status-container {
+    -fx-border-radius: 25%;
+    -fx-padding: 6px 2px;
+}
+
+/*
+================ NAVIGATION BAR ================
+ */
+
+.navigation-bar {
+    -fx-background-color: #e8e4dd;
+    -fx-border-color: rgba(0,0,0,0.08);
+    -fx-border-width: 1px 0 1px 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.5, 0, 2);
+}
+
+.navigation-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #554e49;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 10px 20px;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-background-radius: 0;
+}
+
+.navigation-btn:hover {
+    -fx-background-color: rgba(12, 12, 12, 0.05);
+    -fx-cursor: hand;
+}
+
+.navigation-btn .graphic-container {
+    -fx-padding: 0 20px 0 0;
+}
+
+/*
+================ TOOL BAR ================
+ */
+
+.tool-bar {
+    -fx-background-color: #F0EDE8;
+    -fx-padding: 10px;
+    -fx-border-color: #252422;
+    -fx-border-width: 0 0 1px 0;
+    -fx-spacing: 10px;
+}
+.tool-bar-btn {
+    -fx-background-color: #e1d9cc !important;
+    -fx-border-color: #aaaaaa !important;
+    -fx-border-width: 1px !important;
+    -fx-border-radius: 12px !important;
+    -fx-background-radius: 12px !important;
+    -fx-text-fill: #000000 !important;
+    -fx-font-size: 24px !important;
+    -fx-min-width: 35px !important;
+    -fx-min-height: 35px !important;
+    -fx-pref-width: 35px !important;
+    -fx-pref-height: 35px !important;
+    -fx-text-alignment: center;
+    -fx-padding: 0px;
+    -fx-alignment: center;
+}
+
+.tool-bar-btn:hover {
+    -fx-cursor: hand;
+    -fx-padding: 1px 2px 7px 2px;
+}
+
+.separator .line {
+    -fx-border-color: #252422;
+    -fx-border-width: 0.55px;
+}
+
+/*
+================ TOOL BOX ================
+ */
+
+.tool-box {
+    -fx-background-color: #F0EDE8;
+    -fx-padding: 10px 4px;
+    -fx-border-color: #252422;
+    -fx-border-width: 0 1px 0 0;
+    -fx-background-insets: 0 0 10px 0 ;
+    -fx-alignment: top-center;
+}
+
+.palettes-header {
+    -fx-text-alignment: center;
+    -fx-font-family: Serif;
+    -fx-font-size: 15px;
+    -fx-text-fill: #1e1e1e;
+    -fx-font-weight: 700;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.5, 0, 2);
+    -fx-background-color: #c3b8a8;
+    -fx-background-insets: 10px 4px;
+}
+
+.accordion {
+    -fx-background-color: transparent;
+    -fx-padding: 10px;
+    -fx-spacing: 5px;
+}
+
+.accordion .titled-pane {
+    -fx-text-fill: #131313;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+}
+
+.accordion .titled-pane > .title {
+    -fx-background-color: #e1d9cc;
+    -fx-background-radius: 6px;
+    -fx-border-color: transparent;
+    -fx-padding: 8px;
+    -fx-cursor: hand;
+    -fx-transition: background-color 0.2s;
+    -fx-text-fill: black;
+}
+
+.accordion .titled-pane > .title:hover {
+    -fx-background-color: #c3b8a8;
+    -fx-text-fill: #292929;
+}
+
+.accordion .titled-pane:expanded > .title {
+    -fx-background-color: #c3b8a8;
+    -fx-text-fill: #0e0e0e;
+    -fx-background-radius: 6px 6px 0px 0px;
+}
+
+.accordion .titled-pane > .title > .arrow-button .arrow {
+    -fx-background-color: #8a700d;
+    -fx-shape: "M 0 0 L 4 4 L 8 0 Z";
+}
+
+.accordion .titled-pane:expanded > .title > .arrow-button .arrow {
+    -fx-background-color: #9c8019;
+}
+
+.accordion .titled-pane > .content {
+    -fx-background-color: #F0EDE8;
+    -fx-background-radius: 0px 0px 6px 6px;
+    -fx-border-color: #b8b8b8;
+    -fx-border-width: 0.5px;
+    -fx-padding: 6px;
+    -fx-text-fill: #1c1c1c;
+}
+
+.accordion .titled-pane .button {
+    -fx-background-color: #3a3a3a;
+    -fx-text-fill: white;
+    -fx-background-radius: 4px;
+}
+
+.accordion .titled-pane .button:hover {
+    -fx-background-color: #ffcf09;
+}
+
+/*
+================ STATUS BAR ================
+ */
+
+.status-bar {
+    -fx-spacing: 15px;
+    -fx-padding: 10px 16px;
+    -fx-background-color: rgb(232, 228, 221);
+    -fx-background-radius: 0px 0px 12px 12px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.5, 0, -2);
+    -fx-alignment: center;
+    -fx-border-radius: 0px 0px 12px 12px;
+}
+
+.status-bar-label {
+    -fx-font-size: 13px;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-font-weight: 600;
+}
+
+/*
+================ SHEET PANE ================
+ */
+
+.sheet-pane {
+    -fx-padding: 20px 40px;
+    -fx-background-color: #F0EDE8;
+    -fx-border-color: transparent;
+}
+
+.page-container {
+    -fx-background-color: #F0EDE8;
+}
