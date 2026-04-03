@@ -68,6 +68,22 @@ public class User {
         return new Builder(this).setUsername(username).build();
     }
 
+    public long getId() {
+        return id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
     public static class Builder {
         private long id;
         private String username;
