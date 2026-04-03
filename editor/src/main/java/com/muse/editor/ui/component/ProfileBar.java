@@ -1,6 +1,12 @@
 package com.muse.editor.ui.component;
 
+import com.muse.editor.core.EventBus;
+import com.muse.editor.core.auth.AuthService;
 import com.muse.editor.core.user.User;
+import com.muse.editor.core.user.UserService;
+import com.muse.editor.model.event.LoginSuccessEvent;
+import com.muse.editor.model.event.LogoutEvent;
+import com.muse.editor.model.event.OpenLoginDialogEvent;
 import com.muse.editor.ui.model.Presentable;
 import com.muse.editor.ui.util.ButtonFactory;
 import javafx.application.Platform;
@@ -31,8 +37,13 @@ public class ProfileBar extends GridPane implements Presentable {
     private Button logoutBtn;
 
     private User boundUser;
+    private final AuthService authService;
+    private final UserService userService;
 
     public ProfileBar() {
+        authService = AuthService.getInstance();
+        userService = UserService.getInstance();
+
         present();
     }
 
@@ -70,6 +81,7 @@ public class ProfileBar extends GridPane implements Presentable {
         textContainer.getStyleClass().add("profile-text-container");
         buttonContainer.getStyleClass().add("profile-button-container");
 
+
         statusLabel.getStyleClass().add("profile-status");
         usernameLabel.getStyleClass().add("profile-username");
 
@@ -79,51 +91,39 @@ public class ProfileBar extends GridPane implements Presentable {
 
     @Override
     public void setupLayout() {
-        textContainer.getChildren().addAll(
-                usernameLabel,
-                statusLabel
-        );
-
-        add(pictureView, 0, 0, 1, 2);
-
-        add(textContainer, 1, 0, 1, 2);
-
-        add(buttonContainer, 2, 0, 1, 2);
-
-        ColumnConstraints col1 = new ColumnConstraints();
-        ColumnConstraints col2 = new ColumnConstraints();
-        ColumnConstraints col3 = new ColumnConstraints();
-
-        getColumnConstraints().addAll(col1, col2, col3);
+        add(buttonContainer, 0, 0);
+        updateButtonVisibility();
     }
 
     @Override
     public void setupEventListeners() {
-        if (boundUser != null) {
-            boundUser.getUsernameProperty().addListener((obs, oldVal, newVal) -> {
-                if (!newVal.isBlank()) {
-                    Platform.runLater(() -> usernameLabel.setText(newVal));
-                }
-            });
-        }
+        EventBus.getInstance().subscribe(LoginSuccessEvent.class, event -> {
+            Platform.runLater(this::updateButtonVisibility);
+        });
+
+        EventBus.getInstance().subscribe(LogoutEvent.class, event -> {
+            Platform.runLater(this::updateButtonVisibility);
+        });
     }
+
 
     @Override
     public void setupEventHandlers() {
-
+        loginBtn.setOnAction(e -> handleLogin());
+        logoutBtn.setOnAction(e -> authService.logout());
     }
 
-    public void bindUser(User user) {
-        this.boundUser = user;
-    }
-
-    private void updateButtonVisibility()  {
+    private void updateButtonVisibility() {
         buttonContainer.getChildren().clear();
 
-        if (boundUser.getIsLoggedProperty().get()) {
+        if (authService.isLoggedIn()) {
             buttonContainer.getChildren().add(logoutBtn);
         } else {
             buttonContainer.getChildren().add(loginBtn);
         }
+    }
+
+    private void handleLogin() {
+        EventBus.getInstance().publish(new OpenLoginDialogEvent());
     }
 }
