@@ -9,17 +9,14 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class EventBus {
-    private static EventBus instance;
+    private static final EventBus instance = new EventBus();
     private Map<Class<?>, List<Consumer>> listeners = new HashMap();
 
-    private EventBus() {}
-
     public static EventBus getInstance() {
-        if (instance == null) {
-            instance = new EventBus();
-        }
         return instance;
     }
+
+    private EventBus() {}
 
     public <T extends AppEvent> void subscribe(Class<T> eventType, Consumer<T> listener) {
         listeners.computeIfAbsent(eventType, k -> new ArrayList<>()).add(listener);
