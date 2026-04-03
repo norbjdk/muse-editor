@@ -2,10 +2,17 @@ package com.muse.editor.core.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.muse.editor.app.config.ApiConfig;
+import com.muse.editor.core.EventBus;
 import com.muse.editor.core.model.dto.LoginRequest;
 import com.muse.editor.core.model.dto.LoginResponse;
 import com.muse.editor.core.user.TokenStorage;
+import com.muse.editor.core.user.User;
 import com.muse.editor.core.user.UserService;
+import com.muse.editor.model.event.LoginFailedEvent;
+import com.muse.editor.model.event.LoginSuccessEvent;
+import com.muse.editor.model.event.LogoutEvent;
+import com.muse.editor.model.event.OpenLoginDialogEvent;
+import com.muse.editor.ui.view.LoginDialog;
 import javafx.application.Platform;
 import okhttp3.*;
 
@@ -26,19 +33,23 @@ public class AuthService {
         client = ApiConfig.getHttpClient();
         mapper = ApiConfig.getObjectMapper();
         userService = UserService.getInstance();
+
+        setupEventListeners();
     }
 
     private void setupEventListeners() {
-
+        EventBus.getInstance().subscribe(OpenLoginDialogEvent.class, openLoginDialogEvent -> {
+            handleLoginUserRequested();
+        });
     }
 
     private void handleLoginUserRequested() {
         Platform.runLater(() -> {
-
+            new LoginDialog().showAndWait();
         });
     }
 
-    private void login(LoginRequest loginRequest) {
+    public void login(LoginRequest loginRequest) {
         new  Thread(()  -> {
             try {
                 final String jsonBody = mapper.writeValueAsString(loginRequest);
@@ -55,16 +66,44 @@ public class AuthService {
                 try (Response response = client.newCall(request).execute()) {
                     if (response.isSuccessful() && response.body() != null) {
                         final LoginResponse loginResponse = mapper.readValue(
-                                response.body().toString(),
+                                response.body().string(),
                                 LoginResponse.class
                         );
 
                         TokenStorage.saveToken(loginResponse.getToken());
+
+                        final User user = new User.Builder()
+                                .setId(loginResponse.getId())
+                                .setUsername(loginResponse.getUsername())
+                                .setEmail(loginResponse.getEmail())
+                                .declareRole(loginResponse.getUsername())
+                                .build();
+
+                        UserService.getInstance().setUser(user);
+
+                        System.out.println("Logged in");
+                        EventBus.getInstance().publish(new LoginSuccessEvent((user)));
+                    } else {
+                        String errorMsg = "Login failed: " + response.code();
+                        if (response.body() != null) {
+                            errorMsg += " - " + response.body().string();
+                        }
+                        EventBus.getInstance().publish(new LoginFailedEvent(errorMsg));
                     }
                 }
             } catch (IOException exception) {
                 exception.printStackTrace();
             }
         }).start();
+    }
+
+    public void logout() {
+        UserService.logout();
+        System.out.println("Logged out");
+        EventBus.getInstance().publish(new LogoutEvent());
+    }
+
+    public boolean isLoggedIn() {
+        return userService.isLoggedIn();
     }
 }
