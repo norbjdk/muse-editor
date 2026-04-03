@@ -32,6 +32,7 @@ public class MuseEditorApp extends Application {
         primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResource("/com/muse/editor/assets/images/logo.png")).toExternalForm()));
         primaryStage.setMinWidth(MIN_WIDTH);
         primaryStage.setMinHeight(MIN_HEIGHT);
+        primaryStage.setMaximized(true);
         primaryStage.show();
 
         ProjectService.getInstance().init(primaryStage);
