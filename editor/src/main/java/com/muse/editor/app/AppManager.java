@@ -1,7 +1,9 @@
 package com.muse.editor.app;
 
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.stage.Stage;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -13,6 +15,8 @@ public class AppManager {
     private final static AppManager instance = new AppManager();
     private final BooleanProperty isConnected = new SimpleBooleanProperty(false);
 
+    private Stage stage;
+
     public static AppManager getInstance() {
         return instance;
     }
@@ -21,8 +25,16 @@ public class AppManager {
         runServerMonitor();
     }
 
+    public void init(Stage stage) {
+        this.stage = stage;
+    }
+
     private void runServerMonitor() {
-        final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(runnable -> {
+            Thread t = new Thread(runnable);
+            t.setDaemon(true);
+            return t;
+        });
 
         final String urlToCheck = "http://localhost:8080";
 
@@ -35,16 +47,15 @@ public class AppManager {
                 connection.setConnectTimeout(5000);
                 connection.connect();
 
-                int code = connection.getResponseCode();
-                System.out.println("[" + new java.util.Date() + "] Status: " + code);
-                isConnected.set(true);
+                Platform.runLater(() -> isConnected.set(true));
+
                 connection.disconnect();
             } catch (Exception e) {
-                isConnected.set(false);
-                System.out.println("[" + new java.util.Date() + "] Serwer nie odpowiada: " + e.getMessage());
+                Platform.runLater(() -> isConnected.set(false));
             }
         }, 0, 10, TimeUnit.SECONDS);
     }
+
 
     public BooleanProperty isConnected() {
         return isConnected;
