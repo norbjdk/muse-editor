@@ -3,6 +3,7 @@ package com.muse.editor.ui.component.music;
 import com.muse.editor.core.model.score.ScorePartwise;
 import com.muse.editor.core.project.Project;
 import com.muse.editor.ui.model.Presentable;
+import com.muse.editor.ui.util.SheetMetrics;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -94,17 +95,29 @@ public class SheetPane extends ScrollPane implements Presentable {
     public void rebuild(ScorePartwise scorePartwise, double viewWidth) {
         pageContainer.getChildren().clear();
 
-        if (scorePartwise == null || scorePartwise.getParts() == null || scorePartwise.getParts().isEmpty()) {
+        if (scorePartwise == null || scorePartwise.getParts() == null
+                || scorePartwise.getParts().isEmpty()) {
             showEmptyState();
             return;
         }
 
-        final double availableWidth = Math.max(
-                viewWidth - PAGE_MARGIN_H * 2 - 20,
-                SYSTEM_WIDTH
-        );
-
         final VBox page = buildPage(scorePartwise.getWorkTitle(), scorePartwise.getCreator());
+        final var parts = scorePartwise.getParts();
+        final int measureCount = parts.get(0).getMeasures().size();
+        final double measureWidth = SheetMetrics.MEASURE_MIN_WIDTH * 4;
+
+        for (int i = 0; i < measureCount; i++) {
+            final SystemPane system = new SystemPane();
+            for (int p = 0; p < parts.size(); p++) {
+                final var measures = parts.get(p).getMeasures();
+                if (i < measures.size()) {
+                    boolean isFirst = (i == 0);
+                    MeasurePane mp = new MeasurePane(measures.get(i), isFirst, measureWidth);
+                    system.addStaff(mp);
+                }
+            }
+            page.getChildren().add(system);
+        }
 
         pageContainer.getChildren().add(page);
         sheetReady.set(true);
