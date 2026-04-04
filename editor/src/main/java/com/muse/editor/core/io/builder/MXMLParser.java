@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * @see <a href="https://github.com/norbjdk/muse-editor">GitHub</a>
  * @author norbjdk
  */
-
+@Deprecated
 public class MXMLParser {
     private static final Builder builder = new Builder();
 
@@ -158,7 +158,7 @@ public class MXMLParser {
                             )
                             .setStaves(Integer.parseInt(staves.getValue()))
                             .whatClef(
-                                    sign.getValue().charAt(0),
+                                    new char[]{sign.getValue().charAt(0)},
                                     Integer.parseInt(line.getValue())
                             ).build();
                     result.setAttributes(measureAttributes);
