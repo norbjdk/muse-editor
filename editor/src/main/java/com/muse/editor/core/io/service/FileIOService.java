@@ -1,6 +1,7 @@
 package com.muse.editor.core.io.service;
 
 import com.muse.editor.core.io.builder.MusicXmlParser;
+import com.muse.editor.core.io.builder.MusicXmlWriter;
 import com.muse.editor.core.model.score.ScorePartwise;
 import org.xml.sax.SAXException;
 
@@ -27,4 +28,11 @@ public class FileIOService {
         }
     }
 
+    public void save(ScorePartwise score, Path path) {
+        try {
+            new MusicXmlWriter().write(score, path);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
