@@ -1,5 +1,6 @@
 package com.muse.editor.app;
 
+import com.muse.editor.core.edit.EditService;
 import com.muse.editor.core.project.ProjectService;
 import com.muse.editor.core.user.UserService;
 import javafx.application.Application;
@@ -37,6 +38,7 @@ public class MuseEditorApp extends Application {
 
         ProjectService.getInstance().init(primaryStage);
         UserService.getInstance().init(primaryStage);
+        EditService.getInstance().init();
     }
 
     public static void main(String [] args) {
