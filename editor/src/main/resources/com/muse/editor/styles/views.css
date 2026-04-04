@@ -89,3 +89,105 @@
 .project-view {
     -fx-background-color: #F0EDE8;
 }
+
+/*
+================ NEW PROJECT VIEW ================
+ */
+
+
+.new-project-view {
+    -fx-hgap: 50px;
+    -fx-alignment: center;
+    -fx-orientation: horizontal;
+    -fx-vgap: 50px;
+}
+
+.new-project-view .data-form,
+.new-project-view .props-form,
+.new-project-view .template-form{
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.5, 0, 2);
+    -fx-padding: 26px;
+    -fx-background-color: #E8E4DD;
+    -fx-border-width: 0px;
+    -fx-border-color: #121111;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-vgap: 14px;
+    -fx-hgap: 14px;
+}
+
+.new-project-view .template-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-font-family: "Roboto Light";
+    -fx-text-fill: #939089;
+}
+
+.new-project-view .data-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-font-family: "Roboto Light";
+    -fx-text-fill: #939089;
+}
+
+.new-project-view .data-input {
+    -fx-min-width: 250px;
+    -fx-background-color: #F4F4F4;
+    -fx-border-color: #CCC5B9;
+    -fx-font-size: 14px;
+    -fx-border-width: 0px 0px 2px 0px;
+    -fx-text-fill: #CCC5B9;
+    -fx-border-radius: 3px;
+    -fx-padding: 8px 4px;
+}
+
+.create-btn {
+    -fx-font-size: 13px;
+    -fx-font-family: "Roboto Light";
+    -fx-padding: 8px 16px;
+    -fx-background-color: #E8E4DD;
+    -fx-border-width: 1px;
+    -fx-background-radius: 6px;
+    -fx-font-weight: 700;
+    -fx-border-color: black;
+    -fx-text-fill: #CCC5B9;
+    -fx-border-radius: 6px;
+}
+
+.create-btn:hover {
+    -fx-background-color: #cec9bf;
+    -fx-cursor: hand;
+}
+
+.list-view {
+    -fx-max-height: 300px;
+    -fx-max-width: 150px;
+    -fx-background-color: #F4F4F4;
+    -fx-background-radius: 8px;
+    -fx-border-color: #444;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-padding: 0;
+}
+
+.list-view .viewport {
+    -fx-background-color: transparent;
+}
+
+.list-view .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 10px 15px;
+    -fx-border-color: transparent transparent #333 transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.list-view .list-cell:filled {
+    -fx-background-color: transparent;
+    -fx-text-fill: black;
+    -fx-font-size: 14px;
+}
+
+/*.list-view:focused {*/
+/*    -fx-background-color: #dedcdc;*/
+/*    -fx-background-insets: 0;*/
+/*}*/
