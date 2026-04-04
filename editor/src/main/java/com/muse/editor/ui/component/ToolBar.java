@@ -1,5 +1,8 @@
 package com.muse.editor.ui.component;
 
+import com.muse.editor.core.EventBus;
+import com.muse.editor.model.event.AddNoteRequestedEvent;
+import com.muse.editor.model.event.AddRestRequestedEvent;
 import com.muse.editor.ui.model.Presentable;
 import com.muse.editor.ui.util.ButtonFactory;
 import com.muse.editor.ui.util.FontFactory;
@@ -132,7 +135,31 @@ public class ToolBar extends HBox implements Presentable {
 
     @Override
     public void setupEventHandlers() {
+        wholeNoteBtn.setOnAction(e ->
+                EventBus.getInstance().publish(new AddNoteRequestedEvent("whole")));
+        halfNoteBtn.setOnAction(e ->
+                EventBus.getInstance().publish(new AddNoteRequestedEvent("half")));
+        quarterNoteBtn.setOnAction(e ->
+                EventBus.getInstance().publish(new AddNoteRequestedEvent("quarter")));
+        quaverNoteBtn.setOnAction(e ->
+                EventBus.getInstance().publish(new AddNoteRequestedEvent("eighth")));
+        semiquaverNoteBtn.setOnAction(e ->
+                EventBus.getInstance().publish(new AddNoteRequestedEvent("16th")));
+        thirtyTwoNoteBtn.setOnAction(e ->
+                EventBus.getInstance().publish(new AddNoteRequestedEvent("32nd")));
 
+        wholeRestBtn.setOnAction(e ->
+                EventBus.getInstance().publish(new AddRestRequestedEvent("whole")));
+        halfRestBtn.setOnAction(e ->
+                EventBus.getInstance().publish(new AddRestRequestedEvent("half")));
+        quarterRestBtn.setOnAction(e ->
+                EventBus.getInstance().publish(new AddRestRequestedEvent("quarter")));
+        quaverRestBtn.setOnAction(e ->
+                EventBus.getInstance().publish(new AddRestRequestedEvent("eighth")));
+        semiquaverRestBtn.setOnAction(e ->
+                EventBus.getInstance().publish(new AddRestRequestedEvent("16th")));
+        thirtyTwoRestBtn.setOnAction(e ->
+                EventBus.getInstance().publish(new AddRestRequestedEvent("32nd")));
     }
 
     private void addSeparator() {
