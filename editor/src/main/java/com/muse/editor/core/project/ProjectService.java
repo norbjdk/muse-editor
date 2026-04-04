@@ -96,7 +96,7 @@ public class ProjectService {
     }
 
     private void updateStatus(Project project, ScorePartwise scorePartwise) {
-        if (scorePartwise.getParts() != null) return;
+        if (scorePartwise.getParts() == null) return;
 
         final int measures = scorePartwise.getParts().stream()
                 .mapToInt(p -> p.getMeasures() != null ? p.getMeasures().size() : 0)

@@ -1,9 +1,6 @@
 package com.muse.editor.core.io.builder;
 
-import com.muse.editor.core.model.score.Note;
-import com.muse.editor.core.model.score.PartList;
-import com.muse.editor.core.model.score.ScorePart;
-import com.muse.editor.core.model.score.ScorePartwise;
+import com.muse.editor.core.model.score.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -28,7 +25,10 @@ public class MusicXmlParser {
 
     public ScorePartwise parse(InputStream is) throws IOException, ParserConfigurationException, SAXException {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+//        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        factory.setAttribute("http://apache.org/xml/properties/security-manager", null);
 
         final DocumentBuilder builder = factory.newDocumentBuilder();
         final Document doc = builder.parse(is);
@@ -39,6 +39,23 @@ public class MusicXmlParser {
         score.setWorkTitle(getText(doc, "work-title"));
         score.setCreator(getCreator(doc));
         score.setPartList(parseParseList(doc));
+
+        NodeList partNodes = doc.getElementsByTagName("part");
+        for (int i = 0; i < partNodes.getLength(); i++) {
+            Element partEl = (Element) partNodes.item(i);
+            Part part = new Part();
+            NodeList measureNodes = partEl.getElementsByTagName("measure");
+            for (int j = 0; j < measureNodes.getLength(); j++) {
+                Element measureEl = (Element) measureNodes.item(j);
+                Measure measure = new Measure();
+                NodeList noteNodes = measureEl.getElementsByTagName("note");
+                for (int k = 0; k < noteNodes.getLength(); k++) {
+                    measure.getNotes().add(parseNote((Element) noteNodes.item(k)));
+                }
+                part.getMeasures().add(measure);
+            }
+            score.getParts().add(part);
+        }
 
         return score;
     }
