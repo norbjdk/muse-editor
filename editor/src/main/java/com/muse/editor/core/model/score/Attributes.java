@@ -9,7 +9,7 @@ public class Attributes {
     private final int beatType;
     private final int staves;
     // Clef
-    private final char sign;
+    private final char [] signs;
     private final int line;
 
     private Attributes(Builder builder) {
@@ -18,7 +18,7 @@ public class Attributes {
         this.beats = builder.beats;
         this.beatType = builder.beatType;
         this.staves = builder.staves;
-        this.sign = builder.sign;
+        this.signs = builder.signs;
         this.line = builder.line;
     }
 
@@ -42,8 +42,8 @@ public class Attributes {
         return staves;
     }
 
-    public char getSign() {
-        return sign;
+    public char [] getSign() {
+        return signs;
     }
 
     public int getLine() {
@@ -59,7 +59,7 @@ public class Attributes {
         private int beatType;
         private int staves;
         // Clef
-        private char sign;
+        private char [] signs;
         private int line;
 
         public Builder(Attributes existing) {
@@ -68,7 +68,7 @@ public class Attributes {
             this.beats = existing.beats;
             this.beatType = existing.beatType;
             this.staves = existing.staves;
-            this.sign = existing.sign;
+            this.signs = existing.signs;
             this.line = existing.line;
         }
         public Builder() {}
@@ -94,8 +94,8 @@ public class Attributes {
             return this;
         }
 
-        public Builder whatClef(char sign, int line) {
-            this.sign = sign;
+        public Builder whatClef(char [] signs, int line) {
+            this.signs = signs;
             this.line = line;
             return this;
         }
