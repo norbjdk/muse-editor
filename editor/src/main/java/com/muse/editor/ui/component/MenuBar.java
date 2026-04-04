@@ -1,7 +1,9 @@
 package com.muse.editor.ui.component;
 
+import com.muse.editor.app.AppManager;
 import com.muse.editor.ui.model.Presentable;
 import com.muse.editor.ui.util.SpaceFactory;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;
@@ -18,8 +20,6 @@ import java.util.Objects;
 import static com.muse.editor.ui.util.SpaceFactory.createSpacer;
 
 public class MenuBar extends HBox implements Presentable {
-
-    private final BooleanProperty isServerDown = new SimpleBooleanProperty(true);
 
     private Label serverStatusLabel;
     private Label statusLabel;
@@ -96,12 +96,14 @@ public class MenuBar extends HBox implements Presentable {
 
     @Override
     public void setupEventListeners() {
-        isServerDown.addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                statusLabel.setText("running");
-            } else {
-                statusLabel.setText("down");
-            }
+        AppManager.getInstance().isConnected().addListener((obs, oldV, newV) -> {
+            Platform.runLater(() -> {
+                if (newV) {
+                    statusLabel.setText("running");
+                } else {
+                    statusLabel.setText("down");
+                }
+            });
         });
     }
 
