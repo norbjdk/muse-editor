@@ -26,10 +26,10 @@ public final class SheetMetrics {
     public static final double NOTE_MIN_SPACING   = STAFF_SPACE * 3.0;
 
     public static final double CLEF_WIDTH         = STAFF_SPACE * 3.5;
-    public static final double CLEF_FONT_SIZE     = STAFF_SPACE * 8;
+    public static final double CLEF_FONT_SIZE     = STAFF_SPACE * 3;
 
     public static final double TIME_SIG_WIDTH     = STAFF_SPACE * 2.5;
-    public static final double TIME_SIG_FONT_SIZE = STAFF_SPACE * 4;
+    public static final double TIME_SIG_FONT_SIZE = STAFF_SPACE * 3.5;
 
     public static final double KEY_SIG_SIGN_WIDTH = STAFF_SPACE * 1.2;
 
