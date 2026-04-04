@@ -25,7 +25,6 @@ public class MusicXmlParser {
 
     public ScorePartwise parse(InputStream is) throws IOException, ParserConfigurationException, SAXException {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-//        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
         factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         factory.setAttribute("http://apache.org/xml/properties/security-manager", null);
@@ -40,21 +39,55 @@ public class MusicXmlParser {
         score.setCreator(getCreator(doc));
         score.setPartList(parseParseList(doc));
 
-        NodeList partNodes = doc.getElementsByTagName("part");
+        final NodeList partNodes = doc.getElementsByTagName("part");
         for (int i = 0; i < partNodes.getLength(); i++) {
-            Element partEl = (Element) partNodes.item(i);
-            Part part = new Part();
-            NodeList measureNodes = partEl.getElementsByTagName("measure");
+            final Element partEl = (Element) partNodes.item(i);
+
+            final NodeList measureNodes = partEl.getElementsByTagName("measure");
+            if (measureNodes.getLength() == 0) continue;
+
+            final Element firstMeasure = (Element) measureNodes.item(0);
+            final Element firstAttrs = getChild(firstMeasure, "attributes");
+            int stavesCount = 1;
+            if (firstAttrs != null) {
+                stavesCount = parseInt(getText(firstAttrs, "staves"), 1);
+            }
+
+            final Part[] parts = new Part[stavesCount];
+            for (int s = 0; s < stavesCount; s++) {
+                parts[s] = new Part();
+            }
+
             for (int j = 0; j < measureNodes.getLength(); j++) {
-                Element measureEl = (Element) measureNodes.item(j);
-                Measure measure = new Measure();
+                final Element measureEl = (Element) measureNodes.item(j);
+
+                final Element attrsEl = getChild(measureEl, "attributes");
+                final Attributes attrs = attrsEl != null ? parseAttributes(attrsEl) : null;
+
+                final Measure[] measures = new Measure[stavesCount];
+                for (int s = 0; s < stavesCount; s++) {
+                    measures[s] = new Measure();
+                    measures[s].setAttributes(attrs);
+                }
+
                 NodeList noteNodes = measureEl.getElementsByTagName("note");
                 for (int k = 0; k < noteNodes.getLength(); k++) {
-                    measure.getNotes().add(parseNote((Element) noteNodes.item(k)));
+                    Note n = parseNote((Element) noteNodes.item(k));
+                    if (n == null) continue;
+                    int staffIndex = n.getStaff() - 1;
+                    if (staffIndex >= 0 && staffIndex < stavesCount) {
+                        measures[staffIndex].getNotes().add(n);
+                    }
                 }
-                part.getMeasures().add(measure);
+
+                for (int s = 0; s < stavesCount; s++) {
+                    parts[s].getMeasures().add(measures[s]);
+                }
             }
-            score.getParts().add(part);
+
+            for (Part part : parts) {
+                score.getParts().add(part);
+            }
         }
 
         return score;
@@ -77,6 +110,42 @@ public class MusicXmlParser {
         }
 
         return partList;
+    }
+
+    private Attributes parseAttributes(Element el) {
+        final Attributes.Builder builder = new Attributes.Builder();
+
+        final String divisions = getText(el, "divisions");
+        if (!divisions.isEmpty()) builder.setDivisions(parseInt(divisions, 1));
+
+        final String staves = getText(el, "staves");
+        builder.setStaves(parseInt(staves, 1));
+
+        final Element keyEl = getChild(el, "key");
+        if (keyEl != null) {
+            builder.setFifths(parseInt(getText(keyEl, "fifths"), 0));
+        }
+
+        final Element timeEl = getChild(el, "time");
+        if (timeEl != null) {
+            int beats     = parseInt(getText(timeEl, "beats"), 4);
+            int beatType  = parseInt(getText(timeEl, "beat-type"), 4);
+            builder.whatTime(beats, beatType);
+        }
+
+        final NodeList clefNodes = el.getElementsByTagName("clef");
+        final char[] signs = new char[clefNodes.getLength() == 0 ? 1 : clefNodes.getLength()];
+        int firstLine = 2;
+        for (int i = 0; i < clefNodes.getLength(); i++) {
+            Element clefEl = (Element) clefNodes.item(i);
+            String sign = getText(clefEl, "sign");
+            signs[i] = sign.isEmpty() ? 'G' : sign.charAt(0);
+            if (i == 0) firstLine = parseInt(getText(clefEl, "line"), 2);
+        }
+        if (signs.length == 0) signs[0] = 'G';
+        builder.whatClef(signs, firstLine);
+
+        return builder.build();
     }
 
     private Note parseNote(Element element) {
