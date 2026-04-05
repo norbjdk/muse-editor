@@ -1,5 +1,7 @@
 package com.muse.editor.core.user;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.muse.editor.core.project.Project;
 import javafx.beans.property.*;
 
@@ -51,6 +53,7 @@ class UserDeprecated {
     }
 }
 
+@JsonDeserialize(builder = User.Builder.class)
 public class User {
     private final long id;
     private final String username;
@@ -99,21 +102,25 @@ public class User {
 
         public Builder() {}
 
+        @JsonProperty("id")
         public Builder setId(long id) {
             this.id = id;
             return this;
         }
 
+        @JsonProperty("username")
         public Builder setUsername(String username) {
             this.username = username;
             return this;
         }
 
+        @JsonProperty("email")
         public Builder setEmail(String email) {
             this.email = email;
             return this;
         }
 
+        @JsonProperty("role")
         public Builder declareRole(String role) {
             this.role = role;
             return this;
