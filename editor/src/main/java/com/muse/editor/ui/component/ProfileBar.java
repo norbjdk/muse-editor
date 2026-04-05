@@ -36,7 +36,6 @@ public class ProfileBar extends GridPane implements Presentable {
     private Button loginBtn;
     private Button logoutBtn;
 
-    private User boundUser;
     private final AuthService authService;
     private final UserService userService;
 
@@ -49,10 +48,10 @@ public class ProfileBar extends GridPane implements Presentable {
 
     @Override
     public void initComponents() {
-        loginBtn = ButtonFactory.createButton("Login",  "login-btn", "Login to your account", "profile-btn");
-        logoutBtn = ButtonFactory.createButton("Logout",  "logout-btn", "Logout from your account", "profile-btn");
+        loginBtn = ButtonFactory.createButton("Login", "login-btn", "Login to your account", "profile-btn");
+        logoutBtn = ButtonFactory.createButton("Logout", "logout-btn", "Logout from your account", "profile-btn");
 
-        usernameLabel =  new Label();
+        usernameLabel = new Label();
         statusLabel = new Label();
 
         pictureView = new Circle(25);
@@ -67,10 +66,7 @@ public class ProfileBar extends GridPane implements Presentable {
         textContainer.setAlignment(Pos.CENTER_LEFT);
         buttonContainer.setAlignment(Pos.CENTER_RIGHT);
 
-        // temporary fixed setup
-
-        statusLabel.setText("online");
-        pictureView.setFill(new ImagePattern(new Image(Objects.requireNonNull(getClass().getResource("/com/muse/editor/assets/images/user.png")).toExternalForm())));
+        setDefaultProfileData();
     }
 
     @Override
@@ -81,7 +77,6 @@ public class ProfileBar extends GridPane implements Presentable {
         textContainer.getStyleClass().add("profile-text-container");
         buttonContainer.getStyleClass().add("profile-button-container");
 
-
         statusLabel.getStyleClass().add("profile-status");
         usernameLabel.getStyleClass().add("profile-username");
 
@@ -91,26 +86,48 @@ public class ProfileBar extends GridPane implements Presentable {
 
     @Override
     public void setupLayout() {
-        add(buttonContainer, 0, 0);
+        textContainer.getChildren().addAll(
+                usernameLabel,
+                statusLabel
+        );
+
+        add(pictureView, 0, 0);
+        add(textContainer, 1, 0);
+        add(buttonContainer, 2, 0);
+
+        final ColumnConstraints firstCol = new ColumnConstraints();
+        firstCol.setPercentWidth(20);
+        final ColumnConstraints secondCol = new ColumnConstraints();
+        secondCol.setPercentWidth(40);
+        final ColumnConstraints thirdCol = new ColumnConstraints();
+        thirdCol.setPercentWidth(40);
+
+        this.getColumnConstraints().addAll(firstCol, secondCol, thirdCol);
+
         updateButtonVisibility();
     }
 
     @Override
     public void setupEventListeners() {
         EventBus.getInstance().subscribe(LoginSuccessEvent.class, event -> {
-            Platform.runLater(this::updateButtonVisibility);
+            Platform.runLater(() -> {
+                updateButtonVisibility();
+                updateProfileData();
+            });
         });
 
         EventBus.getInstance().subscribe(LogoutEvent.class, event -> {
-            Platform.runLater(this::updateButtonVisibility);
+            Platform.runLater(() -> {
+                updateButtonVisibility();
+                setDefaultProfileData();
+            });
         });
     }
-
 
     @Override
     public void setupEventHandlers() {
         loginBtn.setOnAction(e -> handleLogin());
-        logoutBtn.setOnAction(e -> authService.logout());
+        logoutBtn.setOnAction(e -> handleLogout());
     }
 
     private void updateButtonVisibility() {
@@ -121,6 +138,81 @@ public class ProfileBar extends GridPane implements Presentable {
         } else {
             buttonContainer.getChildren().add(loginBtn);
         }
+    }
+
+    private void updateProfileData() {
+        if (authService.isLoggedIn()) {
+            User currentUser = userService.getCurrentUser();
+
+            if (currentUser != null) {
+                usernameLabel.setText(currentUser.getUsername());
+
+                String status = getStatusText(currentUser.getRole());
+                statusLabel.setText(status);
+
+                updateStatusStyle(currentUser.getRole());
+
+            } else {
+                setDefaultProfileData();
+            }
+        }
+    }
+
+    private void setDefaultProfileData() {
+        usernameLabel.setText("Guest");
+        statusLabel.setText("offline");
+        statusLabel.getStyleClass().removeAll("profile-status-online", "profile-status-admin");
+        statusLabel.getStyleClass().add("profile-status-offline");
+
+        try {
+            Image defaultAvatar = new Image(Objects.requireNonNull(
+                    getClass().getResource("/com/muse/editor/assets/images/user.png")).toExternalForm());
+            pictureView.setFill(new ImagePattern(defaultAvatar));
+        } catch (Exception e) {
+            pictureView.setFill(Color.GRAY);
+        }
+    }
+
+    private String getStatusText(String role) {
+        if (role == null) return "online";
+
+        switch (role.toLowerCase()) {
+            case "admin":
+                return "administrator";
+            case "user":
+                return "online";
+            default:
+                return "online";
+        }
+    }
+
+    private void updateStatusStyle(String role) {
+        statusLabel.getStyleClass().removeAll(
+                "profile-status-online",
+                "profile-status-offline",
+                "profile-status-admin"
+        );
+
+        // Dodaj odpowiednią klasę stylu
+        if (role == null) {
+            statusLabel.getStyleClass().add("profile-status-online");
+        } else {
+            switch (role.toLowerCase()) {
+                case "admin":
+                    statusLabel.getStyleClass().add("profile-status-admin");
+                    break;
+                case "user":
+                    statusLabel.getStyleClass().add("profile-status-online");
+                    break;
+                default:
+                    statusLabel.getStyleClass().add("profile-status-online");
+            }
+        }
+    }
+
+    private void handleLogout() {
+        authService.logout();
+        setDefaultProfileData();
     }
 
     private void handleLogin() {
