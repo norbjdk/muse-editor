@@ -13,7 +13,7 @@ function Footer() {
                             </span>
                             MUSE
                         </Link>
-                        <p className="text-[#CCC5B9] text-sm leading-relaxed">
+                        <p className="text-[#2c2c2c] text-sm leading-relaxed">
                             The open-source studio for modern composers. Write, share, and play music without barriers.
                         </p>
                     </div>
