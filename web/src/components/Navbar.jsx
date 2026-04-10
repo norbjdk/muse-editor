@@ -41,7 +41,7 @@ function Navbar() {
                     </Link>
                     <Link 
                         to="/account" 
-                        className="px-5 py-2 bg-[#F4F4F4] text-[#252422] rounded-lg text-sm font-bold hover:bg-[#96918f] hover:text-[#FFFCF2] transition-all">
+                        className="px-5 py-2 bg-[#F4F4F4] text-[#252422] rounded-full text-sm font-bold hover:bg-[#96918f] hover:text-[#FFFCF2] transition-all">
                         Account
                     </Link>
                 </div>
