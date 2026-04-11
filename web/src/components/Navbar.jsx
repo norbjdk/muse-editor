@@ -10,9 +10,9 @@ function Navbar() {
                 <div className="flex items-center gap-6">
                     <Link 
                         to="/scores" 
-                        className="text-[#050505] text-sm font-medium hover:text-[#4d4643] transition-colors relative group">
+                        className="text-[#050505] text-sm font-medium hover:text-[#365603] transition-colors relative group">
                         Scores
-                        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#2c2c2c] transition-all group-hover:w-full"></span>
+                        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#365603] transition-all group-hover:w-full"></span>
                     </Link>
                     <div className="w-full max-w-100">
                         <SearchBar />
@@ -41,7 +41,7 @@ function Navbar() {
                     </Link>
                     <Link 
                         to="/account" 
-                        className="px-5 py-2 bg-[#F4F4F4] text-[#252422] rounded-full text-sm font-bold hover:bg-[#96918f] hover:text-[#FFFCF2] transition-all">
+                        className="px-5 py-2 bg-[#365603] border text-[#f7f4ee] rounded-full text-sm font-bold hover:bg-[#213106] hover:text-[#FFFCF2] transition-all">
                         Account
                     </Link>
                 </div>

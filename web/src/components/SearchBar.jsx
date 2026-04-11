@@ -5,7 +5,7 @@ function SearchBar() {
                 type="text" 
                 className="
                 block w-full border border-stone-950 rounded-full py-2 pl-4 pr-4 text-[#050505]
-                 placeholder-[#CCC5B9] text-sm focus:outline-none focus:bg-[#0C0C0C0C]
+                 placeholder-[#96918f] text-sm focus:outline-none focus:bg-[#0C0C0C0C]
                   focus:border-[#69605c] focus:ring-1 focus:ring-[#686362] transition-all shadow-inner" 
                 placeholder="Search sheet music..."
             />
