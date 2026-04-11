@@ -100,6 +100,17 @@ function Navbar() {
                                     </div>
 
                                     <Link 
+                                        to="/upload" 
+                                        onClick={closeDropdown}
+                                        className="flex items-center px-4 py-3 text-[#050505] hover:bg-[#E8E4DD] transition-colors"
+                                    >
+                                        <svg className="w-5 h-5 mr-3 text-[#365603]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a3 3 0 01-3-3V5a3 3 0 013-3h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a3 3 0 01-3 3z" />
+                                        </svg>
+                                        Upload Music
+                                    </Link>
+
+                                    <Link 
                                         to="/profile" 
                                         onClick={closeDropdown}
                                         className="flex items-center px-4 py-3 text-[#050505] hover:bg-[#E8E4DD] transition-colors"
@@ -109,19 +120,6 @@ function Navbar() {
                                         </svg>
                                         Profile
                                     </Link>
-                                    
-                                    {user.role === 'Artist' && (
-                                        <Link 
-                                            to="/upload" 
-                                            onClick={closeDropdown}
-                                            className="flex items-center px-4 py-3 text-[#050505] hover:bg-[#E8E4DD] transition-colors"
-                                        >
-                                            <svg className="w-5 h-5 mr-3 text-[#365603]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a3 3 0 01-3-3V5a3 3 0 013-3h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a3 3 0 01-3 3z" />
-                                            </svg>
-                                            Upload Music
-                                        </Link>
-                                    )}
                                     
                                     <Link 
                                         to="/settings" 
