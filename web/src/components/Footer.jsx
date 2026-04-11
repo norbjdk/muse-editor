@@ -3,7 +3,7 @@ import Logo from "../assets/images/logo.png";
 
 function Footer() {
     return(
-        <div className="bg-[#E8E4DD] border-t border-black pt-12 pb-6 px-0 font-sans shadow-2xl backdrop-blur-md">
+        <div className="bg-[#E8E4DD]  pt-12 pb-6 px-0 font-sans shadow-2xl backdrop-blur-md">
             <div className="min-w-9/12 max-w-full mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12 px-6">
                     <div className="col-span-1 md:col-span-1">
@@ -45,7 +45,7 @@ function Footer() {
                     </div>
                 </div>
 
-                <div className="border-t border-[#4d4d4d] pt-2 flex flex-col md:row justify-between items-center gap-4">
+                <div className="border-t border-[#365603] pt-2 flex flex-col md:row justify-between items-center gap-4">
                     <p className="text-[#050505] text-xs">
                         &copy; {new Date().getFullYear()} MUSE is music software. Released under MIT License.
                     </p>
