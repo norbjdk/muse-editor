@@ -97,9 +97,6 @@ function Navbar() {
                                     <div className="px-4 py-3 border-b border-[#CCC5B9]">
                                         <p className="text-[#050505] font-semibold">{user.username}</p>
                                         <p className="text-[#2c2c2c] text-sm">{user.email}</p>
-                                        <p className="text-[#365603] text-xs mt-1 font-medium">
-                                            {user.role === 'Artist' ? '🎤 Artist' : '👂 Listener'}
-                                        </p>
                                     </div>
 
                                     <Link 
