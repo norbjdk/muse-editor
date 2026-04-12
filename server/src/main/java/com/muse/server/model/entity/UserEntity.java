@@ -1,6 +1,10 @@
 package com.muse.server.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -21,9 +25,19 @@ public class UserEntity {
     @Column(nullable = false)
     private String role;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<SheetEntity> sheets = new ArrayList<>();
 
     public UserEntity() {
         role = "default";
+    }
+
+    public UserEntity(String username, String email, String password, String role) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.role = role;
     }
 
     public Long getId() {
@@ -64,5 +78,13 @@ public class UserEntity {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public List<SheetEntity> getSheets() {
+        return sheets;
+    }
+
+    public void setSheets(List<SheetEntity> sheets) {
+        this.sheets = sheets;
     }
 }
