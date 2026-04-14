@@ -59,7 +59,13 @@ public class FileStorageService {
     }
 
     public String uploadMusicXML(MultipartFile file) throws Exception {
-        validateType(file, List.of("application/xml", "text/xml", "application/vnd.recordare.musicxml+xml", "application/vnd.recordare.musicxml"));
+        validateType(file, List.of(
+                "application/xml",
+                "text/xml",
+                "application/vnd.recordare.musicxml+xml",
+                "application/vnd.recordare.musicxml",
+                "application/octet-stream"
+        ));
         return storeFile(file, "scores");
     }
 
@@ -91,7 +97,16 @@ public class FileStorageService {
 
     private void validateType(MultipartFile file, List<String> allowedTypes) {
         String contentType = file.getContentType();
+
+        System.out.println("File content type: " + contentType);
+        System.out.println("File original filename: " + file.getOriginalFilename());
+
         if (contentType == null || !allowedTypes.contains(contentType)) {
+            String filename = file.getOriginalFilename();
+            if (filename != null && (filename.endsWith(".musicxml") || filename.endsWith(".mxl") || filename.endsWith(".xml"))) {
+                System.out.println("Accepting file based on extension: " + filename);
+                return;
+            }
             throw new IllegalArgumentException("Niepoprawny typ pliku: " + contentType);
         }
     }
