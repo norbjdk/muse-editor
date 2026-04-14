@@ -87,44 +87,40 @@ function Upload() {
         setLoading(true);
         setUploadProgress(0);
 
-        const interval = setInterval(() => {
-            setUploadProgress(prev => {
-                if (prev >= 90) {
-                    clearInterval(interval);
-                    return 90;
-                }
-                return prev + 10;
-            });
-        }, 200);
+        const formDataToSend = new FormData();
+        formDataToSend.append('file', file);
+        formDataToSend.append('title', formData.title);
+        formDataToSend.append('composer', formData.composer);
+        formDataToSend.append('difficulty', formData.difficulty);
+        formDataToSend.append('key', formData.key);
+        formDataToSend.append('category', formData.category);
+        formDataToSend.append('description', formData.description);
+        formDataToSend.append('tags', formData.tags);
+        formDataToSend.append('isPublic', formData.isPublic);
 
         try {
-            const formDataToSend = new FormData();
-            formDataToSend.append('file', file);
-            formDataToSend.append('title', formData.title);
-            formDataToSend.append('composer', formData.composer);
-            formDataToSend.append('difficulty', formData.difficulty);
-            formDataToSend.append('key', formData.key);
-            formDataToSend.append('category', formData.category);
-            formDataToSend.append('description', formData.description);
-            formDataToSend.append('tags', formData.tags);
-            formDataToSend.append('isPublic', formData.isPublic);
-            formDataToSend.append('userId', user.id);
+            const response = await fetch('http://localhost:8080/api/sheets/upload', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: formDataToSend
+            });
 
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            clearInterval(interval);
-            setUploadProgress(100);
+            const data = await response.json();
             
-            setSubmitSuccess(true);
-            
-            setTimeout(() => {
-                navigate('/profile');
-            }, 2000);
-            
+            if (data.success) {
+                setUploadProgress(100);
+                setSubmitSuccess(true);
+                setTimeout(() => {
+                    navigate('/profile');
+                }, 2000);
+            } else {
+                throw new Error(data.message);
+            }
         } catch (error) {
             console.error('Upload error:', error);
             alert('Failed to upload score. Please try again.');
-            clearInterval(interval);
             setUploadProgress(0);
         } finally {
             setLoading(false);
