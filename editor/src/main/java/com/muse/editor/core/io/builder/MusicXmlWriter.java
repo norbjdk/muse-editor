@@ -44,9 +44,12 @@ public class MusicXmlWriter {
 
         final Element work = document.createElement("work");
         final Element title = document.createElement("work-title");
+        final Element album = document.createElement("work-subtitle");
 
         title.setTextContent(score.getWorkTitle());
+        album.setTextContent(score.getAlbum());
         work.appendChild(title);
+        work.appendChild(album);
         root.appendChild(work);
     }
 
