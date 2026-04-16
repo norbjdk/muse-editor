@@ -1,11 +1,20 @@
 package com.muse.editor.core.model.score;
 
 public class ScorePart {
+    private String id;
     private String partName;
     private String partAbbreviation;
     private ScoreInstrument scoreInstrument;
 
     public ScorePart() {}
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getPartName() {
         return partName;
