@@ -6,6 +6,7 @@ import java.util.List;
 public class ScorePartwise {
     private String workTitle;
     private String creator;
+    private String album;
     private PartList partList;
     private List<Part> parts = new ArrayList<>();
 
@@ -25,6 +26,14 @@ public class ScorePartwise {
 
     public void setCreator(String creator) {
         this.creator = creator;
+    }
+
+    public String getAlbum() {
+        return album;
+    }
+
+    public void setAlbum(String album) {
+        this.album = album;
     }
 
     public PartList getPartList() {
