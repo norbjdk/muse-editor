@@ -1,10 +1,13 @@
 package com.muse.editor.ui.view;
 
 import com.muse.editor.core.EventBus;
-import com.muse.editor.model.event.ChangeProjectPreviewEvent;
+import com.muse.editor.model.dto.internal.ViewRequest;
+import com.muse.editor.model.event.*;
 import com.muse.editor.ui.model.Presentable;
+import com.muse.editor.ui.model.ViewName;
 import com.muse.editor.ui.model.Viewable;
 import com.muse.editor.ui.util.ButtonFactory;
+import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -12,7 +15,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.Reflection;
-import javafx.scene.image.Image;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -32,11 +34,15 @@ public class NewProjectView extends FlowPane implements Presentable, Viewable {
     private TextField albumInput;
 
     private Button createProjectBtn;
+    private Button cancelProjectBtn;
     private Canvas sheetPreview;
     private GraphicsContext graphicsContext;
 
     private GridPane dataForm;
     private GridPane templateForm;
+
+    private ListView<String> instrumentsListView;
+    private ListView<String> selectedListView;
 
     public NewProjectView() {
         present();
@@ -49,16 +55,21 @@ public class NewProjectView extends FlowPane implements Presentable, Viewable {
         albumInput = new TextField();
 
         createProjectBtn = ButtonFactory.createButton("Create", "create-btn", "Create new project", "create-btn");
+        cancelProjectBtn = ButtonFactory.createButton("Cancel", "cancel-btn", "Cancel new project", "create-btn");
         sheetPreview = new Canvas();
         graphicsContext = sheetPreview.getGraphicsContext2D();
 
         dataForm = new GridPane();
         templateForm = new GridPane();
+
+        instrumentsListView = new ListView<>();
+        selectedListView = new ListView<>();
     }
 
     @Override
     public void setupComponents() {
-        ButtonFactory.addIcon(createProjectBtn, FontAwesomeSolid.CHECK_CIRCLE, 16, Color.rgb(5, 5, 5));
+        ButtonFactory.addIcon(createProjectBtn, FontAwesomeSolid.CHECK_CIRCLE, 16, Color.rgb(204, 197, 185));
+        ButtonFactory.addIcon(cancelProjectBtn, FontAwesomeSolid.MINUS_CIRCLE, 16, Color.rgb(204, 197, 185));
 
         sheetPreview.setWidth(300);
         sheetPreview.setHeight(450);
@@ -102,34 +113,45 @@ public class NewProjectView extends FlowPane implements Presentable, Viewable {
             dataForm.add(fieldBoxes.get(vbox), 0, vbox);
         }
 
-        final Label categoryLabel = new Label("Category");
-        final Label templateLabel = new Label("Template");
+        final Label instrumentsLabel = new Label("Choose instruments");
+        final Label templateLabel = new Label("");
 
-        categoryLabel.getStyleClass().add("template-label");
+        instrumentsLabel.getStyleClass().add("template-label");
         templateLabel.getStyleClass().add("template-label");
 
-        final ListView<String> categoryList = new ListView<>();
-        final ListView<String> templatesList = new ListView<>();
+        instrumentsListView.getItems().addAll("Piano", "Violin", "Guitar", "Drums", "Flutes");
+        selectedListView.getItems().addAll("");
 
-        categoryList.getItems().addAll("General", "Choral", "Solo", "Band", "Orchestral");
-        templatesList.getItems().addAll("Treble Clef", "Bass Clef", "Grand Staff");
+        instrumentsListView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue != null) EventBus.getInstance().publish(new AddInstrumentToProjectEvent(newValue));
+        });
 
-        templateForm.add(categoryLabel, 0, 0);
+        selectedListView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue != null) EventBus.getInstance().publish(new RemoveInstrumentFromProjectEvent(newValue));
+        });
+
+        templateForm.add(instrumentsLabel, 0, 0);
         templateForm.add(templateLabel, 1, 0);
-        templateForm.add(categoryList, 0, 1);
-        templateForm.add(templatesList, 1, 1);
+        templateForm.add(instrumentsListView, 0, 1);
+        templateForm.add(selectedListView, 1, 1);
+
+        final VBox buttonsContainer = new VBox(10, createProjectBtn, cancelProjectBtn);
+        buttonsContainer.setAlignment(Pos.CENTER);
 
         getChildren().addAll(
                 dataForm,
                 templateForm,
                 sheetPreview,
-                createProjectBtn
+                buttonsContainer
         );
     }
 
     @Override
     public void setupEventListeners() {
         EventBus.getInstance().subscribe(ChangeProjectPreviewEvent.class, event -> redrawPreview());
+        EventBus.getInstance().subscribe(AddInstrumentToProjectEvent.class, event -> handleInstrumentSelected(event.getName()));
+        EventBus.getInstance().subscribe(RemoveInstrumentFromProjectEvent.class, event -> handleInstrumentRemoved(event.getName()));
+        EventBus.getInstance().subscribe(NewProjectCancelledEvent.class, event -> handleCancelledProject());
     }
 
     @Override
@@ -137,6 +159,7 @@ public class NewProjectView extends FlowPane implements Presentable, Viewable {
         titleInput.setOnKeyTyped(keyEvent -> EventBus.getInstance().publish(new ChangeProjectPreviewEvent()));
         composerInput.setOnKeyTyped(keyEvent -> EventBus.getInstance().publish(new ChangeProjectPreviewEvent()));
         albumInput.setOnKeyTyped(keyEvent -> EventBus.getInstance().publish(new ChangeProjectPreviewEvent()));
+        cancelProjectBtn.setOnAction(actionEvent -> handleCancelButton());
     }
 
     private void redrawPreview() {
@@ -146,6 +169,7 @@ public class NewProjectView extends FlowPane implements Presentable, Viewable {
         graphicsContext.fillRoundRect(0,0 ,300, 450, 20, 30);
         graphicsContext.setStroke(Color.rgb(5, 5, 5));
         graphicsContext.strokeRect(0, 0, 300, 450);
+        graphicsContext.setFill(Color.BLACK);
 
         final String title = titleInput.getText();
         final String album = albumInput.getText();
@@ -175,6 +199,24 @@ public class NewProjectView extends FlowPane implements Presentable, Viewable {
         reflection.setBottomOpacity(0.0);
 
         return reflection;
+    }
+
+    private void handleInstrumentSelected(String instrument) {
+        selectedListView.getItems().add(instrument);
+        instrumentsListView.getItems().remove(instrument);
+    }
+
+    private void handleInstrumentRemoved(String instrument) {
+        selectedListView.getItems().remove(instrument);
+        instrumentsListView.getItems().add(instrument);
+    }
+
+    private void handleCancelledProject() {
+        EventBus.getInstance().publish(new ChangeViewRequestedEvent(new ViewRequest(ViewName.HOME)));
+    }
+
+    private void handleCancelButton() {
+        EventBus.getInstance().publish(new NewProjectCancelledEvent());
     }
 
     public TextField getTitleInput() {
