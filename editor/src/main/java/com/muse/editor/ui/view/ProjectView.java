@@ -1,6 +1,7 @@
 package com.muse.editor.ui.view;
 
 import com.muse.editor.core.EventBus;
+import com.muse.editor.model.event.ProjectCreatedEvent;
 import com.muse.editor.model.event.ProjectLoadedEvent;
 import com.muse.editor.ui.component.ToolBar;
 import com.muse.editor.ui.component.ToolBox;
@@ -69,6 +70,12 @@ public class ProjectView extends BorderPane implements Presentable, Viewable {
     @Override
     public void setupEventListeners() {
         EventBus.getInstance().subscribe(ProjectLoadedEvent.class, event -> {
+            Platform.runLater(() -> {
+                loadingLabel.setVisible(false);
+                sheetPane.bindProject(event.getProject());
+            });
+        });
+        EventBus.getInstance().subscribe(ProjectCreatedEvent.class, event -> {
             Platform.runLater(() -> {
                 loadingLabel.setVisible(false);
                 sheetPane.bindProject(event.getProject());
