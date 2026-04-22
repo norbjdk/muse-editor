@@ -169,24 +169,12 @@
     -fx-scale-y: 0.98;
 }
 
-.list-view {
-    -fx-max-height: 300px;
-    -fx-min-width: 220px;
-    -fx-max-width: 260px;
-    -fx-background-color: #F4F4F4;
-    -fx-border-color: #CCC5B9;
-    -fx-border-width: 0px 0px 2px 0px;
-    -fx-border-radius: 4px;
-    -fx-background-radius: 4px;
-    -fx-padding: 0;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 4, 0.2, 0, 1);
-}
-
-.list-view .viewport {
+.instruments-column {
+    -fx-padding: 4px;
     -fx-background-color: transparent;
 }
 
-.list-view .list-cell {
+.instrument-btn {
     -fx-background-color: #F4F4F4;
     -fx-font-family: "Roboto Light";
     -fx-font-weight: 500;
@@ -196,49 +184,17 @@
     -fx-border-color: transparent transparent #E0DCD5 transparent;
     -fx-border-width: 1px;
     -fx-cursor: hand;
-    -fx-transition: all 0.2s ease;
+    -fx-alignment: CENTER-LEFT;
 }
 
-.list-view .list-cell:filled:selected {
-    -fx-background-color: #D4CFC5;
-    -fx-text-fill: #1a1917;
-    -fx-font-weight: 700;
-}
-
-.list-view .list-cell:filled:hover {
+.instrument-btn:hover {
     -fx-background-color: #E8E4DD;
     -fx-text-fill: #2c2b28;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 2, 0.1, 0, 0);
 }
 
-.list-view .list-cell:odd {
-    -fx-background-color: #F4F4F4;
-}
-
-.list-view .list-cell:even {
-    -fx-background-color: #F8F7F5;
-}
-
-.list-view .scroll-bar {
-    -fx-background-color: transparent;
-    -fx-pref-width: 6px;
-}
-
-.list-view .scroll-bar .thumb {
-    -fx-background-color: #CCC5B9;
-    -fx-background-radius: 3px;
-}
-
-.list-view .scroll-bar .thumb:hover {
-    -fx-background-color: #B5AD9F;
-}
-
-.list-view .scroll-bar .track {
-    -fx-background-color: transparent;
-}
-
-.list-view .scroll-bar .increment-button,
-.list-view .scroll-bar .decrement-button {
-    -fx-background-color: transparent;
-    -fx-padding: 0 4px;
+.instrument-btn:pressed {
+    -fx-background-color: #D4CFC5;
+    -fx-text-fill: #1a1917;
+    -fx-font-weight: 700;
 }
