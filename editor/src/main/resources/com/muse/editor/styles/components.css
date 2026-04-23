@@ -81,10 +81,11 @@
  */
 
 .side-bar {
-    -fx-background-color: #F0EDE8;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 8, 0.5, -2, 0);
-    -fx-background-insets: -1px;
-    -fx-padding: 0px;
+    -fx-background-color:  #F0EDE8;
+    -fx-effect:            dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+    -fx-background-radius: 8px;
+    -fx-padding:           10px;
+    -fx-spacing:           15px;
 }
 
 .profile-status {
@@ -112,10 +113,12 @@
 }
 
 .profile-bar {
-    -fx-background-color: #f5f5f5;
-    -fx-padding: 10;
-    -fx-border-color: #e0e0e0;
-    -fx-border-width: 0 0 1 0;
+    -fx-background-color:  #f3f3f3;
+    -fx-effect:            dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+    -fx-padding:           10;
+    -fx-background-radius: 10px;
+    -fx-border-color:      #e0e0e0;
+    -fx-border-width:      0 0 1 0;
 }
 
 .profile-text-container {
@@ -148,6 +151,103 @@
 
 #logout-btn:hover {
     -fx-background-color: #da190b;
+}
+
+.friends-scroll {
+    -fx-background:           transparent;
+    -fx-background-color:     transparent;
+    -fx-fit-to-width:         true;
+    -fx-vbar-policy:          as-needed;
+    -fx-pannable:             false;
+    -fx-border-width:         0;
+}
+
+.friends-scroll .viewport {
+    -fx-background-color: transparent;
+    -fx-border-width:     0;
+}
+
+.friends-container {
+    -fx-background-color:  transparent;
+    -fx-effect:            dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+    -fx-padding:           0;
+    -fx-border-color:      #e0e0e0;
+    -fx-border-width:      0 0 1 0;
+    -fx-spacing:           15;
+}
+
+/*
+================ INVITE BAR ================
+ */
+
+.invite-bar {
+    -fx-background-color:  #f5f5f5;
+    -fx-effect:            dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+    -fx-alignment:         center;
+    -fx-padding:           12 6;
+    -fx-background-radius: 10px;
+    -fx-border-color:      #e0e0e0;
+    -fx-border-width:      0 0 1 0;
+    -fx-spacing:           20px;
+}
+
+.friend-name-input {
+    -fx-background-color:  #EDEDED;
+    -fx-effect:            dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+    -fx-padding:           6;
+    -fx-background-radius: 6px;
+    -fx-border-color:      #e0e0e0;
+    -fx-border-width:      0 0 1 0;
+}
+
+.add-friend-btn {
+    -fx-background-color:  #EDEDED;
+    -fx-effect:            dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+    -fx-alignment:         center;
+    -fx-padding:           6;
+    -fx-background-radius: 50%;
+    -fx-border-color:      #e0e0e0;
+    -fx-border-width:      0 0 1 0;
+}
+
+.add-friend-btn:hover {
+    -fx-cursor:           hand;
+    -fx-background-color: #dfdede;
+}
+
+/*
+================ FRIEND CARD ================
+ */
+
+.friend-card {
+    -fx-background-color:  #f3f3f3;
+    -fx-effect:            dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+    -fx-padding:           10 4;
+    -fx-background-radius: 10px;
+    -fx-border-color:      #e0e0e0;
+    -fx-border-width:      0 0 1 0;
+    -fx-alignment: center;
+    -fx-spacing: 10px;
+}
+
+.profile-buttons-container {
+    -fx-spacing: 10px;
+    -fx-alignment: center;
+}
+
+.friend-card-btn {
+    -fx-background-color:  #EDEDED;
+    -fx-effect:            dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+    -fx-alignment:         center;
+    -fx-padding:           6;
+    -fx-background-radius: 50%;
+    -fx-border-color:      #e0e0e0;
+    -fx-border-width:      0 0 1 0;
+}
+
+.friend-card-btn:hover {
+    -fx-cursor:           hand;
+    -fx-background-color: #dfdede;
 }
 
 /*

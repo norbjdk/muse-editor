@@ -50,7 +50,7 @@ public class MainWindow implements Presentable {
 
     @Override
     public void setupComponents() {
-        BorderPane.setMargin(sideBar, new Insets(5, 0, 5, 6));
+        BorderPane.setMargin(sideBar, new Insets(15, 10, 15, 10));
     }
 
     @Override
