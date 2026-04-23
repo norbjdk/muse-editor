@@ -2,12 +2,10 @@ package com.muse.editor.core.project;
 
 import com.muse.editor.core.EventBus;
 import com.muse.editor.core.io.service.FileIOService;
+import com.muse.editor.core.model.dto.NewProjectRequest;
 import com.muse.editor.core.model.score.ScorePartwise;
 import com.muse.editor.model.dto.internal.ViewRequest;
-import com.muse.editor.model.event.ChangeViewRequestedEvent;
-import com.muse.editor.model.event.OpenProjectRequestedEvent;
-import com.muse.editor.model.event.ProjectLoadFailedEvent;
-import com.muse.editor.model.event.ProjectLoadedEvent;
+import com.muse.editor.model.event.*;
 import com.muse.editor.ui.model.ViewName;
 import javafx.application.Platform;
 import javafx.stage.FileChooser;
@@ -36,6 +34,7 @@ public class ProjectService {
 
     private void setupEventListeners() {
         EventBus.getInstance().subscribe(OpenProjectRequestedEvent.class, event -> handleOpenProjectRequested());
+        EventBus.getInstance().subscribe(CreateProjectRequestedEvent.class, event -> handleCreateProjectRequested(event.getRequest()));
     }
 
     private void handleOpenProjectRequested() {
@@ -45,6 +44,23 @@ public class ProjectService {
 
             loadFile(file.toPath());
         });
+    }
+
+    private void handleCreateProjectRequested(NewProjectRequest request) {
+        Platform.runLater(() -> {
+            if (request == null) return;
+            createProject(request);
+        });
+    }
+
+    private void createProject(NewProjectRequest request) {
+        CompletableFuture
+                .supplyAsync(() -> FileIOService.getInstance().create(request))
+                .thenAcceptAsync(score -> onCreateSuccess(request, score), Platform::runLater)
+                .exceptionally(ex -> {
+                    Platform.runLater(() -> onLoadFailure(ex));
+                    return null;
+                });
     }
 
     private File showFileChooser() {
@@ -85,6 +101,23 @@ public class ProjectService {
 
         EventBus.getInstance().publish(new ChangeViewRequestedEvent(new ViewRequest(ViewName.PROJECT)));
         EventBus.getInstance().publish(new ProjectLoadedEvent(project));
+    }
+
+    private void onCreateSuccess(NewProjectRequest request, ScorePartwise scorePartwise) {
+        if (scorePartwise == null) return;
+
+        final String title = request.getTitle() != null && !request.getTitle().isBlank()
+                ? request.getTitle()
+                : "New music sheet";
+
+        final Project project = Project.createNew(title);
+        project.getScorePartwise().set(scorePartwise);
+
+        updateStatus(project, scorePartwise);
+        ProjectManager.getInstance().addDocument(project);
+
+        EventBus.getInstance().publish(new ChangeViewRequestedEvent(new ViewRequest(ViewName.PROJECT)));
+        EventBus.getInstance().publish(new ProjectCreatedEvent(project));
     }
 
     private void onLoadFailure(Throwable ex) {

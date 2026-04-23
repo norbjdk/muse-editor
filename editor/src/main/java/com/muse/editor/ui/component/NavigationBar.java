@@ -4,6 +4,7 @@ import com.muse.editor.core.EventBus;
 import com.muse.editor.model.dto.internal.ViewRequest;
 import com.muse.editor.model.event.ChangeViewRequestedEvent;
 import com.muse.editor.model.event.OpenProjectRequestedEvent;
+import com.muse.editor.model.event.ProjectCreatedEvent;
 import com.muse.editor.model.event.ProjectLoadedEvent;
 import com.muse.editor.ui.model.Presentable;
 import com.muse.editor.ui.model.ViewName;
@@ -82,6 +83,15 @@ public class NavigationBar extends HBox implements Presentable {
     @Override
     public void setupEventListeners() {
         EventBus.getInstance().subscribe(ProjectLoadedEvent.class, event -> {
+            Platform.runLater(() -> {
+                String title = event.getProject().getTitle().get();
+
+                currentProjectBtn.setText(title);
+                currentProjectBtn.setVisible(true);
+                currentProjectBtn.setManaged(true);
+            });
+        });
+        EventBus.getInstance().subscribe(ProjectCreatedEvent.class, event -> {
             Platform.runLater(() -> {
                 String title = event.getProject().getTitle().get();
 

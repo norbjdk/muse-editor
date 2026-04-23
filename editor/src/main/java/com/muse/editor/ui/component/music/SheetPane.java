@@ -95,29 +95,28 @@ public class SheetPane extends ScrollPane implements Presentable {
     public void rebuild(ScorePartwise scorePartwise, double viewWidth) {
         pageContainer.getChildren().clear();
 
-        if (scorePartwise == null || scorePartwise.getParts() == null
-                || scorePartwise.getParts().isEmpty()) {
+        if (scorePartwise == null) {
             showEmptyState();
             return;
         }
 
         final VBox page = buildPage(scorePartwise.getWorkTitle(), scorePartwise.getCreator());
-        final var parts = scorePartwise.getParts();
-        final int measureCount = parts.get(0).getMeasures().size();
-        final double measureWidth = SheetMetrics.MEASURE_MIN_WIDTH * 4;
-
-        for (int i = 0; i < measureCount; i++) {
-            final SystemPane system = new SystemPane();
-            for (int p = 0; p < parts.size(); p++) {
-                final var measures = parts.get(p).getMeasures();
-                if (i < measures.size()) {
-                    boolean isFirst = (i == 0);
-                    MeasurePane mp = new MeasurePane(measures.get(i), isFirst, measureWidth);
-                    system.addStaff(mp);
-                }
-            }
-            page.getChildren().add(system);
-        }
+//        final var parts = scorePartwise.getParts();
+//        final int measureCount = parts.getFirst().getMeasures().size();
+//        final double measureWidth = SheetMetrics.MEASURE_MIN_WIDTH * 4;
+//
+//        for (int i = 0; i < measureCount; i++) {
+//            final SystemPane system = new SystemPane();
+//            for (int p = 0; p < parts.size(); p++) {
+//                final var measures = parts.get(p).getMeasures();
+//                if (i < measures.size()) {
+//                    boolean isFirst = (i == 0);
+//                    MeasurePane mp = new MeasurePane(measures.get(i), isFirst, measureWidth);
+//                    system.addStaff(mp);
+//                }
+//            }
+//            page.getChildren().add(system);
+//        }
 
         pageContainer.getChildren().add(page);
         sheetReady.set(true);
