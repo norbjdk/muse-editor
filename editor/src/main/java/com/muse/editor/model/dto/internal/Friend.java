@@ -4,6 +4,7 @@ public class Friend {
     private Long id;
     private String username;
     private String picturePath;
+    private String status;
 
     public Friend() {}
 
@@ -29,5 +30,13 @@ public class Friend {
 
     public void setPicturePath(String picturePath) {
         this.picturePath = picturePath;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
