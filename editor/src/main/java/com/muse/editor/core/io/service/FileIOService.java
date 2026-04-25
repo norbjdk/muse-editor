@@ -7,7 +7,6 @@ import com.muse.editor.core.model.score.ScorePartwise;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -35,7 +34,7 @@ public class FileIOService {
 
         score.setWorkTitle(request.getTitle());
         score.setCreator(request.getComposer());
-        score.setAlbum(request.getAlbum());
+        score.setAlbum(request.getSubtitle());
 
         return score;
     }
