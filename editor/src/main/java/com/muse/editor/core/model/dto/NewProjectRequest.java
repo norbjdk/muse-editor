@@ -7,8 +7,8 @@ import java.util.List;
 public class NewProjectRequest {
     private final List<String> instruments = new ArrayList<>();
     private String title;
+    private String subtitle;
     private String composer;
-    private String album;
 
     public NewProjectRequest() {}
 
@@ -28,12 +28,12 @@ public class NewProjectRequest {
         this.composer = composer;
     }
 
-    public String getAlbum() {
-        return album;
+    public String getSubtitle() {
+        return subtitle;
     }
 
-    public void setAlbum(String album) {
-        this.album = album;
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
     }
 
     public List<String> getInstruments() {
