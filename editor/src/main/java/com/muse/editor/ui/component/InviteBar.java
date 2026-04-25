@@ -18,6 +18,7 @@ public class InviteBar extends HBox implements Presentable {
 
     private TextField friendNameInput;
     private Button addFriendBtn;
+    private Button notificationsBtn;
 
     public InviteBar() {
         present();
@@ -26,12 +27,14 @@ public class InviteBar extends HBox implements Presentable {
     @Override
     public void initComponents() {
         friendNameInput = new TextField();
-        addFriendBtn = ButtonFactory.createButton("", "add-friend-btn", "Add new friend", "add-friend-btn");
+        addFriendBtn = ButtonFactory.createButton("", "add-friend-btn", "Add new friend", "invite-bar-btn");
+        notificationsBtn = ButtonFactory.createButton("", "notifications-btn", "See your notifications", "invite-bar-btn");
     }
 
     @Override
     public void setupComponents() {
         ButtonFactory.addIcon(addFriendBtn, FontAwesomeSolid.USER_PLUS, 15, Color.rgb(5, 5, 5));
+        ButtonFactory.addIcon(notificationsBtn, FontAwesomeSolid.BELL, 15, Color.rgb(5,5 ,5));
 
         friendNameInput.setPromptText("Type friend name");
     }
@@ -42,7 +45,6 @@ public class InviteBar extends HBox implements Presentable {
         this.getStyleClass().add("invite-bar");
 
         friendNameInput.getStyleClass().add("friend-name-input");
-        addFriendBtn.getStyleClass().add("add-friend-btn");
     }
 
     @Override
@@ -51,6 +53,7 @@ public class InviteBar extends HBox implements Presentable {
                 createSpacer(SpaceFactory.Direction.HORIZONTAL),
                 friendNameInput,
                 addFriendBtn,
+                notificationsBtn,
                 createSpacer(SpaceFactory.Direction.HORIZONTAL)
         );
     }

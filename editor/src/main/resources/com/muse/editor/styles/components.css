@@ -200,7 +200,7 @@
     -fx-border-width:      0 0 1 0;
 }
 
-.add-friend-btn {
+.invite-bar-btn {
     -fx-background-color:  #EDEDED;
     -fx-effect:            dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
     -fx-alignment:         center;
@@ -210,7 +210,7 @@
     -fx-border-width:      0 0 1 0;
 }
 
-.add-friend-btn:hover {
+.invite-bar-btn:hover {
     -fx-cursor:           hand;
     -fx-background-color: #dfdede;
 }
@@ -230,9 +230,28 @@
     -fx-spacing: 10px;
 }
 
+.friend-name-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-font-family: "Segoe UI Variable Display", "Segoe UI Bold";
+}
+
+.friend-status-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-font-family: "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-text-fill: #9e9e9e;
+}
+
 .profile-buttons-container {
     -fx-spacing: 10px;
     -fx-alignment: center;
+}
+
+.name-status-container {
+    -fx-padding:      4 0;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 0 1 0;
 }
 
 .friend-card-btn {
@@ -381,7 +400,7 @@
     -fx-spacing: 15px;
     -fx-padding: 10px 16px;
     -fx-background-color: rgb(232, 228, 221);
-    -fx-background-radius: 0px 0px 12px 12px;
+    -fx-background-radius: 0;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.5, 0, -2);
     -fx-alignment: center;
     -fx-border-radius: 0px 0px 12px 12px;
