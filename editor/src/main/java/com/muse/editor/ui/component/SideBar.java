@@ -67,14 +67,17 @@ public class SideBar extends VBox implements Presentable {
     private void addFixedFriends() {
         final Friend friend1 = new Friend();
         friend1.setUsername("Musician3040");
+        friend1.setStatus("offline");
         friend1.setPicturePath("https://static.vecteezy.com/system/resources/previews/005/520/556/non_2x/cartoon-drawing-of-a-musician-vector.jpg");
 
         final Friend friend2 = new Friend();
         friend2.setUsername("GuitarLover20");
+        friend2.setStatus("online");
         friend2.setPicturePath("https://static.vecteezy.com/system/resources/previews/005/520/506/non_2x/cartoon-drawing-of-a-musician-vector.jpg");
 
         final Friend friend3 = new Friend();
         friend3.setUsername("PianoEnjoyer99");
+        friend3.setStatus("offline");
         friend3.setPicturePath("https://static.vecteezy.com/system/resources/previews/049/165/981/non_2x/pianist-playing-the-piano-element-illustration-in-cartoon-style-free-vector.jpg");
 
         friendsContainer.getChildren().addAll(
