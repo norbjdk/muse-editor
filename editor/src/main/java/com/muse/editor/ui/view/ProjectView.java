@@ -49,6 +49,8 @@ public class ProjectView extends BorderPane implements Presentable, Viewable {
         );
         StackPane.setAlignment(loadingLabel, Pos.CENTER);
         BorderPane.setMargin(centerStack, new Insets(10));
+        BorderPane.setMargin(toolBox, new Insets(10, 10, 10, 10));
+        BorderPane.setMargin(toolBar, new Insets(15, 10, 15, 10));
         BorderPane.setAlignment(centerStack, Pos.CENTER);
     }
 

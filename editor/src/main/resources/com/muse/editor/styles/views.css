@@ -211,14 +211,6 @@
 }
 
 /*
-================ PROJECT VIEW ================
- */
-
-.project-view {
-    -fx-background-color: #F0EDE8;
-}
-
-/*
 ================ NEW PROJECT VIEW ================
  */
 
@@ -368,4 +360,12 @@
 .new-project-btn:hover {
     -fx-cursor: hand;
     -fx-background-color: #252321;
+}
+
+/*
+================ PROJECT VIEW ================
+ */
+
+.project-view {
+    -fx-padding: 8 18 15 18;
 }
