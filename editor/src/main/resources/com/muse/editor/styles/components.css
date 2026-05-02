@@ -274,18 +274,14 @@
  */
 
 .tool-bar {
-    -fx-background-color: #F0EDE8;
-    -fx-padding: 10px;
-    -fx-border-color: #252422;
-    -fx-border-width: 0 0 1px 0;
-    -fx-spacing: 10px;
+    -fx-background-color:  #F0EDE8;
+    -fx-effect:            dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+    -fx-background-radius: 8px;
+    -fx-padding:           10px;
+    -fx-spacing:           15px;
 }
 .tool-bar-btn {
-    -fx-background-color: #e1d9cc !important;
-    -fx-border-color: #aaaaaa !important;
-    -fx-border-width: 1px !important;
-    -fx-border-radius: 12px !important;
-    -fx-background-radius: 12px !important;
+    -fx-border-radius: 12px;
     -fx-text-fill: #000000 !important;
     -fx-font-size: 24px !important;
     -fx-min-width: 35px !important;
@@ -293,8 +289,13 @@
     -fx-pref-width: 35px !important;
     -fx-pref-height: 35px !important;
     -fx-text-alignment: center;
-    -fx-padding: 0px;
     -fx-alignment: center;
+    -fx-background-color:  #EDEDED;
+    -fx-effect:            dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+    -fx-padding:           0;
+    -fx-background-radius: 50%;
+    -fx-border-color:      #e0e0e0;
+    -fx-border-width:      0 0 1 0;
 }
 
 .tool-bar-btn:hover {
@@ -312,12 +313,12 @@
  */
 
 .tool-box {
-    -fx-background-color: #F0EDE8;
-    -fx-padding: 10px 4px;
-    -fx-border-color: #252422;
-    -fx-border-width: 0 1px 0 0;
-    -fx-background-insets: 0 0 10px 0 ;
-    -fx-alignment: top-center;
+    -fx-background-color:  #F0EDE8;
+    -fx-effect:            dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+    -fx-background-radius: 8px;
+    -fx-padding:           10px;
+    -fx-spacing:           15px;
+    -fx-alignment:         top-center;
 }
 
 .palettes-header {
