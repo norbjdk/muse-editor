@@ -3,6 +3,8 @@ package com.muse.editor.core.project;
 import com.muse.editor.core.EventBus;
 import com.muse.editor.core.io.service.FileIOService;
 import com.muse.editor.core.model.dto.NewProjectRequest;
+import com.muse.editor.core.model.score.PartList;
+import com.muse.editor.core.model.score.ScorePart;
 import com.muse.editor.core.model.score.ScorePartwise;
 import com.muse.editor.model.dto.internal.ViewRequest;
 import com.muse.editor.model.event.*;
@@ -111,6 +113,15 @@ public class ProjectService {
                 : "New music sheet";
 
         final Project project = Project.createNew(title);
+
+        scorePartwise.setWorkTitle(request.getTitle());
+        scorePartwise.setAlbum(request.getSubtitle());
+        scorePartwise.setCreator(request.getComposer());
+        final PartList partList = new PartList();
+        partList.getScoreParts().add(new ScorePart());
+        scorePartwise.setPartList(partList);
+
+        project.getMeasureCount().set(request.getMeasuresCount());
         project.getScorePartwise().set(scorePartwise);
 
         updateStatus(project, scorePartwise);

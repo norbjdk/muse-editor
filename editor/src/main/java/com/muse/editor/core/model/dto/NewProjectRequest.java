@@ -1,5 +1,7 @@
 package com.muse.editor.core.model.dto;
 
+import com.muse.editor.core.model.score.Attributes;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,6 +11,10 @@ public class NewProjectRequest {
     private String title;
     private String subtitle;
     private String composer;
+    private int    beats;
+    private int    beatType;
+    private int    tempo;
+    private int    measures;
 
     public NewProjectRequest() {}
 
@@ -28,12 +34,52 @@ public class NewProjectRequest {
         this.composer = composer;
     }
 
+    public int getMeasuresCount() {
+        return measures;
+    }
+
+    public void setMeasuresCount(int measuresCount) {
+        this.measures = measuresCount;
+    }
+
     public String getSubtitle() {
         return subtitle;
     }
 
     public void setSubtitle(String subtitle) {
         this.subtitle = subtitle;
+    }
+
+    public int getBeats() {
+        return beats;
+    }
+
+    public void setBeats(int beats) {
+        this.beats = beats;
+    }
+
+    public int getBeatType() {
+        return beatType;
+    }
+
+    public void setBeatType(int beatType) {
+        this.beatType = beatType;
+    }
+
+    public int getTempo() {
+        return tempo;
+    }
+
+    public void setTempo(int tempo) {
+        this.tempo = tempo;
+    }
+
+    public int getMeasures() {
+        return measures;
+    }
+
+    public void setMeasures(int measures) {
+        this.measures = measures;
     }
 
     public List<String> getInstruments() {
@@ -43,4 +89,6 @@ public class NewProjectRequest {
     public void addInstruments(String ... instruments) {
         this.instruments.add(Arrays.toString(instruments));
     }
+
+
 }

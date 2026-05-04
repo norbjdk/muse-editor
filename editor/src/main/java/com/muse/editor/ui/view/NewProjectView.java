@@ -2,6 +2,7 @@ package com.muse.editor.ui.view;
 
 import com.muse.editor.core.EventBus;
 import com.muse.editor.core.model.dto.NewProjectRequest;
+import com.muse.editor.core.model.score.Attributes;
 import com.muse.editor.core.user.UserService;
 import com.muse.editor.model.dto.internal.ViewRequest;
 import com.muse.editor.model.event.ChangeProjectPreviewEvent;
@@ -323,10 +324,23 @@ public class NewProjectView extends VBox implements Presentable, Viewable {
         final String title    = titleInput.getText();
         final String subtitle = subtitleInput.getText();
         final String composer = composerInput.getText();
+        final int    beats    = Integer.parseInt(beatsInput.getText());
+        final int    beatType = Integer.parseInt(beatTypeInput.getText());
+        final int    tempo    = Integer.parseInt(tempoInput.getText());
+        final int    measures = Integer.parseInt(measuresInput.getText());
 
         request.setTitle(title);
         request.setSubtitle(subtitle);
         request.setComposer(composer);
+        request.setBeats(beats);
+        request.setBeatType(beatType);
+        request.setTempo(tempo);
+        request.setMeasures(measures);
+
+        for (Node button : instrumentsBox.getChildren())
+            if (button.getPseudoClassStates().contains(ACTIVE_PSEUDO)) {
+                request.getInstruments().add(((Button) button).getText());
+            }
 
         EventBus.getInstance().publish(new CreateProjectRequestedEvent(request));
     }
