@@ -1,6 +1,6 @@
 package com.muse.editor.core.model.score;
 
-import com.muse.editor.ui.component.music.MeasurePane;
+import com.muse.editor.ui.component.old_music.MeasurePane;
 import com.muse.editor.ui.model.Presentable;
 import javafx.scene.layout.Pane;
 

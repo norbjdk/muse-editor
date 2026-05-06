@@ -1,4 +1,4 @@
-package com.muse.editor.ui.component.music;
+package com.muse.editor.ui.component.old_music;
 
 import com.muse.editor.core.model.score.Attributes;
 import com.muse.editor.core.model.score.Measure;

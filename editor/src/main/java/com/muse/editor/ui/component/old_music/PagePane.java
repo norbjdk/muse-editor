@@ -1,4 +1,4 @@
-package com.muse.editor.ui.component.music;
+package com.muse.editor.ui.component.old_music;
 
 import com.muse.editor.ui.model.Presentable;
 import javafx.scene.layout.VBox;

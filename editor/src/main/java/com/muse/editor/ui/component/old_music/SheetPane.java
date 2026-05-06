@@ -1,9 +1,8 @@
-package com.muse.editor.ui.component.music;
+package com.muse.editor.ui.component.old_music;
 
 import com.muse.editor.core.model.score.ScorePartwise;
 import com.muse.editor.core.project.Project;
 import com.muse.editor.ui.model.Presentable;
-import com.muse.editor.ui.util.SheetMetrics;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
