@@ -4,6 +4,7 @@ import com.muse.editor.core.EventBus;
 import com.muse.editor.core.io.service.FileIOService;
 import com.muse.editor.core.model.dto.NewProjectRequest;
 import com.muse.editor.core.model.score.PartList;
+import com.muse.editor.core.model.score.ScoreInstrument;
 import com.muse.editor.core.model.score.ScorePart;
 import com.muse.editor.core.model.score.ScorePartwise;
 import com.muse.editor.model.dto.internal.ViewRequest;
@@ -117,8 +118,21 @@ public class ProjectService {
         scorePartwise.setWorkTitle(request.getTitle());
         scorePartwise.setAlbum(request.getSubtitle());
         scorePartwise.setCreator(request.getComposer());
+
         final PartList partList = new PartList();
-        partList.getScoreParts().add(new ScorePart());
+
+        for (int num = 0; num < request.getInstruments().size(); num++) {
+            ScorePart scorePart = new ScorePart();
+            scorePart.setId("P" + (num + 1));
+            scorePart.setPartName(request.getInstruments().get(num));
+            scorePart.setPartAbbreviation(extractAbbreviation(request.getInstruments().get(num)));
+            ScoreInstrument scoreInstrument = new ScoreInstrument();
+            scoreInstrument.setInstrumentName(request.getInstruments().get(num));
+
+            scorePart.setScoreInstrument(scoreInstrument);
+            partList.getScoreParts().add(scorePart);
+        }
+
         scorePartwise.setPartList(partList);
 
         project.getMeasureCount().set(request.getMeasuresCount());
@@ -155,5 +169,26 @@ public class ProjectService {
 
         project.getMeasureCount().set(measures);
         project.getNoteCount().set(notes);
+    }
+
+    private String extractAbbreviation(String instrumentName) {
+        switch (instrumentName) {
+            case "Piano" -> {
+                return "Pno.";
+            }
+            case "Violin" -> {
+                return "Vln.";
+            }
+            case "Drums"  -> {
+                return "Dr.";
+            }
+            case "Guitar" -> {
+                return "Gtr.";
+            }
+            case "Flute" -> {
+                return "Fl.";
+            }
+            case null, default -> throw new IllegalArgumentException();
+        }
     }
 }
