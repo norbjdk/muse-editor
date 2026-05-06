@@ -89,6 +89,9 @@ public class NavigationBar extends HBox implements Presentable {
                 currentProjectBtn.setText(title);
                 currentProjectBtn.setVisible(true);
                 currentProjectBtn.setManaged(true);
+
+                createProjectBtn.setDisable(true);
+                openProjectBtn.setDisable(true);
             });
         });
         EventBus.getInstance().subscribe(ProjectCreatedEvent.class, event -> {
@@ -98,6 +101,9 @@ public class NavigationBar extends HBox implements Presentable {
                 currentProjectBtn.setText(title);
                 currentProjectBtn.setVisible(true);
                 currentProjectBtn.setManaged(true);
+
+                createProjectBtn.setDisable(true);
+                openProjectBtn.setDisable(true);
             });
         });
     }
