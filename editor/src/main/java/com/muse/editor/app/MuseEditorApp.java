@@ -38,7 +38,6 @@ public class MuseEditorApp extends Application {
 
         ProjectService.getInstance().init(primaryStage);
         UserService.getInstance().init(primaryStage);
-        EditService.getInstance().init();
         AppManager.getInstance().init(primaryStage);
     }
 
