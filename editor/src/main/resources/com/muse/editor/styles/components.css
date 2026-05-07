@@ -319,32 +319,15 @@
     -fx-padding:           10px;
     -fx-spacing:           15px;
     -fx-alignment:         top-center;
+    -fx-max-width:         180;
 }
 
-.palettes-header {
-    -fx-text-alignment: center;
-    -fx-font-family: Serif;
-    -fx-font-size: 15px;
-    -fx-text-fill: #1e1e1e;
-    -fx-font-weight: 700;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.5, 0, 2);
-    -fx-background-color: #c3b8a8;
-    -fx-background-insets: 10px 4px;
-}
-
-.accordion {
-    -fx-background-color: transparent;
-    -fx-padding: 10px;
-    -fx-spacing: 5px;
-}
-
-.accordion .titled-pane {
-    -fx-text-fill: #131313;
+.expandable-tools-container {
     -fx-font-family: "Segoe UI", sans-serif;
     -fx-font-size: 13px;
 }
 
-.accordion .titled-pane > .title {
+.expandable-tools-container > .title {
     -fx-background-color: #e1d9cc;
     -fx-background-radius: 6px;
     -fx-border-color: transparent;
@@ -354,43 +337,22 @@
     -fx-text-fill: black;
 }
 
-.accordion .titled-pane > .title:hover {
-    -fx-background-color: #c3b8a8;
-    -fx-text-fill: #292929;
+.expandable-tools-container > .content {
+    -fx-background-color:  transparent;
+    -fx-effect:            dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+    -fx-padding:           10 4;
+    -fx-background-radius: 10px;
+    -fx-border-color:      #e0e0e0;
+    -fx-border-width:      0 0 1 0;
+    -fx-alignment:         center;
+    -fx-spacing:           10px;
 }
 
-.accordion .titled-pane:expanded > .title {
-    -fx-background-color: #c3b8a8;
-    -fx-text-fill: #0e0e0e;
-    -fx-background-radius: 6px 6px 0px 0px;
-}
-
-.accordion .titled-pane > .title > .arrow-button .arrow {
-    -fx-background-color: #8a700d;
-    -fx-shape: "M 0 0 L 4 4 L 8 0 Z";
-}
-
-.accordion .titled-pane:expanded > .title > .arrow-button .arrow {
-    -fx-background-color: #9c8019;
-}
-
-.accordion .titled-pane > .content {
-    -fx-background-color: #F0EDE8;
-    -fx-background-radius: 0px 0px 6px 6px;
-    -fx-border-color: #b8b8b8;
-    -fx-border-width: 0.5px;
-    -fx-padding: 6px;
-    -fx-text-fill: #1c1c1c;
-}
-
-.accordion .titled-pane .button {
-    -fx-background-color: #3a3a3a;
-    -fx-text-fill: white;
-    -fx-background-radius: 4px;
-}
-
-.accordion .titled-pane .button:hover {
-    -fx-background-color: #ffcf09;
+.tool-buttons-container {
+    -fx-alignment:   center;
+    -fx-orientation: horizontal;
+    -fx-hgap:        10;
+    -fx-vgap:        10;
 }
 
 /*
