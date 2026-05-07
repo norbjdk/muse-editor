@@ -10,6 +10,9 @@ import com.muse.editor.core.project.ProjectManager;
 import com.muse.editor.model.event.AddNoteRequestedEvent;
 import com.muse.editor.model.event.AddRestRequestedEvent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EditService {
     private final static EditService instance = new EditService();
 
@@ -17,6 +20,7 @@ public class EditService {
         return instance;
     }
 
-    private EditService() {}
+    private List<Instrument> instruments = new ArrayList<>();
 
+    private EditService() {}
 }
