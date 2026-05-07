@@ -1,13 +1,15 @@
 package com.muse.editor.ui.view;
 
 import com.muse.editor.core.EventBus;
+import com.muse.editor.core.edit.Instrument;
 import com.muse.editor.core.model.score.ScorePart;
 import com.muse.editor.core.model.score.ScorePartwise;
 import com.muse.editor.model.event.ProjectCreatedEvent;
 import com.muse.editor.model.event.ProjectLoadedEvent;
 import com.muse.editor.ui.component.ToolBar;
 import com.muse.editor.ui.component.ToolBox;
-import com.muse.editor.ui.component.old_music.SheetPane;
+import com.muse.editor.ui.component.music.SheetFactory;
+import com.muse.editor.ui.component.music.SheetPane;
 import com.muse.editor.ui.model.Presentable;
 import com.muse.editor.ui.model.Viewable;
 import javafx.application.Platform;
@@ -25,9 +27,6 @@ public class ProjectView extends BorderPane implements Presentable, Viewable {
 
     private ToolBar toolBar;
     private ToolBox toolBox;
-    private SheetPane sheetPane;
-    private Label loadingLabel;
-    private StackPane centerStack;
     private TabPane instrumentsPane;
 
     public ProjectView() {
@@ -38,22 +37,11 @@ public class ProjectView extends BorderPane implements Presentable, Viewable {
     public void initComponents() {
         toolBar = new ToolBar();
         toolBox = new ToolBox();
-        sheetPane = new SheetPane();
-        centerStack = new StackPane();
-        loadingLabel = new Label();
         instrumentsPane = new TabPane();
     }
 
     @Override
     public void setupComponents() {
-        loadingLabel.setText("Loading...");
-        loadingLabel.setVisible(false);
-
-        centerStack.getChildren().addAll(
-                sheetPane,
-                loadingLabel
-        );
-        StackPane.setAlignment(loadingLabel, Pos.CENTER);
         BorderPane.setMargin(instrumentsPane, new Insets(10));
         BorderPane.setMargin(toolBox, new Insets(10, 10, 10, 10));
         BorderPane.setMargin(toolBar, new Insets(15, 10, 15, 10));
@@ -64,8 +52,6 @@ public class ProjectView extends BorderPane implements Presentable, Viewable {
     public void setupStyle() {
         this.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/muse/editor/styles/views.css")).toExternalForm());
         this.getStyleClass().add("project-view");
-
-        loadingLabel.getStyleClass().add("loading-label");
     }
 
     @Override
@@ -79,21 +65,19 @@ public class ProjectView extends BorderPane implements Presentable, Viewable {
     public void setupEventListeners() {
         EventBus.getInstance().subscribe(ProjectLoadedEvent.class, event -> {
             Platform.runLater(() -> {
-                loadingLabel.setVisible(false);
-                sheetPane.bindProject(event.getProject());
             });
         });
         EventBus.getInstance().subscribe(ProjectCreatedEvent.class, event -> {
             Platform.runLater(() -> {
-                loadingLabel.setVisible(false);
-                sheetPane.bindProject(event.getProject());
-
                 final ScorePartwise scorePartwise = event.getProject().getScorePartwise().get();
 
                 for (ScorePart part : scorePartwise.getPartList().getScoreParts()) {
                     Tab instrumentTab = new Tab(part.getPartName());
                     instrumentTab.setClosable(false);
+                    SheetPane sheetPane = SheetFactory.createSheetPane(extractInstrument(part.getPartName()));
+                    sheetPane.bindProject(event.getProject());
 
+                    instrumentTab.setContent(sheetPane);
                     instrumentsPane.getTabs().add(instrumentTab);
                 }
             });
@@ -103,5 +87,26 @@ public class ProjectView extends BorderPane implements Presentable, Viewable {
     @Override
     public void setupEventHandlers() {
 
+    }
+
+    private Instrument extractInstrument(String name) {
+        switch (name) {
+            case "Piano" -> {
+                return new Instrument(Instrument.Name.Piano);
+            }
+            case "Violin" -> {
+                return new Instrument(Instrument.Name.Violin);
+            }
+            case "Drums"  -> {
+                return new Instrument(Instrument.Name.Drums);
+            }
+            case "Guitar" -> {
+                return new Instrument(Instrument.Name.Guitar);
+            }
+            case "Flute" -> {
+                return new Instrument(Instrument.Name.Flute);
+            }
+            case null, default -> throw new IllegalArgumentException();
+        }
     }
 }

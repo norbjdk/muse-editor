@@ -369,3 +369,43 @@
 .project-view {
     -fx-padding: 8 18 15 18;
 }
+
+.tab-pane .tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.tab {
+    -fx-background-color: #f3f3f3;
+    -fx-background-insets: 0 4 0 4;
+    -fx-background-radius: 10 10 0 0;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 8, 0, 0, 2);
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-insets: 0 4 0 4;
+}
+
+.tab:hover {
+    -fx-background-color: #f9f9f9;
+    -fx-cursor: hand;
+}
+
+.tab:selected {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #C3B8A8;
+    -fx-border-width: 0 0 3 0;
+    -fx-border-insets: 0 4 0 4;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 10, 0, 0, 3);
+}
+
+.tab .tab-label {
+    -fx-text-fill: #666666;
+    -fx-font-weight: normal;
+    -fx-font-size: 13px;
+}
+
+.tab:selected .tab-label {
+    -fx-text-fill: #050505;
+    -fx-font-weight: bold;
+}
+
