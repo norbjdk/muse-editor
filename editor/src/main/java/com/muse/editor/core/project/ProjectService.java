@@ -3,10 +3,7 @@ package com.muse.editor.core.project;
 import com.muse.editor.core.EventBus;
 import com.muse.editor.core.io.service.FileIOService;
 import com.muse.editor.core.model.dto.NewProjectRequest;
-import com.muse.editor.core.model.score.PartList;
-import com.muse.editor.core.model.score.ScoreInstrument;
-import com.muse.editor.core.model.score.ScorePart;
-import com.muse.editor.core.model.score.ScorePartwise;
+import com.muse.editor.core.model.score.*;
 import com.muse.editor.model.dto.internal.ViewRequest;
 import com.muse.editor.model.event.*;
 import com.muse.editor.ui.model.ViewName;
@@ -129,8 +126,15 @@ public class ProjectService {
             ScoreInstrument scoreInstrument = new ScoreInstrument();
             scoreInstrument.setInstrumentName(request.getInstruments().get(num));
 
+            Part part = new Part();
+            part.setId("P" + (num + 1));
+
+            for (int i = 0; i < request.getMeasuresCount(); i++)
+                part.getMeasures().add(new Measure());
+
             scorePart.setScoreInstrument(scoreInstrument);
             partList.getScoreParts().add(scorePart);
+            scorePartwise.getParts().add(part);
         }
 
         scorePartwise.setPartList(partList);
