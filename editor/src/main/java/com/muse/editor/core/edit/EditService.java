@@ -4,6 +4,7 @@ import com.muse.editor.core.EventBus;
 import com.muse.editor.core.io.service.FileIOService;
 import com.muse.editor.core.model.score.Measure;
 import com.muse.editor.core.model.score.Note;
+import com.muse.editor.core.model.score.Part;
 import com.muse.editor.core.model.score.ScorePartwise;
 import com.muse.editor.core.project.Project;
 import com.muse.editor.core.project.ProjectManager;
@@ -23,4 +24,14 @@ public class EditService {
     private List<Instrument> instruments = new ArrayList<>();
 
     private EditService() {}
+
+    public void handleAddNote(final Measure measure) {
+
+    }
+
+    public void handleAddRest(final Measure measure) {}
+
+    public void handleAddMeasure(final Measure measure) {
+
+    }
 }

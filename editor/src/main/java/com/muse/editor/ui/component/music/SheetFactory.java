@@ -6,14 +6,9 @@ public class SheetFactory {
     private SheetFactory() {}
 
     public static SheetPane createSheetPane(Instrument instrument) {
-        switch (instrument.getName()) {
-            case Violin -> {
-                return new ViolinPane(instrument);
-            }
-            case Guitar -> {
-                return new GuitarPane(instrument);
-            }
+        return switch (instrument.getName()) {
+            case Violin, Cello, Viola -> new StringSheet(instrument);
             case null, default -> throw new IllegalArgumentException();
-        }
+        };
     }
 }

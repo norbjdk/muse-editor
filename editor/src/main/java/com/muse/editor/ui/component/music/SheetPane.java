@@ -4,10 +4,17 @@ import com.muse.editor.core.edit.Instrument;
 import com.muse.editor.core.model.score.Part;
 import com.muse.editor.core.project.Project;
 import com.muse.editor.ui.model.Presentable;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+
+import java.util.Objects;
 
 public abstract class SheetPane extends ScrollPane implements Presentable {
     protected final double PAGE_WIDTH = 794;
@@ -30,6 +37,46 @@ public abstract class SheetPane extends ScrollPane implements Presentable {
         this.present();
     }
 
+    public void initComponents() {
+        pageContainer = new VBox();
+
+        titleLabel = new Label();
+        subtitleLabel = new Label();
+        composerLabel = new Label();
+    }
+
+    public void setupStyle() {
+        this.getStylesheets().add(Objects.requireNonNull(
+                getClass().getResource("/com/muse/editor/styles/music.css")).toExternalForm()
+        );
+
+        this.getStyleClass().add("sheet-pane");
+        pageContainer.getStyleClass().add("page-container");
+
+        titleLabel.getStyleClass().add("title-label");
+        subtitleLabel.getStyleClass().add("subtitle-label");
+        composerLabel.getStyleClass().add("composer-label");
+    }
+
+    public void setupLayout() {
+        setFitToWidth(true);
+        StackPane wrapper = new StackPane(pageContainer);
+        wrapper.setAlignment(Pos.TOP_CENTER);
+        wrapper.setPadding(new Insets(20, 40, 20, 40));
+        setContent(wrapper);
+    }
+
+    public void setupEventListeners() {
+        if (project == null) return;
+
+        project.getScorePartwise().addListener((obs, oldV, newV) -> {
+            if (newV != null) {
+                Platform.runLater(() -> rebuild(part));
+            }
+        });
+    }
+
+
     public void bindProject(Project project) {
         this.project = project;
 
@@ -41,14 +88,15 @@ public abstract class SheetPane extends ScrollPane implements Presentable {
             });
             break;
         }
-        rebuild(part);
+
+        if (part != null) {
+            rebuild(part);
+        }
     }
 
     protected void rebuild(Part part) {
         pageContainer.getChildren().clear();
-
         if (part == null) return;
-
         final VBox page = buildPage();
 
         pageContainer.getChildren().add(page);
@@ -60,10 +108,10 @@ public abstract class SheetPane extends ScrollPane implements Presentable {
         final VBox page = new VBox(90);
 
         page.setPadding(new Insets(
-                        PAGE_MARGIN_V,
-                        PAGE_MARGIN_H,
-                        PAGE_MARGIN_V,
-                        PAGE_MARGIN_H
+                    PAGE_MARGIN_V,
+                    PAGE_MARGIN_H,
+                    PAGE_MARGIN_V,
+                    PAGE_MARGIN_H
                 )
         );
 
@@ -75,16 +123,32 @@ public abstract class SheetPane extends ScrollPane implements Presentable {
         }
 
         if (part != null && !part.getMeasures().isEmpty()) {
-            final VBox measures = buildMeasures();
+            final FlowPane measures = buildMeasures();
             page.getChildren().add(measures);
         }
 
         return page;
     }
 
-    protected abstract VBox buildHeader();
+    protected VBox buildHeader() {
+        final VBox header = new VBox(4);
 
-    protected abstract VBox buildMeasures();
+        header.setPadding(new Insets(0, 0, 20, 0));
+
+        titleLabel.setText(project.getScorePartwise().get().getWorkTitle());
+        subtitleLabel.setText(project.getScorePartwise().get().getAlbum());
+        composerLabel.setText(project.getScorePartwise().get().getCreator());
+
+        header.getChildren().addAll(
+                titleLabel,
+                subtitleLabel,
+                composerLabel
+        );
+
+        return header;
+    }
+
+    protected abstract FlowPane buildMeasures();
 
     public double getPAGE_WIDTH() {
         return PAGE_WIDTH;

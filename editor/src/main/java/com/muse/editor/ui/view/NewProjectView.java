@@ -1,6 +1,7 @@
 package com.muse.editor.ui.view;
 
 import com.muse.editor.core.EventBus;
+import com.muse.editor.core.edit.Instrument;
 import com.muse.editor.core.model.dto.NewProjectRequest;
 import com.muse.editor.core.model.score.Attributes;
 import com.muse.editor.core.user.UserService;
@@ -38,8 +39,10 @@ import static com.muse.editor.ui.util.SpaceFactory.createSpacer;
 public class NewProjectView extends VBox implements Presentable, Viewable {
     private final static int PREVIEW_WIDTH        = 300;
     private final static int PREVIEW_HEIGHT       = 450;
-    private final static List<String> instrumentsList = List.of(
-            "Piano", "Violin", "Flute", "Guitar", "Drums"
+    private final static List<Instrument> instrumentsList = List.of(
+            new Instrument(Instrument.Name.Violin),
+            new Instrument(Instrument.Name.Viola),
+            new Instrument(Instrument.Name.Cello)
     );
     private final static List<String> keysList = List.of(
             "C-dur", "G-dur", "D-dur", "A-dur", "E-dur",
@@ -149,7 +152,7 @@ public class NewProjectView extends VBox implements Presentable, Viewable {
         );
 
         instrumentsList.forEach(instrument -> {
-            final Button btn = ButtonFactory.createButton(instrument, "instrument-btn", instrument, "instrument-btn");
+            final Button btn = ButtonFactory.createButton(instrument.getName().getName(), "instrument-btn", instrument.getName().getName(), "instrument-btn");
 
             btn.setOnAction(actionEvent -> {
                 handleInstrumentButtonClicked(btn);
@@ -184,7 +187,7 @@ public class NewProjectView extends VBox implements Presentable, Viewable {
         beatsInput.setText("4");
         beatTypeInput.setText("4");
         tempoInput.setText("120");
-        measuresInput.setText("3");
+        measuresInput.setText("15");
     }
 
     @Override

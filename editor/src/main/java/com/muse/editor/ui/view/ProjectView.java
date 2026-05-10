@@ -63,6 +63,18 @@ public class ProjectView extends BorderPane implements Presentable, Viewable {
     public void setupEventListeners() {
         EventBus.getInstance().subscribe(ProjectLoadedEvent.class, event -> {
             Platform.runLater(() -> {
+                final ScorePartwise scorePartwise = event.getProject().getScorePartwise().get();
+
+                for (ScorePart part : scorePartwise.getPartList().getScoreParts()) {
+                    Tab instrumentTab = new Tab(part.getPartName());
+                    instrumentTab.setClosable(false);
+
+                    SheetPane sheetPane = SheetFactory.createSheetPane(extractInstrument(part.getPartName()));
+                    sheetPane.bindProject(event.getProject());
+
+                    instrumentTab.setContent(sheetPane);
+                    instrumentsPane.getTabs().add(instrumentTab);
+                }
             });
         });
         EventBus.getInstance().subscribe(ProjectCreatedEvent.class, event -> {
@@ -72,6 +84,7 @@ public class ProjectView extends BorderPane implements Presentable, Viewable {
                 for (ScorePart part : scorePartwise.getPartList().getScoreParts()) {
                     Tab instrumentTab = new Tab(part.getPartName());
                     instrumentTab.setClosable(false);
+
                     SheetPane sheetPane = SheetFactory.createSheetPane(extractInstrument(part.getPartName()));
                     sheetPane.bindProject(event.getProject());
 
@@ -88,23 +101,11 @@ public class ProjectView extends BorderPane implements Presentable, Viewable {
     }
 
     private Instrument extractInstrument(String name) {
-        switch (name) {
-            case "Piano" -> {
-                return new Instrument(Instrument.Name.Piano);
-            }
-            case "Violin" -> {
-                return new Instrument(Instrument.Name.Violin);
-            }
-            case "Drums"  -> {
-                return new Instrument(Instrument.Name.Drums);
-            }
-            case "Guitar" -> {
-                return new Instrument(Instrument.Name.Guitar);
-            }
-            case "Flute" -> {
-                return new Instrument(Instrument.Name.Flute);
-            }
+        return switch (name) {
+            case "Violin" -> new Instrument(Instrument.Name.Violin);
+            case "Viola" -> new Instrument(Instrument.Name.Viola);
+            case "Cello" -> new Instrument(Instrument.Name.Cello);
             case null, default -> throw new IllegalArgumentException();
-        }
+        };
     }
 }

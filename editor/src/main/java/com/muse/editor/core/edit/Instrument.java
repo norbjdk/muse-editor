@@ -2,11 +2,9 @@ package com.muse.editor.core.edit;
 
 public class Instrument {
     public enum Name {
-        Piano("Piano"),
         Violin("Violin"),
-        Flute("Flute"),
-        Guitar("Guitar"),
-        Drums("Drums");
+        Viola("Viola"),
+        Cello("Cello");
 
         private final String value;
 
