@@ -30,6 +30,9 @@ public class MusicXmlParser {
         factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
         factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         factory.setAttribute("http://apache.org/xml/properties/security-manager", null);
+        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        factory.setFeature("http://xml.org/sax/features/validation", false);
+        factory.setValidating(false);
 
         final DocumentBuilder builder = factory.newDocumentBuilder();
         final Document doc = builder.parse(is);
