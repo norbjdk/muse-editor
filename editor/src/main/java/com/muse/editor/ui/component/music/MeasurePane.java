@@ -22,63 +22,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-class MetreComponent extends Canvas {
-    public MetreComponent(int beats, int beatType) {
-        super(30, 60);
-        GraphicsContext gc = getGraphicsContext2D();
-
-        Font bravura = FontFactory.getBravura(48);
-        gc.setFont(bravura);
-        gc.setFill(Color.BLACK);
-        gc.setTextAlign(TextAlignment.CENTER);
-
-        gc.fillText(getDigitGlyph(beats), 0, 20);
-        gc.fillText(getDigitGlyph(beatType), 0, 44);
-    }
-
-    private String getDigitGlyph(int digit) {
-        return switch (digit) {
-            case 0 -> "\uE080";
-            case 1 -> "\uE081";
-            case 2 -> "\uE082";
-            case 3 -> "\uE083";
-            case 4 -> "\uE084";
-            case 5 -> "\uE085";
-            case 6 -> "\uE086";
-            case 7 -> "\uE087";
-            case 8 -> "\uE088";
-            case 9 -> "\uE089";
-            default -> throw new IllegalArgumentException();
-        };
-    }
-}
-
-class ClefComponent extends Canvas {
-    private final int value;
-
-    public ClefComponent(int value) {
-        super(35, 120);
-        this.value = value;
-
-        GraphicsContext gc = getGraphicsContext2D();
-        gc.setFont(FontFactory.getBravura(48));
-        gc.setFill(Color.BLACK);
-        gc.setTextAlign(TextAlignment.CENTER);
-        gc.fillText(extractClef(value), 15, 43);
-    }
-
-    public int getValue() {
-        return value;
-    }
-
-    private String extractClef(int fifths) {
-        return switch (fifths) {
-            case 0 -> FontFactory.getGClef();
-            default -> throw new IllegalStateException("Unexpected value: " + fifths);
-        };
-    }
-}
-
 public class MeasurePane extends StackPane implements Presentable {
     private final Measure measure;
     private final boolean drawAttributes;
