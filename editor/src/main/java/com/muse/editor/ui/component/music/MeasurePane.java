@@ -63,6 +63,7 @@ public class MeasurePane extends StackPane implements Presentable {
     @Override
     public void setupComponents() {
         attributesContainer.setMouseTransparent(true);
+        notesContainer.setMouseTransparent(true);
     }
 
     @Override

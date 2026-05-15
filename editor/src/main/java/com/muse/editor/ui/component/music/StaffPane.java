@@ -29,6 +29,7 @@ public class StaffPane extends Pane implements Presentable {
 
     private static final double BARLINE_STROKE = 1;
 
+    private final List<BlankSpace> blankSpaces = new ArrayList<>();
     private final List<Rectangle> spaces = new ArrayList<>();
     private final List<Line> lines = new ArrayList<>();
 
@@ -40,6 +41,7 @@ public class StaffPane extends Pane implements Presentable {
 
     @Override
     public void initComponents() {
+        blankSpaces.clear();
         spaces.clear();
         lines.clear();
     }
@@ -49,7 +51,11 @@ public class StaffPane extends Pane implements Presentable {
         double y = 0;
         for (int i = 0; i < SLOT_COUNT; i++) {
             if (i % 2 == 0) {
-                spaces.add(buildSpace(y, i));
+                final BlankSpace blankSpace = new BlankSpace(y, i);
+                blankSpace.bindWidth(currentStaffWidth);
+                blankSpaces.add(blankSpace);
+//                spaces.add(buildSpace(y, i));
+
                 y += SPACE_HEIGHT;
             } else {
                 lines.add(buildLine(y, i));
@@ -70,7 +76,7 @@ public class StaffPane extends Pane implements Presentable {
     public void setupLayout() {
         getChildren().clear();
 
-        getChildren().addAll(spaces);
+        getChildren().addAll(blankSpaces);
         getChildren().addAll(lines);
         getChildren().add(buildBarline(0));
         getChildren().add(buildBarline(currentStaffWidth.get()));
