@@ -28,9 +28,12 @@ public class StringSheet extends SheetPane {
         measures.setOrientation(Orientation.HORIZONTAL);
         List<Measure> measureList = part.getMeasures();
 
-        for (Measure measure: measureList) {
-            if (measure.getAttributes() != null ) measures.getChildren().add(new MeasurePane(measure, true));
-            else measures.getChildren().add(new MeasurePane(measure, false));
+        for (Measure measure : measureList) {
+            final MeasureComponent measureComponent = new MeasureComponent();
+
+            measureComponent.assignMeasure(measure);
+
+            measures.getChildren().add(measureComponent);
         }
 
         return measures;
