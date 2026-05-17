@@ -6,19 +6,27 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
+import javafx.scene.transform.Translate;
 
 public class NoteComponent extends Canvas {
     private final Note note;
 
     public NoteComponent(Note note) {
-        super(30, 60);
+        super(MusicMetrics.NOTE_CANVAS_WIDTH, MusicMetrics.NOTE_CANVAS_HEIGHT);
         this.note = note;
 
+        double noteHeadYPosition = 32.0;
+
+        Translate shiftToNoteHead = new Translate();
+        shiftToNoteHead.setY(-noteHeadYPosition);
+        this.getTransforms().add(shiftToNoteHead);
+
         GraphicsContext gc = getGraphicsContext2D();
-        gc.setFont(FontFactory.getBravura(48));
+        gc.setFont(FontFactory.getBravura(MusicMetrics.NOTE_FONT_SIZE));
         gc.setFill(Color.BLACK);
         gc.setTextAlign(TextAlignment.CENTER);
-        gc.fillText(getNoteGlyph(), 15, 32);
+
+        gc.fillText(getNoteGlyph(), 15, noteHeadYPosition);
     }
 
     public Note getNote() {
@@ -44,6 +52,9 @@ public class NoteComponent extends Canvas {
     }
 
     private String getRestGlyph() {
+        if (note.getType() == null || note.getType().isEmpty()) {
+            return FontFactory.getWholeRest();
+        }
         return switch (note.getType()) {
             case "whole"   -> FontFactory.getWholeRest();
             case "half"    -> FontFactory.getHalfRest();
