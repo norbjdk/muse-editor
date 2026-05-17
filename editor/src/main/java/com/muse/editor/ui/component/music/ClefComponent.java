@@ -10,11 +10,11 @@ public class ClefComponent extends Canvas {
     private final int value;
 
     public ClefComponent(int value) {
-        super(35, 120);
+        super(MusicMetrics.CLEF_CANVAS_WIDTH, MusicMetrics.CLEF_CANVAS_HEIGHT);
         this.value = value;
 
         GraphicsContext gc = getGraphicsContext2D();
-        gc.setFont(FontFactory.getBravura(48));
+        gc.setFont(FontFactory.getBravura(MusicMetrics.CLEF_FONT_SIZE));
         gc.setFill(Color.BLACK);
         gc.setTextAlign(TextAlignment.CENTER);
         gc.fillText(extractClef(value), 15, 43);
