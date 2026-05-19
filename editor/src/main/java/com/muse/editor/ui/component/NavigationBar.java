@@ -1,15 +1,18 @@
 package com.muse.editor.ui.component;
 
+import com.muse.editor.app.AppManager;
 import com.muse.editor.core.EventBus;
 import com.muse.editor.model.dto.internal.ViewRequest;
 import com.muse.editor.model.event.ChangeViewRequestedEvent;
 import com.muse.editor.model.event.OpenProjectRequestedEvent;
+import com.muse.editor.model.event.ProjectCreatedEvent;
 import com.muse.editor.model.event.ProjectLoadedEvent;
 import com.muse.editor.ui.model.Presentable;
 import com.muse.editor.ui.model.ViewName;
 import com.muse.editor.ui.util.ButtonFactory;
 import com.muse.editor.ui.util.SpaceFactory;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -20,6 +23,7 @@ import java.util.Objects;
 import static com.muse.editor.ui.util.SpaceFactory.createSpacer;
 
 public class NavigationBar extends HBox implements Presentable {
+    private ChangeListener<Boolean> connectionListener;
 
     private Button homeBtn;
     private Button createProjectBtn;
@@ -56,6 +60,8 @@ public class NavigationBar extends HBox implements Presentable {
 
         currentProjectBtn.setVisible(false);
         currentProjectBtn.setManaged(false);
+
+        collectionBtn.setDisable(true);
     }
 
     @Override
@@ -88,8 +94,30 @@ public class NavigationBar extends HBox implements Presentable {
                 currentProjectBtn.setText(title);
                 currentProjectBtn.setVisible(true);
                 currentProjectBtn.setManaged(true);
+
+                createProjectBtn.setDisable(true);
+                openProjectBtn.setDisable(true);
             });
         });
+        EventBus.getInstance().subscribe(ProjectCreatedEvent.class, event -> {
+            Platform.runLater(() -> {
+                String title = event.getProject().getTitle().get();
+
+                currentProjectBtn.setText(title);
+                currentProjectBtn.setVisible(true);
+                currentProjectBtn.setManaged(true);
+
+                createProjectBtn.setDisable(true);
+                openProjectBtn.setDisable(true);
+            });
+        });
+        connectionListener = (obs, oldV, newV) -> {
+            Platform.runLater(() -> {
+                collectionBtn.setDisable(!newV);
+            });
+        };
+
+        AppManager.getInstance().isConnected().addListener(connectionListener);
     }
 
     @Override

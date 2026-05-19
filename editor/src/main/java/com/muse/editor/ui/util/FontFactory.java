@@ -22,7 +22,7 @@ public final class FontFactory {
 
     private static void loadFont() {
         try {
-            InputStream is = FontFactory.class.getResourceAsStream("/com/muse/editor/font/Bravura.otf");
+            InputStream is = FontFactory.class.getResourceAsStream("/com/muse/editor/font/BravuraText.otf");
             if (is == null) {
                 System.out.println("Font file not found!");
                 bravuraFont = Font.font("Segoe UI Symbol", 12);
@@ -45,7 +45,7 @@ public final class FontFactory {
     }
 
     public static String getCClef() {
-        return "\uD834\uDD21";
+        return "\uE05C";
     }
 
     public static String getWholeNote() {
@@ -162,6 +162,22 @@ public final class FontFactory {
 
     public static String getTimeSignatureCutText() {
         return "C|";
+    }
+
+    public enum Metre {
+        TWO_FOUR, THREE_FOUR, FOUR_FOUR,
+        SIX_EIGHT, TWELVE_EIGHT;
+    }
+
+    public static String getTimeSignature(Metre metre) {
+        return switch (metre) {
+            case TWO_FOUR    -> "\uE09E\uE082\uE09F\uE084";
+            case THREE_FOUR  -> "\uE09E\uE083\uE09F\uE084";
+            case FOUR_FOUR   -> "\uE09E\uE084\uE09F\uE084";
+            case SIX_EIGHT   -> "\uE09E\uE086\uE09F\uE088";
+            case TWELVE_EIGHT -> "\uE09E\uE081\uE082\uE09F\uE088";
+            case null -> throw new IllegalArgumentException();
+        };
     }
 
     public enum Dynamic {

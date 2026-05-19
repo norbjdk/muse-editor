@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MusicXmlParser {
 
@@ -28,6 +30,9 @@ public class MusicXmlParser {
         factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
         factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         factory.setAttribute("http://apache.org/xml/properties/security-manager", null);
+        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        factory.setFeature("http://xml.org/sax/features/validation", false);
+        factory.setValidating(false);
 
         final DocumentBuilder builder = factory.newDocumentBuilder();
         final Document doc = builder.parse(is);
@@ -37,79 +42,75 @@ public class MusicXmlParser {
 
         score.setWorkTitle(getText(doc, "work-title"));
         score.setCreator(getCreator(doc));
-        score.setPartList(parseParseList(doc));
-
-        final NodeList partNodes = doc.getElementsByTagName("part");
-        for (int i = 0; i < partNodes.getLength(); i++) {
-            final Element partEl = (Element) partNodes.item(i);
-
-            final NodeList measureNodes = partEl.getElementsByTagName("measure");
-            if (measureNodes.getLength() == 0) continue;
-
-            final Element firstMeasure = (Element) measureNodes.item(0);
-            final Element firstAttrs = getChild(firstMeasure, "attributes");
-            int stavesCount = 1;
-            if (firstAttrs != null) {
-                stavesCount = parseInt(getText(firstAttrs, "staves"), 1);
-            }
-
-            final Part[] parts = new Part[stavesCount];
-            for (int s = 0; s < stavesCount; s++) {
-                parts[s] = new Part();
-            }
-
-            for (int j = 0; j < measureNodes.getLength(); j++) {
-                final Element measureEl = (Element) measureNodes.item(j);
-
-                final Element attrsEl = getChild(measureEl, "attributes");
-                final Attributes attrs = attrsEl != null ? parseAttributes(attrsEl) : null;
-
-                final Measure[] measures = new Measure[stavesCount];
-                for (int s = 0; s < stavesCount; s++) {
-                    measures[s] = new Measure();
-                    measures[s].setAttributes(attrs);
-                }
-
-                NodeList noteNodes = measureEl.getElementsByTagName("note");
-                for (int k = 0; k < noteNodes.getLength(); k++) {
-                    Note n = parseNote((Element) noteNodes.item(k));
-                    if (n == null) continue;
-                    int staffIndex = n.getStaff() - 1;
-                    if (staffIndex >= 0 && staffIndex < stavesCount) {
-                        measures[staffIndex].getNotes().add(n);
-                    }
-                }
-
-                for (int s = 0; s < stavesCount; s++) {
-                    parts[s].getMeasures().add(measures[s]);
-                }
-            }
-
-            for (Part part : parts) {
-                score.getParts().add(part);
-            }
-        }
+        score.setPartList(parsePartList(doc));
+        score.getParts().addAll(parseParts(doc));
 
         return score;
     }
 
-    private PartList parseParseList(Document doc) {
+    private PartList parsePartList(Document doc) {
         final PartList partList = new PartList();
         final NodeList scorePartNodes = doc.getElementsByTagName("score-part");
 
         for (int i = 0; i < scorePartNodes.getLength(); i++) {
             final Element element = (Element) scorePartNodes.item(i);
             final ScorePart scorePart = new ScorePart();
+            final ScoreInstrument scoreInstrument = new ScoreInstrument();
+            final String partId = element.getAttribute("id");
             final String partName = getText(element, "part-name");
             final String partAbbreviation = getText(element, "part-abbreviation");
 
+            scorePart.setId(partId);
             scorePart.setPartName(partName);
             scorePart.setPartAbbreviation(partAbbreviation);
+            scoreInstrument.setInstrumentName(partName);
+            scorePart.setScoreInstrument(scoreInstrument);
 
             partList.getScoreParts().add(scorePart);
         }
 
         return partList;
+    }
+
+    private List<Part> parseParts(Document doc) {
+        final List<Part> parts = new ArrayList<>();
+        final NodeList partNodes = doc.getElementsByTagName("part");
+
+        for (int i = 0; i < partNodes.getLength(); i++) {
+            final Element partEl = (Element) partNodes.item(i);
+            final Part part = new Part();
+            part.setId(partEl.getAttribute("id"));
+
+            final NodeList measureNodes = partEl.getElementsByTagName("measure");
+
+            for (int j = 0; j < measureNodes.getLength(); j++) {
+                final Element measureEl = (Element) measureNodes.item(j);
+                final Measure measure = new Measure();
+
+                final Element attrsEl = getChild(measureEl, "attributes");
+                if (attrsEl != null) {
+                    measure.setAttributes(parseAttributes(attrsEl));
+                }
+
+                final NodeList noteNodes = measureEl.getElementsByTagName("note");
+                for (int k = 0; k < noteNodes.getLength(); k++) {
+                    final Note note = parseNote((Element) noteNodes.item(k));
+                    if (note != null) measure.getNotes().add(note);
+                }
+
+                part.getMeasures().add(measure);
+            }
+
+            parts.add(part);
+        }
+
+        return parts;
+    }
+
+    private Measure parseMeasure(Element el) {
+        final Measure measure = new Measure();
+
+        return measure;
     }
 
     private Attributes parseAttributes(Element el) {

@@ -1,42 +1,88 @@
 package com.muse.editor.ui.view;
 
 import com.muse.editor.core.EventBus;
+import com.muse.editor.core.edit.Instrument;
+import com.muse.editor.core.model.dto.NewProjectRequest;
+import com.muse.editor.core.user.UserService;
+import com.muse.editor.model.dto.internal.ViewRequest;
 import com.muse.editor.model.event.ChangeProjectPreviewEvent;
+import com.muse.editor.model.event.ChangeViewRequestedEvent;
+import com.muse.editor.model.event.CreateProjectRequestedEvent;
 import com.muse.editor.ui.model.Presentable;
+import com.muse.editor.ui.model.ViewName;
 import com.muse.editor.ui.model.Viewable;
+
 import com.muse.editor.ui.util.ButtonFactory;
+import com.muse.editor.ui.util.SpaceFactory;
+import javafx.css.PseudoClass;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.effect.Reflection;
-import javafx.scene.image.Image;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class NewProjectView extends FlowPane implements Presentable, Viewable {
+import static com.muse.editor.ui.util.SpaceFactory.createSpacer;
+
+
+public class NewProjectView extends ScrollPane implements Presentable, Viewable {
+    private final static int PREVIEW_WIDTH        = 300;
+    private final static int PREVIEW_HEIGHT       = 450;
+    private final static List<Instrument> instrumentsList = List.of(
+            new Instrument(Instrument.Name.Violin),
+            new Instrument(Instrument.Name.Viola),
+            new Instrument(Instrument.Name.Cello)
+    );
+    private final static List<String> keysList = List.of(
+            "C-dur", "G-dur", "D-dur", "A-dur", "E-dur",
+            "H-dur", "Fis-dur", "Cis-dur", "F-dur", "B-dur",
+            "Es-dur", "As-dur", "Des-dur", "Ges-dur", "Ces-dur"
+    );
+    private final static PseudoClass ACTIVE_PSEUDO = PseudoClass.getPseudoClass("active");
+
+    private VBox     contentContainer;
+    private TilePane cardsContainer;
+
+    private Label viewHeaderLabel;
+    private Label instrumentsLabel;
+
+    private List<Label> metaDataLabels;
+    private List<Label> additionalDataLabels;
+    private List<Node>  additionalDataNodes;
 
     private TextField titleInput;
     private TextField composerInput;
-    private TextField albumInput;
+    private TextField subtitleInput;
+    private TextField copyrightInput;
+
+    private List<TextField> metaDataInputs;
 
     private Button createProjectBtn;
-    private Canvas sheetPreview;
-    private GraphicsContext graphicsContext;
+    private Button cancelProjectBtn;
 
-    private GridPane dataForm;
-    private GridPane templateForm;
+    private GridPane metaDataForm;
+    private GridPane additionalDataForm;
+    private GridPane instrumentsForm;
+
+    private VBox                  instrumentsBox;
+    private HBox                  projectButtonsContainer;
+
+    private Canvas           sheetPreview;
+    private GraphicsContext  graphicsContext;
+
+    private ComboBox<String> keyBox;
+    private HBox             metricBox;
+    private TextField        beatsInput;
+    private TextField        beatTypeInput;
+    private TextField        tempoInput;
+    private TextField        measuresInput;
 
     public NewProjectView() {
         present();
@@ -44,160 +90,281 @@ public class NewProjectView extends FlowPane implements Presentable, Viewable {
 
     @Override
     public void initComponents() {
-        titleInput = new TextField();
-        composerInput = new TextField();
-        albumInput = new TextField();
+        contentContainer = new VBox();
+        cardsContainer   = new TilePane();
 
-        createProjectBtn = ButtonFactory.createButton("Create", "create-btn", "Create new project", "create-btn");
-        sheetPreview = new Canvas();
+        viewHeaderLabel  = new Label("Create new composition");
+        instrumentsLabel = new Label("Choose Instruments");
+
+        titleInput     = new TextField();
+        composerInput  = new TextField();
+        subtitleInput  = new TextField();
+        copyrightInput = new TextField();
+
+        createProjectBtn = ButtonFactory.createButton("Create", "create-btn", "Create new project", "new-project-btn");
+        cancelProjectBtn = ButtonFactory.createButton("Cancel", "cancel-btn", "Cancel creation", "new-project-btn");
+
+        metaDataForm       = new GridPane();
+        additionalDataForm = new GridPane();
+        instrumentsForm    = new GridPane();
+
+        instrumentsBox = new VBox();
+        projectButtonsContainer = new HBox();
+
+        sheetPreview    = new Canvas();
         graphicsContext = sheetPreview.getGraphicsContext2D();
 
-        dataForm = new GridPane();
-        templateForm = new GridPane();
+        keyBox        = new ComboBox<>();
+        metricBox     = new HBox();
+        beatsInput    = new TextField();
+        beatTypeInput = new TextField();
+        tempoInput    = new TextField();
+        measuresInput = new TextField();
+
+        metaDataLabels = List.of(
+                new Label("Title"),
+                new Label("Subtitle"),
+                new Label("Composer"),
+                new Label("Copyright")
+        );
+
+        additionalDataLabels = List.of(
+                new Label("Key"),
+                new Label("Metric"),
+                new Label("Tempo"),
+                new Label("Measures")
+        );
+
+        additionalDataNodes = List.of(
+                keyBox,
+                metricBox,
+                tempoInput,
+                measuresInput
+        );
+
+        metaDataInputs = List.of(
+                titleInput,
+                subtitleInput,
+                composerInput,
+                copyrightInput
+        );
+
+        instrumentsList.forEach(instrument -> {
+            final Button btn = ButtonFactory.createButton(instrument.getName().getName(), "instrument-btn", instrument.getName().getName(), "instrument-btn");
+
+            btn.setOnAction(actionEvent -> {
+                handleInstrumentButtonClicked(btn);
+            });
+
+            instrumentsBox.getChildren().add(btn);
+        });
     }
 
     @Override
     public void setupComponents() {
-        ButtonFactory.addIcon(createProjectBtn, FontAwesomeSolid.CHECK_CIRCLE, 16, Color.rgb(5, 5, 5));
+        titleInput.setPromptText("New composition...");
+        subtitleInput.setPromptText("Unknown");
+        composerInput.setPromptText(UserService.getInstance().getCurrentUser() != null ? UserService.getInstance().getCurrentUser().getUsername() : "Guest");
+        copyrightInput.setPromptText("...");
 
-        sheetPreview.setWidth(300);
-        sheetPreview.setHeight(450);
+        ButtonFactory.addIcon(createProjectBtn, FontAwesomeSolid.CHECK_CIRCLE, 15, Color.rgb(204, 197, 185));
+        ButtonFactory.addIcon(cancelProjectBtn, FontAwesomeSolid.MINUS_CIRCLE, 15, Color.rgb(204, 197, 185));
+
+        sheetPreview.setWidth(PREVIEW_WIDTH);
+        sheetPreview.setHeight(PREVIEW_HEIGHT);
 
         graphicsContext.setFill(Color.WHITESMOKE);
         graphicsContext.setTextAlign(TextAlignment.CENTER);
-        graphicsContext.fillRoundRect(0,0 ,300, 450, 20, 30);
+        graphicsContext.fillRoundRect(0, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT, 20, 30);
         graphicsContext.setStroke(Color.rgb(5, 5, 5));
-        graphicsContext.strokeRect(0, 0, 300, 450);
+        graphicsContext.strokeRoundRect(0, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT, 20, 30);
+
+        keyBox.getItems().addAll(keysList);
+        keyBox.getSelectionModel().selectFirst();
+
+        beatsInput.setText("4");
+        beatTypeInput.setText("4");
+        tempoInput.setText("120");
+        measuresInput.setText("15");
     }
 
     @Override
     public void setupStyle() {
         this.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/muse/editor/styles/views.css")).toExternalForm());
-        this.getStyleClass().add("new-project-view");
+        this.getStyleClass().add("new-project-scroll");
 
-        dataForm.getStyleClass().add("data-form");
-        templateForm.getStyleClass().add("template-form");
+        contentContainer.getStyleClass().add("new-project-view");
+        cardsContainer.getStyleClass().add("cards-container");
 
-        dataForm.setEffect(createReflection());
-        templateForm.setEffect(createReflection());
-        sheetPreview.setEffect(createReflection());
+        projectButtonsContainer.getStyleClass().add("project-buttons-container");
 
+        viewHeaderLabel.getStyleClass().add("new-project-page-header");
 
+        metaDataLabels.forEach(label -> label.getStyleClass().add("form-label"));
+        additionalDataLabels.forEach(label -> label.getStyleClass().add("form-label"));
+
+        instrumentsLabel.getStyleClass().add("form-label");
+
+        metaDataInputs.forEach(input -> {
+            input.getStyleClass().add("form-input");
+            input.setStyle("-fx-min-width: 250;");
+        });
+
+        additionalDataNodes.forEach(node -> node.setStyle("-fx-max-width: 150"));
+
+        beatsInput.getStyleClass().add("form-input");
+        beatTypeInput.getStyleClass().add("form-input");
+        tempoInput.getStyleClass().add("form-input");
+        measuresInput.getStyleClass().add("form-input");
+
+        metaDataForm.getStyleClass().add("project-form");
+        additionalDataForm.getStyleClass().add("project-form");
+        instrumentsForm.getStyleClass().add("project-form");
+
+        keyBox.getStyleClass().add("key-box");
+        instrumentsBox.getStyleClass().add("instruments-box");
+
+        addReflection(sheetPreview);
     }
 
     @Override
     public void setupLayout() {
-        final ArrayList<VBox> fieldBoxes = new ArrayList<>(List.of(
-                new VBox(10, new Label("Title"), titleInput),
-                new VBox(10, new Label("Album"), albumInput),
-                new VBox(10, new Label("Composer"), composerInput)
-        ));
+        metricBox.getChildren().addAll(
+                beatsInput, beatTypeInput
+        );
 
-        fieldBoxes.forEach( vbox -> {
-            vbox.getChildren().getFirst().getStyleClass().add("data-label");
-            vbox.getChildren().getLast().getStyleClass().add("data-input");
-        });
+        projectButtonsContainer.getChildren().addAll(
+                cancelProjectBtn, createProjectBtn
+        );
 
-        for (int vbox = 0; vbox < fieldBoxes.size(); vbox++) {
-            dataForm.add(fieldBoxes.get(vbox), 0, vbox);
+        for (int box = 0; box < metaDataLabels.size(); box++) {
+            metaDataForm.add(
+                    new VBox(10, metaDataLabels.get(box), metaDataInputs.get(box)),
+                    0,
+                    box);
         }
 
-        final Label categoryLabel = new Label("Category");
-        final Label templateLabel = new Label("Template");
+        for (int box = 0; box < additionalDataLabels.size(); box++) {
+            additionalDataForm.add(
+                    new VBox(10, additionalDataLabels.get(box), additionalDataNodes.get(box)),
+                    0,
+                    box
+            );
+        }
 
-        categoryLabel.getStyleClass().add("template-label");
-        templateLabel.getStyleClass().add("template-label");
+        instrumentsForm.add(instrumentsLabel, 0, 0);
+        instrumentsForm.add(instrumentsBox, 0, 1);
 
-        final ListView<String> categoryList = new ListView<>();
-        final ListView<String> templatesList = new ListView<>();
-
-        categoryList.getItems().addAll("General", "Choral", "Solo", "Band", "Orchestral");
-        templatesList.getItems().addAll("Treble Clef", "Bass Clef", "Grand Staff");
-
-        templateForm.add(categoryLabel, 0, 0);
-        templateForm.add(templateLabel, 1, 0);
-        templateForm.add(categoryList, 0, 1);
-        templateForm.add(templatesList, 1, 1);
-
-        getChildren().addAll(
-                dataForm,
-                templateForm,
+        cardsContainer.getChildren().addAll(
+                metaDataForm,
+                additionalDataForm,
+                instrumentsForm,
                 sheetPreview,
-                createProjectBtn
+                projectButtonsContainer
         );
+
+        contentContainer.getChildren().addAll(
+                viewHeaderLabel,
+                createSpacer(SpaceFactory.Direction.VERTICAL),
+                cardsContainer,
+                createSpacer(SpaceFactory.Direction.VERTICAL),
+                new HBox(createSpacer(SpaceFactory.Direction.HORIZONTAL), projectButtonsContainer),
+                createSpacer(SpaceFactory.Direction.VERTICAL)
+        );
+
+        this.setContent(contentContainer);
     }
 
     @Override
     public void setupEventListeners() {
-        EventBus.getInstance().subscribe(ChangeProjectPreviewEvent.class, event -> redrawPreview());
+        titleInput.setOnKeyTyped(keyEvent -> EventBus.getInstance().publish(new ChangeProjectPreviewEvent()));
+        subtitleInput.setOnKeyTyped(keyEvent -> EventBus.getInstance().publish(new ChangeProjectPreviewEvent()));
+        composerInput.setOnKeyTyped(keyEvent -> EventBus.getInstance().publish(new ChangeProjectPreviewEvent()));
+        createProjectBtn.setOnAction(actionEvent -> handleCreateProjectBtnClicked());
+        cancelProjectBtn.setOnAction(actionEvent -> handleCancelProjectBtnClicked());
     }
 
     @Override
     public void setupEventHandlers() {
-        titleInput.setOnKeyTyped(keyEvent -> EventBus.getInstance().publish(new ChangeProjectPreviewEvent()));
-        composerInput.setOnKeyTyped(keyEvent -> EventBus.getInstance().publish(new ChangeProjectPreviewEvent()));
-        albumInput.setOnKeyTyped(keyEvent -> EventBus.getInstance().publish(new ChangeProjectPreviewEvent()));
+        EventBus.getInstance().subscribe(ChangeProjectPreviewEvent.class, event -> handleRedrawPreview());
     }
 
-    private void redrawPreview() {
-        graphicsContext.clearRect(0, 0, sheetPreview.getWidth(), sheetPreview.getHeight());
+    private void handleRedrawPreview() {
+        graphicsContext.clearRect(0, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT);
         graphicsContext.setFill(Color.WHITESMOKE);
-        graphicsContext.setTextAlign(TextAlignment.CENTER);
-        graphicsContext.fillRoundRect(0,0 ,300, 450, 20, 30);
+        graphicsContext.fillRoundRect(0, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT, 20, 30);
         graphicsContext.setStroke(Color.rgb(5, 5, 5));
-        graphicsContext.strokeRect(0, 0, 300, 450);
+        graphicsContext.strokeRoundRect(0, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT, 20, 30);
+        graphicsContext.setFill(Color.BLACK);
 
-        final String title = titleInput.getText();
-        final String album = albumInput.getText();
-        final String author = composerInput.getText();
+        final String title    = titleInput.getText();
+        final String subtitle = subtitleInput.getText();
+        final String composer = composerInput.getText();
 
         if (!title.isEmpty()) {
             graphicsContext.setFont(Font.font("Arial Black", 16));
-            graphicsContext.fillText(title, sheetPreview.getWidth() / 2, 60);
+            graphicsContext.fillText(title, (double) PREVIEW_WIDTH / 2, 60);
         }
 
-        if (!album.isEmpty()) {
+        if (!subtitle.isEmpty()) {
             graphicsContext.setFont(Font.font("Roboto Light", 13));
-            graphicsContext.fillText(album, sheetPreview.getWidth() / 2, 80);
+            graphicsContext.fillText(subtitle, (double) PREVIEW_WIDTH / 2, 80);
         }
 
-        if (!author.isEmpty()) {
+        if (!composer.isEmpty()) {
             graphicsContext.setFont(Font.font("Times New Roman", 14));
-            graphicsContext.fillText(author, sheetPreview.getWidth() - 28, 100);
+            graphicsContext.fillText(composer, PREVIEW_WIDTH - (composer.length() + 30), 100);
         }
     }
 
-    private Reflection createReflection() {
-        Reflection reflection = new Reflection();
+    private void handleInstrumentButtonClicked(Button target) {
+        boolean isCurrentlyActive = target.getPseudoClassStates().contains(ACTIVE_PSEUDO);
+        target.pseudoClassStateChanged(ACTIVE_PSEUDO, !isCurrentlyActive);
+    }
+
+    private void handleCreateProjectBtnClicked() {
+        final NewProjectRequest request = new NewProjectRequest();
+
+        final String title    = titleInput.getText();
+        final String subtitle = subtitleInput.getText();
+        final String composer = composerInput.getText();
+        final int    beats    = Integer.parseInt(beatsInput.getText());
+        final int    beatType = Integer.parseInt(beatTypeInput.getText());
+        final int    tempo    = Integer.parseInt(tempoInput.getText());
+        final int    measures = Integer.parseInt(measuresInput.getText());
+
+        request.setTitle(title);
+        request.setSubtitle(subtitle);
+        request.setComposer(composer);
+        request.setBeats(beats);
+        request.setBeatType(beatType);
+        request.setTempo(tempo);
+        request.setMeasures(measures);
+
+        for (Node button : instrumentsBox.getChildren())
+            if (button.getPseudoClassStates().contains(ACTIVE_PSEUDO)) {
+                request.getInstruments().add(((Button) button).getText());
+            }
+
+        EventBus.getInstance().publish(new CreateProjectRequestedEvent(request));
+    }
+
+    private void handleCancelProjectBtnClicked() {
+        titleInput.setText("");
+        subtitleInput.setText("");
+        composerInput.setText("");
+
+        EventBus.getInstance().publish(new ChangeViewRequestedEvent(new ViewRequest(ViewName.HOME)));
+    }
+
+    private void addReflection(Node target) {
+        final Reflection reflection = new Reflection();
+
         reflection.setFraction(0.7);
-        reflection.setTopOffset(0.0);
+        reflection.setTopOffset(0);
         reflection.setTopOpacity(0.3);
-        reflection.setBottomOpacity(0.0);
+        reflection.setBottomOpacity(0);
 
-        return reflection;
-    }
-
-    public TextField getTitleInput() {
-        return titleInput;
-    }
-
-    public TextField getComposerInput() {
-        return composerInput;
-    }
-
-    public TextField getAlbumInput() {
-        return albumInput;
-    }
-
-    public Button getCreateProjectBtn() {
-        return createProjectBtn;
-    }
-
-    public Canvas getSheetPreview() {
-        return sheetPreview;
-    }
-
-    public GraphicsContext getGraphicsContext() {
-        return graphicsContext;
+        target.setEffect(reflection);
     }
 }

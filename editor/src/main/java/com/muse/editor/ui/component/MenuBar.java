@@ -10,6 +10,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
@@ -63,6 +64,28 @@ public class MenuBar extends HBox implements Presentable {
         final Menu formatMenu = new Menu("Format");
         final Menu toolsMenu = new Menu("Tools");
         final Menu helpMenu = new Menu("Help");
+
+        final MenuItem newFile = new MenuItem("New");
+        final MenuItem openFile = new MenuItem("Open");
+        final MenuItem recentProjects = new MenuItem("Recent Projects");
+        final MenuItem closeProject = new MenuItem("Close project");
+        final MenuItem saveFile = new MenuItem("Save");
+        final MenuItem saveAsFile = new MenuItem("Save as");
+        final MenuItem exportFile = new MenuItem("Export");
+        final MenuItem printFile = new MenuItem("Print");
+        final MenuItem exit = new MenuItem("Exit");
+
+        fileMenu.getItems().addAll(
+                newFile,
+                openFile,
+                recentProjects,
+                closeProject,
+                saveFile,
+                saveAsFile,
+                exportFile,
+                printFile,
+                exit
+        );
 
         menuBar.getMenus().addAll(
                 fileMenu,

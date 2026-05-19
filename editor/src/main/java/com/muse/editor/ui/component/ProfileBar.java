@@ -193,7 +193,6 @@ public class ProfileBar extends GridPane implements Presentable {
                 "profile-status-admin"
         );
 
-        // Dodaj odpowiednią klasę stylu
         if (role == null) {
             statusLabel.getStyleClass().add("profile-status-online");
         } else {

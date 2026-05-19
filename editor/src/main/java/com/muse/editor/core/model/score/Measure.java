@@ -1,9 +1,10 @@
 package com.muse.editor.core.model.score;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
-public class Measure {
+public class Measure implements Comparable<Measure> {
     private int id;
     private static int counter = 0;
     private Attributes attributes;
@@ -36,4 +37,13 @@ public class Measure {
     public void setId(int id) {
         this.id = id;
     }
+
+    @Override
+    public int compareTo(Measure other) {
+        return Comparator.comparing((Measure m) -> m.attributes.getBeats())
+                .thenComparing(m -> m.attributes.getBeatType())
+                .thenComparing(m -> m.attributes.getFifths())
+                .compare(this, other);
+    }
+
 }

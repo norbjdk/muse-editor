@@ -2,6 +2,7 @@ package com.muse.editor.core.io.service;
 
 import com.muse.editor.core.io.builder.MusicXmlParser;
 import com.muse.editor.core.io.builder.MusicXmlWriter;
+import com.muse.editor.core.model.dto.NewProjectRequest;
 import com.muse.editor.core.model.score.ScorePartwise;
 import org.xml.sax.SAXException;
 
@@ -26,6 +27,16 @@ public class FileIOService {
         } catch (IOException | ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public ScorePartwise create(final NewProjectRequest request) {
+        final ScorePartwise score = new ScorePartwise();
+
+        score.setWorkTitle(request.getTitle());
+        score.setCreator(request.getComposer());
+        score.setAlbum(request.getSubtitle());
+
+        return score;
     }
 
     public void save(ScorePartwise score, Path path) {

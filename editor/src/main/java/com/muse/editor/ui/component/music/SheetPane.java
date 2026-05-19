@@ -1,182 +1,180 @@
 package com.muse.editor.ui.component.music;
 
-import com.muse.editor.core.model.score.ScorePartwise;
+import com.muse.editor.core.edit.Instrument;
+import com.muse.editor.core.model.score.Part;
 import com.muse.editor.core.project.Project;
 import com.muse.editor.ui.model.Presentable;
-import com.muse.editor.ui.util.SheetMetrics;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
-public class SheetPane extends ScrollPane implements Presentable {
-    private final static double PAGE_WIDTH = 794;
-    private final static double PAGE_MARGIN_H = 72;
-    private final static double PAGE_MARGIN_V = 60;
-    private static final double SYSTEM_WIDTH = PAGE_WIDTH - PAGE_MARGIN_H * 2;
+public abstract class SheetPane extends ScrollPane implements Presentable {
+    protected final double PAGE_WIDTH = 794;
+    protected final double PAGE_MARGIN_H = 72;
+    protected final double PAGE_MARGIN_V = 60;
 
-    private VBox pageContainer;
+    protected final Instrument instrument;
 
-    private Consumer<String> onContentChanged;
-    private Consumer<String> onSelectionChanged;
-    private Runnable onDocumentReady;
+    protected Project project;
+    protected Part    part;
 
-    private final BooleanProperty sheetReady = new SimpleBooleanProperty(false);
-    private Project boundProject;
+    protected VBox pageContainer = null;
 
-    List<PagePane> pages = new ArrayList<>();
+    protected Label titleLabel;
+    protected Label subtitleLabel;
+    protected Label composerLabel;
 
-    public SheetPane() {
-        present();
+    protected SheetPane(Instrument instrument) {
+        this.instrument = instrument;
+        this.present();
     }
 
-    @Override
     public void initComponents() {
         pageContainer = new VBox();
+
+        titleLabel = new Label();
+        subtitleLabel = new Label();
+        composerLabel = new Label();
     }
 
-    @Override
-    public void setupComponents() {
-        setFitToWidth(true);
-    }
-
-    @Override
     public void setupStyle() {
-        this.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/muse/editor/styles/components.css")).toExternalForm());
+        this.getStylesheets().add(Objects.requireNonNull(
+                getClass().getResource("/com/muse/editor/styles/music.css")).toExternalForm()
+        );
+
         this.getStyleClass().add("sheet-pane");
-
         pageContainer.getStyleClass().add("page-container");
+
+        titleLabel.getStyleClass().add("title-label");
+        subtitleLabel.getStyleClass().add("subtitle-label");
+        composerLabel.getStyleClass().add("composer-label");
     }
 
-    @Override
     public void setupLayout() {
-        setContent(pageContainer);
+        setFitToWidth(true);
+        StackPane wrapper = new StackPane(pageContainer);
+        wrapper.setAlignment(Pos.TOP_CENTER);
+        wrapper.setPadding(new Insets(20, 40, 20, 40));
+        setContent(wrapper);
     }
 
-    @Override
     public void setupEventListeners() {
-        if (boundProject != null) {
-            boundProject.getScorePartwise().addListener((obs, old, newScore) -> {
-                if (newScore != null) {
-                    Platform.runLater(() -> rebuild(newScore, getWidth()));
-                }
-            });
-        }
+        if (project == null) return;
 
-        widthProperty().addListener((obs, old, newWidth) -> {
-            if (boundProject != null && boundProject.getScorePartwise().get() != null) {
-                rebuild(boundProject.getScorePartwise().get(), newWidth.doubleValue());
+        project.getScorePartwise().addListener((obs, oldV, newV) -> {
+            if (newV != null) {
+                Platform.runLater(() -> rebuild(part));
             }
         });
     }
 
-    @Override
-    public void setupEventHandlers() {}
 
     public void bindProject(Project project) {
-        this.boundProject = project;
+        this.project = project;
 
-        final ScorePartwise score = project.getScorePartwise().get();
-        if (score != null) {
-            rebuild(score, getWidth());
+        for (Part prt : project.getScorePartwise().get().getParts()) {
+            project.getScorePartwise().get().getPartList().getScoreParts().forEach(scorePart -> {
+                if (prt.getId().equals(scorePart.getId())) {
+                    part = prt;
+                }
+            });
+            break;
+        }
+
+        if (part != null) {
+            rebuild(part);
         }
     }
 
-    public void rebuild(ScorePartwise scorePartwise, double viewWidth) {
+    protected void rebuild(Part part) {
         pageContainer.getChildren().clear();
-
-        if (scorePartwise == null || scorePartwise.getParts() == null
-                || scorePartwise.getParts().isEmpty()) {
-            showEmptyState();
-            return;
-        }
-
-        final VBox page = buildPage(scorePartwise.getWorkTitle(), scorePartwise.getCreator());
-        final var parts = scorePartwise.getParts();
-        final int measureCount = parts.get(0).getMeasures().size();
-        final double measureWidth = SheetMetrics.MEASURE_MIN_WIDTH * 4;
-
-        for (int i = 0; i < measureCount; i++) {
-            final SystemPane system = new SystemPane();
-            for (int p = 0; p < parts.size(); p++) {
-                final var measures = parts.get(p).getMeasures();
-                if (i < measures.size()) {
-                    boolean isFirst = (i == 0);
-                    MeasurePane mp = new MeasurePane(measures.get(i), isFirst, measureWidth);
-                    system.addStaff(mp);
-                }
-            }
-            page.getChildren().add(system);
-        }
+        if (part == null) return;
+        final VBox page = buildPage();
 
         pageContainer.getChildren().add(page);
-        sheetReady.set(true);
     }
 
-    private VBox buildPage(String title, String composer) {
-        final VBox page = new VBox(0);
+    protected abstract void publishChange();
 
-        page.setStyle("""
-            -fx-background-color: white;
-            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 8, 0, 0, 2);
-            """);
-        page.setMaxWidth(PAGE_WIDTH);
-        page.setMinWidth(PAGE_WIDTH);
-        page.setPadding(new Insets(PAGE_MARGIN_V, PAGE_MARGIN_H, PAGE_MARGIN_V, PAGE_MARGIN_H));
+    private VBox buildPage() {
+        final VBox page = new VBox(90);
+
+        page.setPadding(new Insets(
+                    PAGE_MARGIN_V,
+                    PAGE_MARGIN_H,
+                    PAGE_MARGIN_V,
+                    PAGE_MARGIN_H
+                )
+        );
+
+        final String title = project.getScorePartwise().get().getWorkTitle();
 
         if (title != null && !title.isBlank()) {
-            VBox header = buildHeader(title, composer);
+            final VBox header = buildHeader();
             page.getChildren().add(header);
+        }
+
+        if (part != null && !part.getMeasures().isEmpty()) {
+            final FlowPane measures = buildMeasures();
+            page.getChildren().add(measures);
         }
 
         return page;
     }
 
-    private VBox buildHeader(String title, String composer) {
+    protected VBox buildHeader() {
         final VBox header = new VBox(4);
+
         header.setPadding(new Insets(0, 0, 20, 0));
 
-        final Label titleLabel = new Label(title);
-        titleLabel.setFont(Font.font("Georgia", 22));
-        titleLabel.setTextFill(Color.web("#1A1A1A"));
-        titleLabel.setMaxWidth(Double.MAX_VALUE);
-        titleLabel.setStyle("-fx-alignment: center;");
+        titleLabel.setText(project.getScorePartwise().get().getWorkTitle());
+        subtitleLabel.setText(project.getScorePartwise().get().getAlbum());
+        composerLabel.setText(project.getScorePartwise().get().getCreator());
 
-        header.getChildren().add(titleLabel);
-
-        if (composer != null && !composer.isBlank()) {
-            final Label composerLabel = new Label(composer);
-            composerLabel.setFont(Font.font("Georgia", 13));
-            composerLabel.setTextFill(Color.web("#4A4540"));
-            composerLabel.setMaxWidth(Double.MAX_VALUE);
-            composerLabel.setStyle("-fx-alignment: center-right;");
-            header.getChildren().add(composerLabel);
-        }
+        header.getChildren().addAll(
+                titleLabel,
+                subtitleLabel,
+                composerLabel
+        );
 
         return header;
     }
 
-    private void showEmptyState() {
-        final Label empty = new Label("Open any MusicXML file");
-        empty.setStyle("""
-            -fx-font-size: 16px;
-            -fx-text-fill: #B0A898;
-            -fx-padding: 60;
-            """);
-        pageContainer.getChildren().add(empty);
+    protected abstract FlowPane buildMeasures();
+
+    public double getPAGE_WIDTH() {
+        return PAGE_WIDTH;
     }
 
-    public BooleanProperty    sheetReadyProperty() {
-        return sheetReady;
+    public double getPAGE_MARGIN_H() {
+        return PAGE_MARGIN_H;
+    }
+
+    public double getPAGE_MARGIN_V() {
+        return PAGE_MARGIN_V;
+    }
+
+    public Instrument getInstrument() {
+        return instrument;
+    }
+
+    public VBox getPageContainer() {
+        return pageContainer;
+    }
+
+    public void setPageContainer(VBox pageContainer) {
+        this.pageContainer = pageContainer;
+    }
+
+    public Part getPart() {
+        return part;
     }
 }
