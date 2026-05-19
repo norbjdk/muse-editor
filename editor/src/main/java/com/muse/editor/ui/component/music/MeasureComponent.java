@@ -224,12 +224,12 @@ public class MeasureComponent extends Pane {
 
     private double computeMinHeight() {
         return
-                MusicMetrics.TOTAL_LINES_NUMBER
-                *
-                MusicMetrics.LINE_HEIGHT
-                +
-                MusicMetrics.TOTAL_BLANK_SPACES_NUMBER
-                *
-                MusicMetrics.BLANK_SPACE_HEIGHT;
+            MusicMetrics.TOTAL_LINES_NUMBER
+            *
+            MusicMetrics.LINE_HEIGHT
+            +
+            MusicMetrics.TOTAL_BLANK_SPACES_NUMBER
+            *
+            MusicMetrics.BLANK_SPACE_HEIGHT;
     }
 }
