@@ -9,7 +9,6 @@ module com.norbjdk.museeditor {
     requires com.fasterxml.jackson.databind;
     requires java.prefs;
 
-
     opens com.muse.editor.app to javafx.fxml;
     exports com.muse.editor.app;
 
