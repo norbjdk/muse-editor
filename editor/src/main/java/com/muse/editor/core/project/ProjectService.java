@@ -10,6 +10,7 @@ import com.muse.editor.ui.model.ViewName;
 import javafx.application.Platform;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.w3c.dom.Attr;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -86,6 +87,24 @@ public class ProjectService {
     }
 
     private void onLoadSuccess(Path path, ScorePartwise scorePartwise) {
+        System.out.println("onLoadSuccess:");
+        System.out.println(scorePartwise.getWorkTitle());
+        System.out.println(scorePartwise.getCreator());
+        for (ScorePart scorePart : scorePartwise.getPartList().getScoreParts()) {
+            System.out.println("ScorePart:");
+            System.out.println(scorePart.getId());
+            System.out.println(scorePart.getPartName());
+            System.out.println(scorePart.getPartAbbreviation());
+        }
+        System.out.println("Parts:");
+        for (Part part : scorePartwise.getParts()) {
+            System.out.println("Part ID: " + part.getId());
+            for (Measure measure : part.getMeasures()) {
+                System.out.println("Measure ID: " + measure.getId());
+                System.out.println("Notes: " + measure.getNotes().size());
+            }
+        }
+
         final String title = scorePartwise.getWorkTitle() != null && !scorePartwise.getWorkTitle().isBlank()
                 ? scorePartwise.getWorkTitle()
                 : path.getFileName().toString();
@@ -129,8 +148,20 @@ public class ProjectService {
             Part part = new Part();
             part.setId("P" + (num + 1));
 
-            for (int i = 0; i < request.getMeasuresCount(); i++)
-                part.getMeasures().add(new Measure());
+            for (int i = 0; i < request.getMeasuresCount(); i++) {
+                final Measure measure = new Measure();
+                if (i == 0) {
+                    final Attributes attributes = new Attributes.Builder()
+                            .whatTime(request.getBeats(), request.getBeatType())
+                            .setDivisions(24)
+                            .setFifths(0)
+                            .setStaves(1)
+                            .build();
+
+                    measure.setAttributes(attributes);
+                }
+                part.getMeasures().add(measure);
+            }
 
             scorePart.setScoreInstrument(scoreInstrument);
             partList.getScoreParts().add(scorePart);
@@ -176,23 +207,11 @@ public class ProjectService {
     }
 
     private String extractAbbreviation(String instrumentName) {
-        switch (instrumentName) {
-            case "Piano" -> {
-                return "Pno.";
-            }
-            case "Violin" -> {
-                return "Vln.";
-            }
-            case "Drums"  -> {
-                return "Dr.";
-            }
-            case "Guitar" -> {
-                return "Gtr.";
-            }
-            case "Flute" -> {
-                return "Fl.";
-            }
+        return switch (instrumentName) {
+            case "Violin" -> "Vln.";
+            case "Viola" -> "Vla.";
+            case "Cello" -> "Vc.";
             case null, default -> throw new IllegalArgumentException();
-        }
+        };
     }
 }

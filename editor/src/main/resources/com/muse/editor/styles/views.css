@@ -1,8 +1,8 @@
 /*
-================ HOME VIEW ================
+================ SHARED ================
  */
 
-.home-scroll {
+.home-scroll, .new-project-scroll {
     -fx-background:           transparent;
     -fx-background-color:     transparent;
     -fx-fit-to-width:         true;
@@ -10,43 +10,47 @@
     -fx-pannable:             false;
 }
 
-.home-scroll > .viewport {
+.home-scroll, .new-project-scroll > .viewport {
     -fx-background-color: transparent;
 }
 
-.home-scroll .scroll-bar:vertical,
-.home-scroll .scroll-bar:horizontal {
+.home-scroll, .new-project-scroll .scroll-bar:vertical,
+.home-scroll, .new-project-scroll .scroll-bar:horizontal {
     -fx-background-color: transparent;
 }
 
-.home-scroll .scroll-bar:vertical .track,
-.home-scroll .scroll-bar:horizontal .track {
+.home-scroll, .new-project-scroll .scroll-bar:vertical .track,
+.home-scroll, .new-project-scroll .scroll-bar:horizontal .track {
     -fx-background-color: transparent;
     -fx-border-color:     transparent;
 }
 
-.home-scroll .scroll-bar:vertical .thumb,
-.home-scroll .scroll-bar:horizontal .thumb {
+.home-scroll, .new-project-scroll .scroll-bar:vertical .thumb,
+.home-scroll, .new-project-scroll .scroll-bar:horizontal .thumb {
     -fx-background-color:  rgba(120, 112, 100, 0.45);
     -fx-background-radius: 10;
 }
 
-.home-scroll .scroll-bar:vertical .thumb:hover,
-.home-scroll .scroll-bar:horizontal .thumb:hover {
+.home-scroll, .new-project-scroll .scroll-bar:vertical .thumb:hover,
+.home-scroll, .new-project-scroll .scroll-bar:horizontal .thumb:hover {
     -fx-background-color: rgba(90, 82, 72, 0.70);
 }
 
-.home-scroll .increment-button,
-.home-scroll .decrement-button {
+.home-scroll, .new-project-scroll .increment-button,
+.home-scroll, .new-project-scroll .decrement-button {
     -fx-background-color: transparent;
     -fx-padding:          0;
 }
 
-.home-scroll .increment-arrow,
-.home-scroll .decrement-arrow {
+.home-scroll, .new-project-scroll .increment-arrow,
+.home-scroll, .new-project-scroll .decrement-arrow {
     -fx-background-color: transparent;
     -fx-shape:            "";
 }
+
+/*
+================ HOME VIEW ================
+ */
 
 .home-content {
     -fx-padding:    32 72 60 72;
@@ -215,9 +219,11 @@
  */
 
 .new-project-view {
-    -fx-padding:    32 72 60 72;
+    -fx-padding:    32 92 60 92;
     -fx-spacing:    40;
     -fx-fill-width: true;
+    -fx-fit-to-width: true;
+    -fx-background-color: transparent;
 }
 
 .new-project-page-header {
@@ -236,7 +242,7 @@
     -fx-effect:           dropshadow(gaussian, rgba(0, 0, 0, 0.18), 14, 0.4, 0, 3);
 }
 
-.content-container {
+.cards-container {
     -fx-hgap:        50px;
     -fx-vgap:        50px;
     -fx-alignment:   center;

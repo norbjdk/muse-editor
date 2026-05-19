@@ -1,8 +1,8 @@
 package com.muse.editor.ui.view;
 
 import com.muse.editor.core.EventBus;
+import com.muse.editor.core.edit.Instrument;
 import com.muse.editor.core.model.dto.NewProjectRequest;
-import com.muse.editor.core.model.score.Attributes;
 import com.muse.editor.core.user.UserService;
 import com.muse.editor.model.dto.internal.ViewRequest;
 import com.muse.editor.model.event.ChangeProjectPreviewEvent;
@@ -20,10 +20,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.effect.Reflection;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
@@ -35,11 +32,13 @@ import java.util.Objects;
 import static com.muse.editor.ui.util.SpaceFactory.createSpacer;
 
 
-public class NewProjectView extends VBox implements Presentable, Viewable {
+public class NewProjectView extends ScrollPane implements Presentable, Viewable {
     private final static int PREVIEW_WIDTH        = 300;
     private final static int PREVIEW_HEIGHT       = 450;
-    private final static List<String> instrumentsList = List.of(
-            "Piano", "Violin", "Flute", "Guitar", "Drums"
+    private final static List<Instrument> instrumentsList = List.of(
+            new Instrument(Instrument.Name.Violin),
+            new Instrument(Instrument.Name.Viola),
+            new Instrument(Instrument.Name.Cello)
     );
     private final static List<String> keysList = List.of(
             "C-dur", "G-dur", "D-dur", "A-dur", "E-dur",
@@ -48,7 +47,8 @@ public class NewProjectView extends VBox implements Presentable, Viewable {
     );
     private final static PseudoClass ACTIVE_PSEUDO = PseudoClass.getPseudoClass("active");
 
-    private FlowPane contentContainer;
+    private VBox     contentContainer;
+    private TilePane cardsContainer;
 
     private Label viewHeaderLabel;
     private Label instrumentsLabel;
@@ -90,7 +90,8 @@ public class NewProjectView extends VBox implements Presentable, Viewable {
 
     @Override
     public void initComponents() {
-        contentContainer = new FlowPane();
+        contentContainer = new VBox();
+        cardsContainer   = new TilePane();
 
         viewHeaderLabel  = new Label("Create new composition");
         instrumentsLabel = new Label("Choose Instruments");
@@ -149,7 +150,7 @@ public class NewProjectView extends VBox implements Presentable, Viewable {
         );
 
         instrumentsList.forEach(instrument -> {
-            final Button btn = ButtonFactory.createButton(instrument, "instrument-btn", instrument, "instrument-btn");
+            final Button btn = ButtonFactory.createButton(instrument.getName().getName(), "instrument-btn", instrument.getName().getName(), "instrument-btn");
 
             btn.setOnAction(actionEvent -> {
                 handleInstrumentButtonClicked(btn);
@@ -184,15 +185,16 @@ public class NewProjectView extends VBox implements Presentable, Viewable {
         beatsInput.setText("4");
         beatTypeInput.setText("4");
         tempoInput.setText("120");
-        measuresInput.setText("3");
+        measuresInput.setText("15");
     }
 
     @Override
     public void setupStyle() {
         this.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/muse/editor/styles/views.css")).toExternalForm());
-        this.getStyleClass().add("new-project-view");
+        this.getStyleClass().add("new-project-scroll");
 
-        contentContainer.getStyleClass().add("content-container");
+        contentContainer.getStyleClass().add("new-project-view");
+        cardsContainer.getStyleClass().add("cards-container");
 
         projectButtonsContainer.getStyleClass().add("project-buttons-container");
 
@@ -253,7 +255,7 @@ public class NewProjectView extends VBox implements Presentable, Viewable {
         instrumentsForm.add(instrumentsLabel, 0, 0);
         instrumentsForm.add(instrumentsBox, 0, 1);
 
-        contentContainer.getChildren().addAll(
+        cardsContainer.getChildren().addAll(
                 metaDataForm,
                 additionalDataForm,
                 instrumentsForm,
@@ -261,14 +263,16 @@ public class NewProjectView extends VBox implements Presentable, Viewable {
                 projectButtonsContainer
         );
 
-        this.getChildren().addAll(
+        contentContainer.getChildren().addAll(
                 viewHeaderLabel,
                 createSpacer(SpaceFactory.Direction.VERTICAL),
-                contentContainer,
+                cardsContainer,
                 createSpacer(SpaceFactory.Direction.VERTICAL),
                 new HBox(createSpacer(SpaceFactory.Direction.HORIZONTAL), projectButtonsContainer),
                 createSpacer(SpaceFactory.Direction.VERTICAL)
         );
+
+        this.setContent(contentContainer);
     }
 
     @Override

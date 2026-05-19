@@ -22,7 +22,7 @@ public final class FontFactory {
 
     private static void loadFont() {
         try {
-            InputStream is = FontFactory.class.getResourceAsStream("/com/muse/editor/font/BravuraText   .otf");
+            InputStream is = FontFactory.class.getResourceAsStream("/com/muse/editor/font/BravuraText.otf");
             if (is == null) {
                 System.out.println("Font file not found!");
                 bravuraFont = Font.font("Segoe UI Symbol", 12);
