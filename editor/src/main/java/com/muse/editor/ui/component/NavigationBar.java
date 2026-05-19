@@ -2,10 +2,7 @@ package com.muse.editor.ui.component;
 
 import com.muse.editor.core.EventBus;
 import com.muse.editor.model.dto.internal.ViewRequest;
-import com.muse.editor.model.event.ChangeViewRequestedEvent;
-import com.muse.editor.model.event.OpenProjectRequestedEvent;
-import com.muse.editor.model.event.ProjectCreatedEvent;
-import com.muse.editor.model.event.ProjectLoadedEvent;
+import com.muse.editor.model.event.*;
 import com.muse.editor.ui.model.Presentable;
 import com.muse.editor.ui.model.ViewName;
 import com.muse.editor.ui.util.ButtonFactory;
@@ -29,6 +26,7 @@ public class NavigationBar extends HBox implements Presentable {
     private Button learnBtn;
     private Button settingsBtn;
     private Button currentProjectBtn;
+    private Button publishProjectBtn;
 
     public NavigationBar() {
         present();
@@ -43,6 +41,7 @@ public class NavigationBar extends HBox implements Presentable {
         learnBtn = ButtonFactory.createButton("Learn", "home-btn", "Home View", "navigation-btn");
         settingsBtn = ButtonFactory.createButton("Settings", "home-btn", "Home View", "navigation-btn");
         currentProjectBtn = ButtonFactory.createButton("Project Name", "project-btn", "Go to your open project", "navigation-btn");
+        publishProjectBtn = ButtonFactory.createButton("Publish", "publish-btn", "Upload project to cloud", "navigation-btn");
     }
 
     @Override
@@ -54,6 +53,10 @@ public class NavigationBar extends HBox implements Presentable {
         ButtonFactory.addIcon(collectionBtn, FontAwesomeSolid.LAYER_GROUP, 15, Color.rgb(5, 5, 5));
         ButtonFactory.addIcon(learnBtn, FontAwesomeSolid.GRADUATION_CAP, 15, Color.rgb(5, 5, 5));
         ButtonFactory.addIcon(settingsBtn, FontAwesomeSolid.COG, 15, Color.rgb(5, 5, 5));
+        ButtonFactory.addIcon(publishProjectBtn, FontAwesomeSolid.CLOUD_UPLOAD_ALT, 15, Color.rgb(5, 5, 5));
+
+        publishProjectBtn.setVisible(false);
+        publishProjectBtn.setManaged(false);
 
         currentProjectBtn.setVisible(false);
         currentProjectBtn.setManaged(false);
@@ -73,6 +76,7 @@ public class NavigationBar extends HBox implements Presentable {
                 openProjectBtn,
                 createSpacer(SpaceFactory.Direction.HORIZONTAL),
                 currentProjectBtn,
+                publishProjectBtn,
                 createSpacer(SpaceFactory.Direction.HORIZONTAL),
                 collectionBtn,
                 learnBtn,
@@ -90,6 +94,9 @@ public class NavigationBar extends HBox implements Presentable {
                 currentProjectBtn.setVisible(true);
                 currentProjectBtn.setManaged(true);
 
+                publishProjectBtn.setVisible(true);
+                publishProjectBtn.setManaged(true);
+
                 createProjectBtn.setDisable(true);
                 openProjectBtn.setDisable(true);
             });
@@ -101,6 +108,9 @@ public class NavigationBar extends HBox implements Presentable {
                 currentProjectBtn.setText(title);
                 currentProjectBtn.setVisible(true);
                 currentProjectBtn.setManaged(true);
+
+                publishProjectBtn.setVisible(true);
+                publishProjectBtn.setManaged(true);
 
                 createProjectBtn.setDisable(true);
                 openProjectBtn.setDisable(true);
@@ -116,6 +126,7 @@ public class NavigationBar extends HBox implements Presentable {
         collectionBtn.setOnAction(actionEvent -> handleCollectionButtonClicked());
         settingsBtn.setOnAction(actionEvent -> handleSettingsButtonClicked());
         currentProjectBtn.setOnAction(actionEvent -> handleCurrentProjectButtonClicked());
+        publishProjectBtn.setOnAction(e -> handlePublishButtonClicked());
     }
 
     private void handleHomeButtonClicked() {
@@ -140,5 +151,9 @@ public class NavigationBar extends HBox implements Presentable {
 
     private void handleCurrentProjectButtonClicked() {
         EventBus.getInstance().publish(new ChangeViewRequestedEvent(new ViewRequest(ViewName.PROJECT)));
+    }
+
+    private void handlePublishButtonClicked() {
+        EventBus.getInstance().publish(new PublishProjectRequestedEvent());
     }
 }

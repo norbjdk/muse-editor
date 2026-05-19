@@ -2,7 +2,7 @@
 ================ SHARED ================
  */
 
-.home-scroll, .new-project-scroll {
+.home-scroll, .new-project-scroll, .collection-scroll {
     -fx-background:           transparent;
     -fx-background-color:     transparent;
     -fx-fit-to-width:         true;
@@ -10,40 +10,40 @@
     -fx-pannable:             false;
 }
 
-.home-scroll, .new-project-scroll > .viewport {
+.home-scroll, .new-project-scroll, .collection-scroll > .viewport {
     -fx-background-color: transparent;
 }
 
-.home-scroll, .new-project-scroll .scroll-bar:vertical,
-.home-scroll, .new-project-scroll .scroll-bar:horizontal {
+.home-scroll, .new-project-scroll, .collection-scroll .scroll-bar:vertical,
+.home-scroll, .new-project-scroll, .collection-scroll .scroll-bar:horizontal {
     -fx-background-color: transparent;
 }
 
-.home-scroll, .new-project-scroll .scroll-bar:vertical .track,
-.home-scroll, .new-project-scroll .scroll-bar:horizontal .track {
+.home-scroll, .new-project-scroll, .collection-scroll .scroll-bar:vertical .track,
+.home-scroll, .new-project-scroll, .collection-scroll .scroll-bar:horizontal .track {
     -fx-background-color: transparent;
     -fx-border-color:     transparent;
 }
 
-.home-scroll, .new-project-scroll .scroll-bar:vertical .thumb,
-.home-scroll, .new-project-scroll .scroll-bar:horizontal .thumb {
+.home-scroll, .new-project-scroll, .collection-scroll .scroll-bar:vertical .thumb,
+.home-scroll, .new-project-scroll, .collection-scroll .scroll-bar:horizontal .thumb {
     -fx-background-color:  rgba(120, 112, 100, 0.45);
     -fx-background-radius: 10;
 }
 
-.home-scroll, .new-project-scroll .scroll-bar:vertical .thumb:hover,
-.home-scroll, .new-project-scroll .scroll-bar:horizontal .thumb:hover {
+.home-scroll, .new-project-scroll, .collection-scroll .scroll-bar:vertical .thumb:hover,
+.home-scroll, .new-project-scroll, .collection-scroll .scroll-bar:horizontal .thumb:hover {
     -fx-background-color: rgba(90, 82, 72, 0.70);
 }
 
-.home-scroll, .new-project-scroll .increment-button,
-.home-scroll, .new-project-scroll .decrement-button {
+.home-scroll, .new-project-scroll, .collection-scroll .increment-button,
+.home-scroll, .new-project-scroll, .collection-scroll .decrement-button {
     -fx-background-color: transparent;
     -fx-padding:          0;
 }
 
-.home-scroll, .new-project-scroll .increment-arrow,
-.home-scroll, .new-project-scroll .decrement-arrow {
+.home-scroll, .new-project-scroll, .collection-scroll .increment-arrow,
+.home-scroll, .new-project-scroll, .collection-scroll .decrement-arrow {
     -fx-background-color: transparent;
     -fx-shape:            "";
 }
@@ -366,6 +366,43 @@
 .new-project-btn:hover {
     -fx-cursor: hand;
     -fx-background-color: #252321;
+}
+
+/*
+================ COLLECTION VIEW ================
+ */
+
+.collection-content {
+    -fx-alignment:  center;
+    -fx-fill-width: true;
+    -fx-padding:    32 72 60 72;
+    -fx-spacing:    40;
+}
+
+.collection-page-header {
+    -fx-font-family: "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-font-weight: 700;
+    -fx-font-size:   38px;
+    -fx-text-fill:   #1a1714;
+    -fx-padding:     10;
+    -fx-alignment:        center-left;
+    -fx-background-color: linear-gradient(
+            to right,
+            rgba(255, 255, 255, 0.78),
+            rgba(255, 255, 255, 0.60)
+    );
+    -fx-background-radius: 16;
+    -fx-effect:      dropshadow(gaussian, rgba(0, 0, 0, 0.18), 14, 0.4, 0, 3);
+}
+
+.collection-projects-container {
+    -fx-background-color: #f3f3f3;
+    -fx-background-radius: 10;
+    -fx-padding: 18;
+    -fx-alignment: top-center;
+    -fx-orientation: horizontal;
+    -fx-vgap: 26;
+    -fx-hgap: 26;
 }
 
 /*

@@ -2,6 +2,7 @@ package com.muse.editor.app;
 
 import com.muse.editor.core.edit.EditService;
 import com.muse.editor.core.project.ProjectService;
+import com.muse.editor.core.project.PublishService;
 import com.muse.editor.core.user.UserService;
 import javafx.application.Application;
 import javafx.scene.image.Image;
@@ -39,6 +40,7 @@ public class MuseEditorApp extends Application {
         ProjectService.getInstance().init(primaryStage);
         UserService.getInstance().init(primaryStage);
         AppManager.getInstance().init(primaryStage);
+        PublishService.getInstance();
     }
 
     public static void main(String [] args) {

@@ -63,7 +63,7 @@ public class MainWindow implements Presentable {
     public void setupLayout() {
         root.setTop(new VBox(0, menuBar, navigationBar));
         root.setRight(sideBar);
-        root.setBottom(statusBar);
+//        root.setBottom(statusBar);
     }
 
     @Override

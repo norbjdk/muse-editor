@@ -2,79 +2,41 @@ package com.muse.server.model.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "sheets")
 public class SheetEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String title;
+    @ManyToOne
+    @JoinColumn(name = "project_id", nullable = false)
+    private ProjectEntity project;
 
     @Column(nullable = false)
-    private String artist;
+    private Integer version = 1;
 
-    private String album;
-
-    @Column(nullable = false, length = 1000)
-    private String fileUrl;
-
-    private String filePath;
-
-    private Long fileSize;
-
-    private String instrument;
-
-    @Column(length = 1000)
-    private String coverUrl;
+    @Column(columnDefinition = "TEXT")
+    private String rawXml;
 
     @Column(nullable = false)
-    private Integer plays = 0;
+    private Integer beats;
 
     @Column(nullable = false)
-    private Integer likes = 0;
+    private Integer beatType;
 
-    @Column(length = 1000)
-    private String description;
+    @Column(name = "key_sig", nullable = false)
+    private String keySig;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
-    @Column(nullable = false)
-    private String difficulty = "Intermediate";
-
-    @Column(nullable = false)
-    private String keySignature = "C Major";
-
-    @Column(nullable = false)
-    private String category = "Original";
-
-    private String tags;
-
-    private boolean isPublic = true;
-
-    @Column(nullable = false)
-    private Integer downloads = 0;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
+    @OneToMany(mappedBy = "sheet", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SheetPartEntity> parts = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -84,100 +46,52 @@ public class SheetEntity {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public ProjectEntity getProject() {
+        return project;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setProject(ProjectEntity project) {
+        this.project = project;
     }
 
-    public String getArtist() {
-        return artist;
+    public Integer getVersion() {
+        return version;
     }
 
-    public void setArtist(String artist) {
-        this.artist = artist;
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 
-    public String getAlbum() {
-        return album;
+    public String getRawXml() {
+        return rawXml;
     }
 
-    public void setAlbum(String album) {
-        this.album = album;
+    public void setRawXml(String rawXml) {
+        this.rawXml = rawXml;
     }
 
-    public String getFileUrl() {
-        return fileUrl;
+    public Integer getBeats() {
+        return beats;
     }
 
-    public void setFileUrl(String fileUrl) {
-        this.fileUrl = fileUrl;
+    public void setBeats(Integer beats) {
+        this.beats = beats;
     }
 
-    public String getFilePath() {
-        return filePath;
+    public Integer getBeatType() {
+        return beatType;
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setBeatType(Integer beatType) {
+        this.beatType = beatType;
     }
 
-    public Long getFileSize() {
-        return fileSize;
+    public String getKeySig() {
+        return keySig;
     }
 
-    public void setFileSize(Long fileSize) {
-        this.fileSize = fileSize;
-    }
-
-    public String getInstrument() {
-        return instrument;
-    }
-
-    public void setInstrument(String instrument) {
-        this.instrument = instrument;
-    }
-
-    public String getCoverUrl() {
-        return coverUrl;
-    }
-
-    public void setCoverUrl(String coverUrl) {
-        this.coverUrl = coverUrl;
-    }
-
-    public Integer getPlays() {
-        return plays;
-    }
-
-    public void setPlays(Integer plays) {
-        this.plays = plays;
-    }
-
-    public Integer getLikes() {
-        return likes;
-    }
-
-    public void setLikes(Integer likes) {
-        this.likes = likes;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public UserEntity getUser() {
-        return user;
-    }
-
-    public void setUser(UserEntity user) {
-        this.user = user;
+    public void setKeySig(String keySig) {
+        this.keySig = keySig;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -188,59 +102,11 @@ public class SheetEntity {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    public List<SheetPartEntity> getParts() {
+        return parts;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public String getDifficulty() {
-        return difficulty;
-    }
-
-    public void setDifficulty(String difficulty) {
-        this.difficulty = difficulty;
-    }
-
-    public String getKeySignature() {
-        return keySignature;
-    }
-
-    public void setKeySignature(String keySignature) {
-        this.keySignature = keySignature;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getTags() {
-        return tags;
-    }
-
-    public void setTags(String tags) {
-        this.tags = tags;
-    }
-
-    public boolean isPublic() {
-        return isPublic;
-    }
-
-    public void setPublic(boolean aPublic) {
-        isPublic = aPublic;
-    }
-
-    public Integer getDownloads() {
-        return downloads;
-    }
-
-    public void setDownloads(Integer downloads) {
-        this.downloads = downloads;
+    public void setParts(List<SheetPartEntity> parts) {
+        this.parts = parts;
     }
 }

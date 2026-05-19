@@ -36,6 +36,7 @@ public class ProjectService {
     private void setupEventListeners() {
         EventBus.getInstance().subscribe(OpenProjectRequestedEvent.class, event -> handleOpenProjectRequested());
         EventBus.getInstance().subscribe(CreateProjectRequestedEvent.class, event -> handleCreateProjectRequested(event.getRequest()));
+        EventBus.getInstance().subscribe(OpenCloudProjectRequestedEvent.class, event -> loadFile(event.getPath()));
     }
 
     private void handleOpenProjectRequested() {

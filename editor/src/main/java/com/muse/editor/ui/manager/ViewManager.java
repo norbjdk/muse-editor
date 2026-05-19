@@ -7,6 +7,7 @@ import com.muse.editor.model.event.ChangeViewRequestedEvent;
 import com.muse.editor.model.event.ViewChangedEvent;
 import com.muse.editor.ui.model.ViewName;
 import com.muse.editor.ui.model.Viewable;
+import com.muse.editor.ui.view.CollectionView;
 import com.muse.editor.ui.view.HomeView;
 import com.muse.editor.ui.view.NewProjectView;
 import com.muse.editor.ui.view.ProjectView;
@@ -49,6 +50,7 @@ public class ViewManager {
         addView(ViewName.HOME, new HomeView());
         addView(ViewName.NEW_PROJECT, new NewProjectView());
         addView(ViewName.PROJECT, new ProjectView());
+        addView(ViewName.COLLECTION, new CollectionView());
     }
 
     /**

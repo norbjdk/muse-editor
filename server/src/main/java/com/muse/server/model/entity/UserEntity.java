@@ -25,9 +25,11 @@ public class UserEntity {
     @Column(nullable = false)
     private String role;
 
-    @JsonIgnore
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    private List<ProjectEntity> projects = new ArrayList<>();
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<SheetEntity> sheets = new ArrayList<>();
+    private List<ProjectMemberEntity> memberships = new ArrayList<>();
 
     public UserEntity() {
         role = "default";
@@ -80,11 +82,19 @@ public class UserEntity {
         this.role = role;
     }
 
-    public List<SheetEntity> getSheets() {
-        return sheets;
+    public List<ProjectEntity> getProjects() {
+        return projects;
     }
 
-    public void setSheets(List<SheetEntity> sheets) {
-        this.sheets = sheets;
+    public void setProjects(List<ProjectEntity> projects) {
+        this.projects = projects;
+    }
+
+    public List<ProjectMemberEntity> getMemberships() {
+        return memberships;
+    }
+
+    public void setMemberships(List<ProjectMemberEntity> memberships) {
+        this.memberships = memberships;
     }
 }

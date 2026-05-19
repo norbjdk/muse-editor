@@ -388,3 +388,53 @@
 .page-container {
     -fx-background-color: #F0EDE8;
 }
+
+/*
+================ PROJECT TILE ================
+ */
+
+.project-tile {
+    -fx-background-color:  #F5F5F5;
+    -fx-effect:            dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+    -fx-padding:           12 16;
+    -fx-background-radius: 4;
+    -fx-alignment:         center-left;
+    -fx-spacing:           20;
+    -fx-transition: -fx-background-color 2.7s ease-in-out,
+    -fx-border-width 3.2s ease-in;
+    -fx-border-width: 0;
+    -fx-border-color: black;
+}
+
+.project-tile:hover {
+    -fx-background-color: #edebe6;
+    -fx-border-width: 0 0 1 0;
+}
+
+.project-tile-title-label {
+    -fx-text-fill: #171717;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-font-family: "Segoe UI Variable Display", "Segoe UI Bold";
+}
+
+.project-tile-subtitle-label {
+    -fx-text-fill: #232222;
+    -fx-font-size: 10px;
+    -fx-font-weight: 700;
+    -fx-font-family: "Segoe UI Variable Display", "Segoe UI Bold";
+}
+
+.project-tile-composer-label {
+    -fx-text-fill: #4a4a4a;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-font-family: "Segoe UI Variable Display", "Segoe UI Bold";
+}
+
+.project-data-box {
+    -fx-alignment: center-left;
+    -fx-padding: 8 12;
+    -fx-background-color: #E8E4DD;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.18), 14, 0.4, 0, 3);
+}
