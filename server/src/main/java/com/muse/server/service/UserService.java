@@ -1,8 +1,8 @@
 package com.muse.server.service;
 
 import com.muse.server.model.detail.CustomUserDetails;
-import com.muse.server.model.dto.RegisterRequest;
-import com.muse.server.model.dto.UserResponse;
+import com.muse.server.model.dto.user.RegisterRequest;
+import com.muse.server.model.dto.user.UserResponse;
 import com.muse.server.model.entity.UserEntity;
 import com.muse.server.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

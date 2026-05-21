@@ -1,4 +1,4 @@
-package com.muse.server.model.dto;
+package com.muse.server.model.dto.friend;
 
 public class FriendRequest {
     private Long friendId;

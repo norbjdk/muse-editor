@@ -1,8 +1,8 @@
 package com.muse.server.service;
 
 import com.muse.server.model.detail.CustomUserDetails;
-import com.muse.server.model.dto.AuthRequest;
-import com.muse.server.model.dto.AuthResponse;
+import com.muse.server.model.dto.auth.AuthRequest;
+import com.muse.server.model.dto.auth.AuthResponse;
 import com.muse.server.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;

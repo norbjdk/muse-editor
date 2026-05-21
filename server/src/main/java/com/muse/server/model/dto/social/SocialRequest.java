@@ -1,13 +1,13 @@
-package com.muse.server.model.dto;
+package com.muse.server.model.dto.social;
 
-public class SocialResponse {
+public class SocialRequest {
     private String youtubeId;
     private String spotifyId;
     private String instagramId;
     private String tiktokId;
     private String personalWebUrl;
 
-    public SocialResponse() {}
+    public SocialRequest() {}
 
     public String getYoutubeId() {
         return youtubeId;
