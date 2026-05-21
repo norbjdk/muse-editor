@@ -55,7 +55,6 @@ public class UserService implements UserDetailsService {
         response.setId(user.getId());
         response.setUsername(user.getUsername());
         response.setEmail(user.getEmail());
-        response.setRole(user.getRole());
 
         return response;
     }
