@@ -8,9 +8,18 @@ import java.util.Objects;
 @Entity
 @Table(name = "project_members")
 public class ProjectMemberEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @EmbeddedId
+    private ProjectMemberId id = new ProjectMemberId();
+
+    @ManyToOne
+    @MapsId("projectId")
+    @JoinColumn(name = "project_id")
+    private ProjectEntity project;
+
+    @ManyToOne
+    @MapsId("userId")
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 
     @Embeddable
     public static class ProjectMemberId implements Serializable {
