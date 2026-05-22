@@ -29,6 +29,22 @@ public class FriendshipService {
         final UserEntity addressee = userRepository.findById(friendId)
                 .orElseThrow(() -> new RuntimeException("Addressee not found"));
 
+        if (userID.equals(friendId)) {
+            throw new RuntimeException("You cannot add yourself");
+        }
+
+        boolean exists = friendshipRepository
+                .existsByRequesterIdAndAddresseeIdOrRequesterIdAndAddresseeId(
+                        userID,
+                        friendId,
+                        friendId,
+                        userID
+                );
+
+        if (exists) {
+            throw new RuntimeException("Friend request already exists");
+        }
+
         final FriendshipEntity friendshipEntity = new FriendshipEntity();
 
         friendshipEntity.setRequester(requester);
@@ -64,6 +80,30 @@ public class FriendshipService {
         final FriendResponse response = new FriendResponse();
 
         response.setId(requester.getId());
+        response.setUsername(requester.getUsername());
+        response.setCoverUrl("");
+
+        return response;
+    }
+
+    public FriendResponse rejectFriend(Long addresseeId, Long requesterId) {
+        final FriendshipEntity friendship = friendshipRepository
+                .findByRequesterIdAndAddresseeId(requesterId, addresseeId)
+                .orElseThrow(() -> new RuntimeException("Friend request not found"));
+
+        if (friendship.getStatus() != FriendshipEntity.FriendshipStatus.PENDING) {
+            throw new RuntimeException("Friend request already handled");
+        }
+
+        friendship.setStatus(FriendshipEntity.FriendshipStatus.REJECTED);
+
+        friendshipRepository.save(friendship);
+
+        final UserEntity requester = friendship.getRequester();
+
+        final FriendResponse response = new FriendResponse();
+
+        response.setId(requesterId);
         response.setUsername(requester.getUsername());
         response.setCoverUrl("");
 

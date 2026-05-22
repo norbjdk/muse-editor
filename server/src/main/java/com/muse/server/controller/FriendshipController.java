@@ -1,7 +1,6 @@
 package com.muse.server.controller;
 
 import com.muse.server.model.detail.CustomUserDetails;
-import com.muse.server.model.dto.friend.FriendRequest;
 import com.muse.server.model.dto.friend.FriendResponse;
 import com.muse.server.service.FriendshipService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +37,15 @@ public class FriendshipController {
         );
     }
 
-    @PostMapping("/{userId}/reject")
-    public ResponseEntity<FriendResponse> reject() { return null;}
+    @PostMapping("/requests/{userId}/reject")
+    public ResponseEntity<FriendResponse> reject(
+            @AuthenticationPrincipal CustomUserDetails  user,
+            @PathVariable Long userId
+    ) {
+        return ResponseEntity.ok(
+                friendshipService.rejectFriend(user.getId(), userId)
+        );
+    }
 
     @GetMapping("/requests")
     public ResponseEntity<List<FriendResponse>> getRequests(
