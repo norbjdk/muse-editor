@@ -22,6 +22,9 @@ public class UserService implements UserDetailsService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private MinioService minioService;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity user = userRepo.findByUsername(username)
@@ -40,12 +43,16 @@ public class UserService implements UserDetailsService {
             throw new RuntimeException("Email is already in use");
         }
 
-        UserEntity user = new UserEntity();
+        final UserEntity user = new UserEntity();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        return userRepo.save(user);
+        final UserEntity saved = userRepo.save(user);
+
+        minioService.createUserFolder(saved.getId());
+
+        return saved;
     }
 
     public UserResponse getUserByUsername(String username) {
