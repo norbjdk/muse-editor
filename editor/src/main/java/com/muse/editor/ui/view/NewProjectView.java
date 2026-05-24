@@ -164,7 +164,7 @@ public class NewProjectView extends ScrollPane implements Presentable, Viewable 
     public void setupComponents() {
         titleInput.setPromptText("New composition...");
         subtitleInput.setPromptText("Unknown");
-        composerInput.setPromptText(UserService.getInstance().getCurrentUser() != null ? UserService.getInstance().getCurrentUser().getUsername() : "Guest");
+//        composerInput.setPromptText(UserService.getInstance().getCurrentUser() != null ? UserService.getInstance().getCurrentUser().getUsername() : "Guest");
         copyrightInput.setPromptText("...");
 
         ButtonFactory.addIcon(createProjectBtn, FontAwesomeSolid.CHECK_CIRCLE, 15, Color.rgb(204, 197, 185));
