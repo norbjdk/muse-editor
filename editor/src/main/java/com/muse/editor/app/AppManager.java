@@ -36,7 +36,7 @@ public class AppManager {
             return t;
         });
 
-        final String urlToCheck = "http://localhost:8080";
+        final String urlToCheck = "http://0.0.0.0:8080";
 
         scheduler.scheduleAtFixedRate(() -> {
             try {
