@@ -1,10 +1,18 @@
 package com.muse.editor.app;
 
+import com.muse.editor.core.EventBus;
+import com.muse.editor.core.project.ProjectManager;
+import com.muse.editor.core.user.CurrentUserService;
+import com.muse.editor.core.user.TokenStorage;
+import com.muse.editor.core.user.User;
+import com.muse.editor.core.user.UserManager;
+import com.muse.editor.model.event.LoginSuccessEvent;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.Executors;
@@ -14,6 +22,11 @@ import java.util.concurrent.TimeUnit;
 public class AppManager {
     private final static AppManager instance = new AppManager();
     private final BooleanProperty isConnected = new SimpleBooleanProperty(false);
+
+    private final UserManager    userManager    = UserManager.getInstance();
+    private final ProjectManager projectManager = ProjectManager.getInstance();
+
+    private final CurrentUserService currentUserService = CurrentUserService.getCurrentUserService();
 
     private Stage stage;
 
@@ -27,6 +40,16 @@ public class AppManager {
 
     public void init(Stage stage) {
         this.stage = stage;
+
+        if (TokenStorage.isLoggedIn()) {
+            User user = CurrentUserService.getCurrentUser();
+
+            if (user != null) {
+                System.out.println("User restored: " + user.getUsername());
+
+                EventBus.getInstance().publish(new LoginSuccessEvent(user));
+            }
+        }
     }
 
     private void runServerMonitor() {
@@ -56,6 +79,25 @@ public class AppManager {
         }, 0, 10, TimeUnit.SECONDS);
     }
 
+    /**
+     * ============ USER =============
+     */
+
+    public User getCurrentUser() throws IOException {
+        return userManager.getCurrentUser();
+    }
+
+    public User getUserByUsername(String username) throws IOException {
+        return userManager.getUserByUsername(username);
+    }
+
+    public boolean IsUserLoggedIn() {
+        return currentUserService.isLoggedIn();
+    }
+
+    public void logoutUser() {
+        currentUserService.logout();
+    }
 
     public BooleanProperty isConnected() {
         return isConnected;
