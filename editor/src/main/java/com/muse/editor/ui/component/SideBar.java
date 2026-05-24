@@ -80,10 +80,10 @@ public class SideBar extends VBox implements Presentable {
         friend3.setStatus("offline");
         friend3.setPicturePath("https://static.vecteezy.com/system/resources/previews/049/165/981/non_2x/pianist-playing-the-piano-element-illustration-in-cartoon-style-free-vector.jpg");
 
-        friendsContainer.getChildren().addAll(
-                new FriendCard(friend1),
-                new FriendCard(friend2),
-                new FriendCard(friend3)
-        );
+//        friendsContainer.getChildren().addAll(
+//                new FriendCard(friend1),
+//                new FriendCard(friend2),
+//                new FriendCard(friend3)
+//        );
     }
 }
