@@ -55,4 +55,13 @@ public class FriendshipController {
                 friendshipService.getPendingRequests(user.getId())
         );
     }
+
+    @GetMapping("/friendlist")
+    public ResponseEntity<List<FriendResponse>> getFriendlist(
+            @AuthenticationPrincipal CustomUserDetails user
+    ) {
+        return ResponseEntity.ok(
+                friendshipService.getFriendList(user.getId())
+        );
+    }
 }

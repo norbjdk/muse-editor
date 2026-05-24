@@ -122,6 +122,17 @@ public class FriendshipService {
                 .toList();
     }
 
+    public List<FriendResponse> getFriendList(Long userId) {
+        return friendshipRepository
+                .findAllByAddresseeIdAndStatus(
+                        userId,
+                        FriendshipEntity.FriendshipStatus.ACCEPTED
+                )
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
     private FriendResponse toResponse(FriendshipEntity friendship) {
 
         final UserEntity requester = friendship.getRequester();
