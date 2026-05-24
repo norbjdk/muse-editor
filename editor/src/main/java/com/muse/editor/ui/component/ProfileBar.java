@@ -1,5 +1,6 @@
 package com.muse.editor.ui.component;
 
+import com.muse.editor.app.AppManager;
 import com.muse.editor.core.EventBus;
 import com.muse.editor.core.auth.AuthService;
 import com.muse.editor.core.user.User;
@@ -23,9 +24,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 
+import java.io.IOException;
 import java.util.Objects;
 
 public class ProfileBar extends GridPane implements Presentable {
+    private final AppManager appManager = AppManager.getInstance();
 
     private Circle pictureView;
     private Label usernameLabel;
@@ -44,6 +47,10 @@ public class ProfileBar extends GridPane implements Presentable {
         userService = UserService.getInstance();
 
         present();
+
+        if (appManager.IsUserLoggedIn()) {
+            updateProfileData();
+        }
     }
 
     @Override
@@ -119,7 +126,7 @@ public class ProfileBar extends GridPane implements Presentable {
         EventBus.getInstance().subscribe(LogoutEvent.class, event -> {
             Platform.runLater(() -> {
                 updateButtonVisibility();
-                setDefaultProfileData();
+                updateProfileData();
             });
         });
     }
@@ -133,7 +140,7 @@ public class ProfileBar extends GridPane implements Presentable {
     private void updateButtonVisibility() {
         buttonContainer.getChildren().clear();
 
-        if (authService.isLoggedIn()) {
+        if (appManager.IsUserLoggedIn()) {
             buttonContainer.getChildren().add(logoutBtn);
         } else {
             buttonContainer.getChildren().add(loginBtn);
@@ -141,20 +148,24 @@ public class ProfileBar extends GridPane implements Presentable {
     }
 
     private void updateProfileData() {
-        if (authService.isLoggedIn()) {
-            User currentUser = userService.getCurrentUser();
+        try {
+            if (appManager.IsUserLoggedIn()) {
+                User currentUser = userService.getCurrentUser();
 
-            if (currentUser != null) {
-                usernameLabel.setText(currentUser.getUsername());
+                if (currentUser != null) {
+                    usernameLabel.setText(currentUser.getUsername());
 
-                String status = getStatusText(currentUser.getRole());
-                statusLabel.setText(status);
+                    String status = getStatusText(currentUser.getRole());
+                    statusLabel.setText(status);
 
-                updateStatusStyle(currentUser.getRole());
+                    updateStatusStyle(currentUser.getRole());
 
-            } else {
-                setDefaultProfileData();
+                } else {
+                    setDefaultProfileData();
+                }
             }
+        } catch (RuntimeException | IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
