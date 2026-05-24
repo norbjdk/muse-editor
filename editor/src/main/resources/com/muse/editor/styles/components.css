@@ -270,6 +270,47 @@
 }
 
 /*
+================ REQUEST CARD ================
+ */
+
+.request-card {
+    -fx-background-color:  #f3f3f3;
+    -fx-effect:            dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+    -fx-padding:           10 4;
+    -fx-background-radius: 10px;
+    -fx-border-color:      #e0e0e0;
+    -fx-border-width:      0 0 1 0;
+    -fx-alignment: center;
+    -fx-spacing: 10px;
+}
+
+.request-username-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-font-family: "Segoe UI Variable Display", "Segoe UI Bold";
+}
+
+.decision-buttons-container {
+    -fx-spacing: 10px;
+    -fx-alignment: center;
+}
+
+.request-card-btn {
+    -fx-background-color:  #EDEDED;
+    -fx-effect:            dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+    -fx-alignment:         center;
+    -fx-padding:           6;
+    -fx-background-radius: 50%;
+    -fx-border-color:      #e0e0e0;
+    -fx-border-width:      0 0 1 0;
+}
+
+.request-card-btn:hover {
+    -fx-cursor:           hand;
+    -fx-background-color: #dfdede;
+}
+
+/*
 ================ TOOL BAR ================
  */
 
