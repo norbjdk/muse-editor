@@ -22,22 +22,18 @@ public class UserEntity {
     @Column(nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String role;
+    private UserRole role = UserRole.EXPLORER;
 
-    @JsonIgnore
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    private List<ProjectEntity> projects  = new ArrayList<>();
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<SheetEntity> sheets = new ArrayList<>();
+    private List<ProjectMemberEntity>  memberships = new ArrayList<>();
 
-    public UserEntity() {
-        role = "default";
-    }
-
-    public UserEntity(String username, String email, String password, String role) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.role = role;
+    public enum UserRole {
+        EXPLORER, ARTIST, ADMIN
     }
 
     public Long getId() {
@@ -72,19 +68,27 @@ public class UserEntity {
         this.password = password;
     }
 
-    public String getRole() {
+    public UserRole getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(UserRole role) {
         this.role = role;
     }
 
-    public List<SheetEntity> getSheets() {
-        return sheets;
+    public List<ProjectEntity> getProjects() {
+        return projects;
     }
 
-    public void setSheets(List<SheetEntity> sheets) {
-        this.sheets = sheets;
+    public void setProjects(List<ProjectEntity> projects) {
+        this.projects = projects;
+    }
+
+    public List<ProjectMemberEntity> getMemberships() {
+        return memberships;
+    }
+
+    public void setMemberships(List<ProjectMemberEntity> memberships) {
+        this.memberships = memberships;
     }
 }

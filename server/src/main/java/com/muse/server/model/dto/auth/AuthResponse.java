@@ -1,4 +1,4 @@
-package com.muse.server.model.dto;
+package com.muse.server.model.dto.auth;
 
 public class AuthResponse {
     private String token;

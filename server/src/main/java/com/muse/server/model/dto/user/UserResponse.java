@@ -1,4 +1,4 @@
-package com.muse.server.model.dto;
+package com.muse.server.model.dto.user;
 
 public class UserResponse {
     private Long id;

@@ -5,16 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface SheetRepository extends JpaRepository<SheetEntity, Long> {
-    List<SheetEntity> findByUserId(Long userId);
-    List<SheetEntity> findByUserIdAndTitleContaining(Long userId, String title);
-
-    List<SheetEntity> findByInstrument(String instrument);
-
-    @Query("SELECT t FROM SheetEntity t ORDER BY t.plays DESC")
-    List<SheetEntity> findTopSheets();
-
-    @Query("SELECT t FROM SheetEntity t ORDER BY t.createdAt DESC")
-    List<SheetEntity> findNewestSheets();
+    List<SheetEntity> findByProjectId(Long projectId);
 }

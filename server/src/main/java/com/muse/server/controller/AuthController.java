@@ -1,8 +1,8 @@
 package com.muse.server.controller;
 
-import com.muse.server.model.dto.AuthRequest;
-import com.muse.server.model.dto.AuthResponse;
-import com.muse.server.model.dto.RegisterRequest;
+import com.muse.server.model.dto.auth.AuthRequest;
+import com.muse.server.model.dto.auth.AuthResponse;
+import com.muse.server.model.dto.user.RegisterRequest;
 import com.muse.server.model.entity.UserEntity;
 import com.muse.server.service.AuthService;
 import com.muse.server.service.UserService;

@@ -1,6 +1,6 @@
 package com.muse.server.controller;
 
-import com.muse.server.model.dto.UserResponse;
+import com.muse.server.model.dto.user.UserResponse;
 import com.muse.server.model.repository.UserRepository;
 import com.muse.server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
