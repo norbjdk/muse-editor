@@ -1,6 +1,7 @@
 package com.muse.editor.app.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.muse.editor.core.user.TokenStorage;
 import okhttp3.OkHttpClient;
 
 import java.util.concurrent.TimeUnit;
@@ -17,9 +18,17 @@ public class ApiConfig {
     public static OkHttpClient getHttpClient() {
         if (httpClient == null) {
             httpClient = new OkHttpClient.Builder()
-                    .connectTimeout(30, TimeUnit.SECONDS)
-                    .readTimeout(30, TimeUnit.SECONDS)
-                    .writeTimeout(30, TimeUnit.SECONDS)
+                    .addInterceptor(chain -> {
+                        var originalRequest = chain.request();
+                        var token = TokenStorage.getToken();
+
+                        if (token != null && !token.isEmpty()) {
+                            var requestBuilder = originalRequest.newBuilder()
+                                    .header("Authorization", "Bearer " + token);
+                            return chain.proceed(requestBuilder.build());
+                        }
+                        return chain.proceed(originalRequest);
+                    })
                     .build();
         }
         return httpClient;
