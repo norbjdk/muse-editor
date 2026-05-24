@@ -102,8 +102,4 @@ public class AuthService {
         System.out.println("Logged out");
         EventBus.getInstance().publish(new LogoutEvent());
     }
-
-    public boolean isLoggedIn() {
-        return userService.isLoggedIn();
-    }
 }
