@@ -7,6 +7,8 @@ import com.muse.editor.ui.view.LoginDialog;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import java.io.IOException;
 
@@ -42,18 +44,40 @@ public class UserService {
         });
     }
 
-    public User getCurrentUser() {
-        if (currentUser == null) {
-            String userJson = TokenStorage.getUser();
-            if (userJson != null && !userJson.isEmpty()) {
-                try {
-                    currentUser = mapper.readValue(userJson, User.class);
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
+    public User getCurrentUser() throws IOException {
+        final String url = ApiConfig.getBaseUrl() + "/api/v1/users/me";
+
+        final Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful() && response.body() != null) {
+                String responseBody = response.body().string();
+                return mapper.readValue(responseBody, User.class);
+            } else {
+                throw new IOException("Failed to fetch current user: " + response.code());
             }
         }
-        return currentUser;
+    }
+
+    public User getUserByUsername(String username) throws IOException {
+        final String url = ApiConfig.getBaseUrl() + "/api/v1/users/" + username;
+
+        final Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful() && response.body() != null) {
+                String responseBody = response.body().string();
+                return mapper.readValue(responseBody, User.class);
+            } else {
+                throw new IOException("Failed to fetch current user: " + response.code());
+            }
+        }
     }
 
     public void setUser(User user) {
@@ -77,9 +101,5 @@ public class UserService {
     public static void logout() {
         currentUser = null;
         TokenStorage.clear();
-    }
-
-    public boolean isLoggedIn() {
-        return TokenStorage.isLoggedIn() && getCurrentUser() != null;
     }
 }
