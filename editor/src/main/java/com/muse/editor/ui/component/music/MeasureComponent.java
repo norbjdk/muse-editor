@@ -91,11 +91,12 @@ public class MeasureComponent extends Pane {
         measureProperty.addListener((obs, oldMeasure, newMeasure) -> {
             if (newMeasure != null && newMeasure.getAttributes() != null) {
                 this.getChildren().add(buildClefComponent());
+                this.getChildren().add(buildMetreComponent());
             }
-            if (newMeasure != null ) {
+            if (newMeasure != null && !newMeasure.getNotes().isEmpty() ) {
                 this.getChildren().addAll(buildNotes());
-                this.recompute();
             }
+            this.recomputeWidth();
         });
     }
 
@@ -129,10 +130,27 @@ public class MeasureComponent extends Pane {
         final ClefComponent clefComponent = new ClefComponent(attributes.getFifths());
 
         if (attributes.getLine() == 2) {
-            clefComponent.setLayoutY(lineComponents.get(0).getY());
+            clefComponent.setLayoutY(lineComponents.getFirst().getY());
+            clefComponent.setLayoutX(5);
         }
 
         return clefComponent;
+    }
+
+    private MetreComponent buildMetreComponent() {
+        if (measure == null)                 return null;
+        if (measure.getAttributes() == null) return null;
+
+        final Attributes     attributes     = measure.getAttributes();
+        final MetreComponent metreComponent = new MetreComponent(
+                attributes.getBeats(),
+                attributes.getBeatType()
+        );
+
+        metreComponent.setLayoutY(lineComponents.getFirst().getY());
+        metreComponent.setLayoutX(35);
+
+        return metreComponent;
     }
 
     private List<NoteComponent> buildNotes() {
@@ -147,7 +165,7 @@ public class MeasureComponent extends Pane {
         ) return List.of();
 
         final List<NoteComponent> noteComponents = new ArrayList<>();
-        double xOffset = measure.getAttributes() == null ? 0 : MusicMetrics.CLEF_CANVAS_WIDTH;
+        double xOffset = measure.getAttributes() == null ? 0 : MusicMetrics.CLEF_CANVAS_WIDTH + 30;
 
         for (Note note : measure.getNotes()) {
             StaffComponent staffComponent = evaluateStaffPlace(note);
@@ -210,7 +228,7 @@ public class MeasureComponent extends Pane {
         return barline;
     }
 
-    private void recompute() {
+    private void recomputeWidth() {
         double maxX = 0;
         for (var child : this.getChildren()) {
             double rightEdge = child.getLayoutX() + child.getBoundsInLocal().getWidth();

@@ -25,11 +25,13 @@ public class EditService {
 
     private EditService() {}
 
-    public void handleAddNote(final Measure measure) {
-
+    public void handleAddNote(final Measure measure, final Note note) {
+        measure.getNotes().add(note);
     }
 
-    public void handleAddRest(final Measure measure) {}
+    public void handleAddNotes(final Measure measure, final List<Note> notes) {
+        measure.getNotes().add((Note) notes);
+    }
 
     public void handleAddMeasure(final Measure measure) {
 

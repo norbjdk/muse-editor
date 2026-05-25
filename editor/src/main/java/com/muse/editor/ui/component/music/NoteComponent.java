@@ -27,6 +27,10 @@ public class NoteComponent extends Canvas {
         gc.setTextAlign(TextAlignment.CENTER);
 
         gc.fillText(getNoteGlyph(), 15, noteHeadYPosition);
+
+        this.setOnMouseClicked(mouseEvent -> {
+            System.out.println(note.getType());
+        });
     }
 
     public Note getNote() {

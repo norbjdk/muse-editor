@@ -160,6 +160,12 @@ public class ProjectService {
 
                     measure.setAttributes(attributes);
                 }
+                measure.getNotes().add(new Note.Builder()
+                        .isRest(true)
+                        .setDuration(2)
+                        .whatType("whole")
+                        .build());
+
                 part.getMeasures().add(measure);
             }
 
