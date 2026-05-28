@@ -3,6 +3,8 @@ package com.muse.editor.ui.component;
 import com.muse.editor.core.EventBus;
 import com.muse.editor.model.event.AddNoteRequestedEvent;
 import com.muse.editor.model.event.AddRestRequestedEvent;
+import com.muse.editor.model.event.edit.InputModeOff;
+import com.muse.editor.model.event.edit.InputModeOn;
 import com.muse.editor.ui.model.Presentable;
 import com.muse.editor.ui.util.ButtonFactory;
 import com.muse.editor.ui.util.FontFactory;
@@ -13,12 +15,12 @@ import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 
+import java.util.List;
 import java.util.Objects;
 
 import static com.muse.editor.ui.util.SpaceFactory.createSpacer;
 
 public class ToolBar extends HBox implements Presentable {
-
     private Button wholeNoteBtn;
     private Button halfNoteBtn;
     private Button quarterNoteBtn;
@@ -130,7 +132,18 @@ public class ToolBar extends HBox implements Presentable {
 
     @Override
     public void setupEventListeners() {
-
+        EventBus.getInstance().subscribe(InputModeOn.class, event -> {
+            wholeNoteBtn.setStyle("-fx-background-color: #fa6637");
+            halfNoteBtn.setStyle("-fx-background-color: #fa6637");
+            quarterNoteBtn.setStyle("-fx-background-color: #fa6637");
+            quaverNoteBtn.setStyle("-fx-background-color: #fa6637");
+        });
+        EventBus.getInstance().subscribe(InputModeOff.class, event -> {
+            wholeNoteBtn.setStyle("-fx-background-color: #F0EDE8;");
+            halfNoteBtn.setStyle("-fx-background-color: #F0EDE8;");
+            quarterNoteBtn.setStyle("-fx-background-color: #F0EDE8;");
+            quaverNoteBtn.setStyle("-fx-background-color: #F0EDE8;");
+        });
     }
 
     @Override

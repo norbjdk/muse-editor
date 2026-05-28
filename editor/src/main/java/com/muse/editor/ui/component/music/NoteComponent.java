@@ -1,6 +1,9 @@
 package com.muse.editor.ui.component.music;
 
+import com.muse.editor.core.EventBus;
+import com.muse.editor.core.edit.EditManager;
 import com.muse.editor.core.model.score.Note;
+import com.muse.editor.model.event.edit.InputModeOff;
 import com.muse.editor.ui.util.FontFactory;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -9,6 +12,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Translate;
 
 public class NoteComponent extends Canvas {
+    private final EditManager editManager = EditManager.getInstance();
     private final Note note;
 
     public NoteComponent(Note note) {
@@ -28,9 +32,26 @@ public class NoteComponent extends Canvas {
 
         gc.fillText(getNoteGlyph(), 15, noteHeadYPosition);
 
+        if (note.getOctave() == 4 && note.getStep() == 'C') {
+            gc.fillRect(3, MusicMetrics.NOTE_CANVAS_HEIGHT / 2 + 3, 23, 1);
+        }
+
         this.setOnMouseClicked(mouseEvent -> {
             System.out.println(note.getType());
+            editManager.switchMode();
         });
+
+        EventBus.getInstance().subscribe(InputModeOff.class, event -> {
+
+        });
+    }
+
+    public void handleInputOff() {
+
+    }
+
+    public void handleInputOn() {
+
     }
 
     public Note getNote() {

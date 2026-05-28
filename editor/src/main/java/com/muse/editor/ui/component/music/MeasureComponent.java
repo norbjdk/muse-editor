@@ -165,7 +165,7 @@ public class MeasureComponent extends Pane {
         ) return List.of();
 
         final List<NoteComponent> noteComponents = new ArrayList<>();
-        double xOffset = measure.getAttributes() == null ? 0 : MusicMetrics.CLEF_CANVAS_WIDTH + 30;
+        double xOffset = measure.getAttributes() == null ? MusicMetrics.NOTE_CANVAS_WIDTH / 2 : MusicMetrics.CLEF_CANVAS_WIDTH + 30;
 
         for (Note note : measure.getNotes()) {
             StaffComponent staffComponent = evaluateStaffPlace(note);
@@ -173,7 +173,6 @@ public class MeasureComponent extends Pane {
             NoteComponent noteComponent = new NoteComponent(note);
             noteComponent.setLayoutY(staffComponent.getY() + 5);
             noteComponent.setLayoutX(xOffset);
-
 
             noteComponents.add(noteComponent);
             xOffset += MusicMetrics.NOTE_CANVAS_WIDTH + 5;
@@ -238,6 +237,18 @@ public class MeasureComponent extends Pane {
         final double required = Math.max(MusicMetrics.BASE_MEASURE_WIDTH, maxX + 20);
 
         measureWidth.set(required);
+    }
+
+    private void rejustifyElements() {
+        final double eachColumnSize = measureWidth.get() / this.getChildren().size();
+
+        double x = eachColumnSize / 2;
+
+        for (var child: this.getChildren()) {
+            System.out.println("x: " + x);
+            child.setLayoutX(x);
+            x += eachColumnSize;
+        }
     }
 
     private double computeMinHeight() {

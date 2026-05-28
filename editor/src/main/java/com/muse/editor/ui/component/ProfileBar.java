@@ -165,7 +165,7 @@ public class ProfileBar extends GridPane implements Presentable {
                 }
             }
         } catch (RuntimeException | IOException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         }
     }
 
