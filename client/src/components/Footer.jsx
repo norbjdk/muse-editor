@@ -5,7 +5,7 @@ import { Podcast } from "lucide-react";
 
 function Footer() {
     return(
-        <footer className="bg-cover bg-center py-4 text-center text-sm text-gray-200 font-sans w-full" style={{ backgroundImage: `url(${Background})` }} >
+        <footer className="py-4 text-center text-sm text-gray-200 font-sans w-full border-t-4 border-stone-500 bg-slate-800">
             <div className="flex flex-col justify-center gap-4">
                 <div className="flex flex-row justify-evenly">
                     <Link to="/tos" className={`tracking-widest font-extrabold text-[#E8E4DD] drop-shadow-sm text-shadow-slate-700 text-shadow-md`}>Terms of Service</Link>
