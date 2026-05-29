@@ -6,7 +6,7 @@ import com.muse.editor.core.user.CurrentUserService;
 import com.muse.editor.core.user.TokenStorage;
 import com.muse.editor.core.user.User;
 import com.muse.editor.core.user.UserManager;
-import com.muse.editor.model.event.LoginSuccessEvent;
+import com.muse.editor.model.event.user.LoginSuccessEvent;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;

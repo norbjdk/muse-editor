@@ -1,4 +1,6 @@
-package com.muse.editor.model.event;
+package com.muse.editor.model.event.user;
+
+import com.muse.editor.model.event.AppEvent;
 
 public class LoginFailedEvent implements AppEvent {
     private String errorMessage;

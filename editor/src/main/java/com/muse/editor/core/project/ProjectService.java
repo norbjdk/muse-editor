@@ -6,11 +6,13 @@ import com.muse.editor.core.model.dto.NewProjectRequest;
 import com.muse.editor.core.model.score.*;
 import com.muse.editor.model.dto.internal.ViewRequest;
 import com.muse.editor.model.event.*;
+import com.muse.editor.model.event.project.ProjectCreatedEvent;
+import com.muse.editor.model.event.project.ProjectLoadFailedEvent;
+import com.muse.editor.model.event.project.ProjectLoadedEvent;
 import com.muse.editor.ui.model.ViewName;
 import javafx.application.Platform;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.w3c.dom.Attr;
 
 import java.io.File;
 import java.nio.file.Path;
