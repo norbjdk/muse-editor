@@ -94,7 +94,7 @@ public class MusicXmlParser {
 
                 final NodeList noteNodes = measureEl.getElementsByTagName("note");
                 for (int k = 0; k < noteNodes.getLength(); k++) {
-                    final Note note = parseNote((Element) noteNodes.item(k));
+                    final Note note = parseNote(k, (Element) noteNodes.item(k));
                     if (note != null) measure.getNotes().add(note);
                 }
 
@@ -149,8 +149,10 @@ public class MusicXmlParser {
         return builder.build();
     }
 
-    private Note parseNote(Element element) {
+    private Note parseNote(int id, Element element) {
         Note.Builder builder = new Note.Builder();
+
+        builder.setId(id);
 
         builder.isRest(getChild(element, "rest") != null);
 

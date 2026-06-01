@@ -76,6 +76,8 @@ public class ToolBox extends VBox implements Presentable {
         clefsPane.setText("Clefs");
         dynamicsPane.setText("Dynamics");
         metresPane.setText("Metres");
+
+        metresPane.setExpanded(false);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.muse.editor.core.model.score;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class Measure implements Comparable<Measure> {
@@ -18,32 +17,56 @@ public class Measure implements Comparable<Measure> {
         notes.add(note);
     }
 
-    public Attributes getAttributes() {
-        return attributes;
+    public Attributes getAttributes() { return attributes; }
+    public void setAttributes(Attributes attributes) { this.attributes = attributes; }
+    public List<Note> getNotes() { return notes; }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+
+    public double usedBeats() {
+        if (attributes == null) return 0;
+        int beatType = attributes.getBeatType();
+        return notes.stream()
+                .mapToDouble(n -> noteTypeToBeats(n.getType(), beatType) * (isDotted(n) ? 1.5 : 1.0))
+                .sum();
     }
 
-    public void setAttributes(Attributes attributes) {
-        this.attributes = attributes;
+    public double remainingBeats() {
+        if (attributes == null) return Double.MAX_VALUE;
+        return attributes.getBeats() - usedBeats();
     }
 
-    public List<Note> getNotes() {
-        return notes;
+    public boolean isFull() {
+        return remainingBeats() <= 0.0001;
     }
 
-    public int getId() {
-        return id;
+    public boolean canFit(String noteType) {
+        if (attributes == null) return true;
+        double needed = noteTypeToBeats(noteType, attributes.getBeatType());
+        return remainingBeats() >= needed - 0.0001;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    private boolean isDotted(Note note) {
+        return false;
+    }
+
+    private double noteTypeToBeats(String type, int beatType) {
+        double baseBeats = switch (type != null ? type : "quarter") {
+            case "whole"   -> 4.0;
+            case "half"    -> 2.0;
+            case "quarter" -> 1.0;
+            case "eighth"  -> 0.5;
+            case "16th"    -> 0.25;
+            case "32nd"    -> 0.125;
+            case "64th"    -> 0.0625;
+            default        -> 1.0;
+        };
+        return baseBeats * (4.0 / beatType);
     }
 
     @Override
     public int compareTo(Measure other) {
-        return Comparator.comparing((Measure m) -> m.attributes.getBeats())
-                .thenComparing(m -> m.attributes.getBeatType())
-                .thenComparing(m -> m.attributes.getFifths())
-                .compare(this, other);
+        return Integer.compare(this.id, other.id);
     }
-
 }

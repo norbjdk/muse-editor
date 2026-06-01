@@ -1,13 +1,10 @@
-package com.muse.editor.ui.component.music;
+package com.muse.editor.ui.component.music.sheet;
 
 import com.muse.editor.core.edit.Instrument;
 import com.muse.editor.core.model.score.Measure;
-import javafx.application.Platform;
+import com.muse.editor.ui.component.music.MeasureComponent;
 import javafx.geometry.Orientation;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.TilePane;
-import javafx.scene.layout.VBox;
 
 import java.util.List;
 
