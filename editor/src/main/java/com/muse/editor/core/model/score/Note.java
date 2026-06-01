@@ -17,6 +17,7 @@ package com.muse.editor.core.model.score;
  */
 
 public class Note {
+    private final int id;
     private final boolean isRest;
     private final char step;
     private final int alter;
@@ -28,6 +29,7 @@ public class Note {
     private final int staff;
 
     private Note(Builder builder) {
+        this.id = builder.id;
         this.isRest = builder.isRest;
         this.step = builder.step;
         this.alter = builder.alter;
@@ -43,6 +45,9 @@ public class Note {
         return new Builder(this).stemDirection(newStem).build();
     }
 
+    public int getId() {
+        return id;
+    }
     public char getStep() {
         return step;
     }
@@ -72,6 +77,7 @@ public class Note {
     }
 
     public static class Builder {
+        private int id;
         private boolean isRest;
         private char step;
         private int alter;
@@ -83,6 +89,7 @@ public class Note {
         private int staff;
 
         public Builder(Note existing) {
+            this.id = existing.id;
             this.isRest = existing.isRest;
             this.step = existing.step;
             this.alter = existing.alter;
@@ -95,6 +102,12 @@ public class Note {
         }
 
         public Builder() {}
+
+        public Builder setId(int id) {
+            this.id = id;
+
+            return this;
+        }
 
         public Builder isRest(boolean isRest) {
             this.isRest = isRest;
