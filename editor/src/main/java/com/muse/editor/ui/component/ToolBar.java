@@ -132,18 +132,18 @@ public class ToolBar extends HBox implements Presentable {
 
     @Override
     public void setupEventListeners() {
-        EventBus.getInstance().subscribe(InputModeOn.class, event -> {
-            wholeNoteBtn.setStyle("-fx-background-color: #fa6637");
-            halfNoteBtn.setStyle("-fx-background-color: #fa6637");
-            quarterNoteBtn.setStyle("-fx-background-color: #fa6637");
-            quaverNoteBtn.setStyle("-fx-background-color: #fa6637");
-        });
-        EventBus.getInstance().subscribe(InputModeOff.class, event -> {
-            wholeNoteBtn.setStyle("-fx-background-color: #F0EDE8;");
-            halfNoteBtn.setStyle("-fx-background-color: #F0EDE8;");
-            quarterNoteBtn.setStyle("-fx-background-color: #F0EDE8;");
-            quaverNoteBtn.setStyle("-fx-background-color: #F0EDE8;");
-        });
+//        EventBus.getInstance().subscribe(InputModeOn.class, event -> {
+//            wholeNoteBtn.setStyle("-fx-background-color: #fa6637");
+//            halfNoteBtn.setStyle("-fx-background-color: #fa6637");
+//            quarterNoteBtn.setStyle("-fx-background-color: #fa6637");
+//            quaverNoteBtn.setStyle("-fx-background-color: #fa6637");
+//        });
+//        EventBus.getInstance().subscribe(InputModeOff.class, event -> {
+//            wholeNoteBtn.setStyle("-fx-background-color: #F0EDE8;");
+//            halfNoteBtn.setStyle("-fx-background-color: #F0EDE8;");
+//            quarterNoteBtn.setStyle("-fx-background-color: #F0EDE8;");
+//            quaverNoteBtn.setStyle("-fx-background-color: #F0EDE8;");
+//        });
     }
 
     @Override
