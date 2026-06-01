@@ -1,7 +1,11 @@
 package com.muse.editor.redevelop.app;
 
+import com.muse.editor.redevelop.gui.component.NavigationBar;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+
+import java.util.Objects;
 
 public class MainWindow {
     private static final int WINDOW_WIDTH  = 1380;
@@ -10,9 +14,20 @@ public class MainWindow {
     private BorderPane root;
     private Scene      scene;
 
+    private NavigationBar navigationBar;
+
     MainWindow() {
+        navigationBar = new NavigationBar();
+
         root  = new BorderPane();
         scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/muse/editor/styles/app.css")).toExternalForm());
+        root.getStyleClass().add("app");
+
+        BorderPane.setMargin(navigationBar.getRoot(), new Insets(3,  0, 0,  0));
+
+        root.setLeft(navigationBar.getRoot());
     }
 
     public Scene getScene() {

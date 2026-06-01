@@ -5,7 +5,7 @@ import javafx.scene.Node;
 public abstract class Presentable<P extends Node> {
     protected final P root;
 
-    protected Presentable(P root) {
+    public Presentable(P root) {
         this.root = root;
 
         initComponents();
