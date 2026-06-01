@@ -1,9 +1,15 @@
 package com.muse.editor.core.edit;
 
-public class EditorState {
-    private final EditorState instance = new EditorState();
+import com.muse.editor.core.EventBus;
+import com.muse.editor.model.event.edit.InputModeOff;
+import com.muse.editor.model.event.edit.InputModeOn;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 
-    public EditorState getInstance() {
+public class EditorState {
+    private static final EditorState instance = new EditorState();
+
+    public static EditorState getInstance() {
         return instance;
     }
 
@@ -12,7 +18,28 @@ public class EditorState {
     private boolean dotted           = false;
     private boolean restMode         = false;
 
-    private EditorState() {}
+    private final BooleanProperty inputMode = new SimpleBooleanProperty(false);
+
+    private EditorState() {
+        inputMode.addListener(((observable, oldValue, newValue) -> {
+            if (newValue) {
+                EventBus.getInstance().publish(new InputModeOn());
+                System.out.println("InputMode On");
+            }
+            else {
+                EventBus.getInstance().publish(new InputModeOff());
+                System.out.println("InputMode Off");
+            }
+        }));
+    }
+
+    public BooleanProperty inputModeProperty() {
+        return inputMode;
+    }
+
+    public void switchMode() {
+        inputMode.set(!inputMode.getValue());
+    }
 
     public String getSelectedNoteType() {
         return selectedNoteType;
