@@ -4,7 +4,9 @@ public class Instrument {
     public enum Name {
         Violin("Violin"),
         Viola("Viola"),
-        Cello("Cello");
+        Cello("Cello"),
+        Flute("Flute"),
+        Piano("Piano");
 
         private final String value;
 

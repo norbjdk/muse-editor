@@ -1,4 +1,4 @@
-package com.muse.editor.ui.component.music;
+package com.muse.editor.ui.component.music.sheet;
 
 import com.muse.editor.core.edit.Instrument;
 import com.muse.editor.core.model.score.Part;
@@ -11,7 +11,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 
 import java.util.Objects;
@@ -88,6 +87,8 @@ public abstract class SheetPane extends ScrollPane implements Presentable {
             });
             break;
         }
+
+        System.out.println("Part ID:" + part.getId());
 
         if (part != null) {
             rebuild(part);
