@@ -1,7 +1,12 @@
 package com.muse.editor.redevelop.app;
 
+import com.muse.editor.redevelop.event.EventBus;
+import com.muse.editor.redevelop.event.view.ViewChangedEvent;
 import com.muse.editor.redevelop.gui.component.NavigationBar;
+import com.muse.editor.redevelop.gui.manager.ViewManager;
+import com.muse.editor.redevelop.gui.model.Viewable;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 
@@ -28,6 +33,10 @@ public class MainWindow {
         BorderPane.setMargin(navigationBar.getRoot(), new Insets(3,  0, 0,  0));
 
         root.setLeft(navigationBar.getRoot());
+
+        EventBus.getInstance().subscribe(ViewChangedEvent.class, this::handleViewChanged);
+
+        ViewManager.getInstance().changeView(Viewable.Name.HOME);
     }
 
     public Scene getScene() {
@@ -44,5 +53,19 @@ public class MainWindow {
 
     public static int getWindowHeight() {
         return WINDOW_HEIGHT;
+    }
+
+    private void handleViewChanged(ViewChangedEvent event) {
+        final var newView = event.getView();
+
+        if (newView != null) {
+            final Node viewNode = newView.getRoot();
+
+            final Node currentView = root.getCenter();
+
+            if (currentView != viewNode) {
+                root.setCenter(viewNode);
+            }
+        }
     }
 }
