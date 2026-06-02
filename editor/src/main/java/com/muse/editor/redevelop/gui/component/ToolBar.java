@@ -1,8 +1,15 @@
 package com.muse.editor.redevelop.gui.component;
 
+import com.muse.editor.redevelop.core.model.music.PartList;
+import com.muse.editor.redevelop.core.model.music.ScorePart;
+import com.muse.editor.redevelop.core.project.ProjectManager;
+import com.muse.editor.redevelop.event.EventBus;
+import com.muse.editor.redevelop.event.project.ChangePartComponentEvent;
+import com.muse.editor.redevelop.event.project.ProjectCreatedEvent;
 import com.muse.editor.redevelop.gui.model.Presentable;
 import com.muse.editor.redevelop.gui.util.ButtonFactory;
 import com.muse.editor.redevelop.gui.util.SpaceFactory;
+import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.HBox;
@@ -12,6 +19,8 @@ import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 import java.util.Objects;
 
 public class ToolBar extends Presentable<HBox> {
+    private final ProjectManager projectManager = ProjectManager.getInstance();
+
     private Button cloudBtn;
     private Button undoBtn;
     private Button redoBtn;
@@ -74,11 +83,21 @@ public class ToolBar extends Presentable<HBox> {
 
     @Override
     protected void setupEventListeners() {
-
+        EventBus.getInstance().subscribe(ProjectCreatedEvent.class, projectCreatedEvent -> {
+            Platform.runLater(() -> {
+                PartList partList = projectManager.scoreProperty().get().getPartList();
+                for (ScorePart scorePart : partList.getScoreParts()) {
+                    partsBox.getItems().add(scorePart.getPartName().getValue());
+                }
+                partsBox.getSelectionModel().selectFirst();
+            });
+        });
     }
 
     @Override
     protected void setupEventHandlers() {
-
+        partsBox.getSelectionModel().selectedItemProperty().addListener((observableValue, p0, p1) -> {
+            EventBus.getInstance().publish(new ChangePartComponentEvent(p1));
+        });
     }
 }
