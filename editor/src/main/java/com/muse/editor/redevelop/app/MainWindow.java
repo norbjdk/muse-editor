@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public class MainWindow {
     private static final int WINDOW_WIDTH  = 1380;
-    private static final int WINDOW_HEIGHT = 820;
+    private static final int WINDOW_HEIGHT = 720;
 
     private BorderPane root;
     private Scene      scene;
