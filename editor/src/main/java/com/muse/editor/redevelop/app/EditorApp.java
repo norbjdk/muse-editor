@@ -23,11 +23,11 @@ public class EditorApp extends Application {
     private static final StringProperty titleProperty = new SimpleStringProperty("MUSE Editor");
 
     @Override
-    public void init() {}
-
-    @Override
     public void start(Stage primaryStage){
         final MainWindow mainWindow = new MainWindow();
+        final AppManager appManager = AppManager.getInstance();
+
+        appManager.init();
 
         primaryStage.setTitle(titleProperty.get());
         primaryStage.setMinWidth(MIN_WIDTH);

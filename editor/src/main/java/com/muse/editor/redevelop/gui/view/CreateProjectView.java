@@ -406,6 +406,7 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
     private void handleCancelProjectBtnClicked() {
         workTitleInput.setText("");
         creatorInput.setText("");
+        root.setVvalue(0.0);
 
         EventBus.getInstance().publish(new ChangeViewEvent(Name.HOME));
     }

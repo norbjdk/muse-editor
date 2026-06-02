@@ -1,5 +1,9 @@
 package com.muse.editor.redevelop.app;
 
+import com.muse.editor.redevelop.event.EventBus;
+import com.muse.editor.redevelop.event.view.ChangeViewEvent;
+import com.muse.editor.redevelop.gui.manager.ViewManager;
+import com.muse.editor.redevelop.gui.model.Viewable;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -13,6 +17,8 @@ import java.util.concurrent.TimeUnit;
 
 public class AppManager {
     private final static int MONITOR_DELAY = 8;
+
+    private final ViewManager viewManager = ViewManager.getInstance();
 
     public enum ServerStatus {
         RUNNING(true),
@@ -38,9 +44,22 @@ public class AppManager {
 
     private AppManager() {
         runServerMonitor();
+        setupEventListener();
     }
 
-    public void init() {}
+    public void init() {
+        Platform.runLater(() -> {
+            EventBus.getInstance().publish(new ChangeViewEvent(Viewable.Name.HOME));
+        });
+    }
+
+    private void setupEventListener() {
+        EventBus.getInstance().subscribe(ChangeViewEvent.class, event -> {
+            if (event.getViewName() != null) {
+                viewManager.changeView(event.getViewName());
+            }
+        });
+    }
 
     private void runServerMonitor() {
         final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(runnable -> {

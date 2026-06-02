@@ -1,6 +1,7 @@
 package com.muse.editor.redevelop.app;
 
 import com.muse.editor.redevelop.event.EventBus;
+import com.muse.editor.redevelop.event.view.ChangeViewEvent;
 import com.muse.editor.redevelop.event.view.ViewChangedEvent;
 import com.muse.editor.redevelop.gui.component.NavigationBar;
 import com.muse.editor.redevelop.gui.manager.ViewManager;
@@ -35,8 +36,6 @@ public class MainWindow {
         root.setLeft(navigationBar.getRoot());
 
         EventBus.getInstance().subscribe(ViewChangedEvent.class, this::handleViewChanged);
-
-        ViewManager.getInstance().changeView(Viewable.Name.CREATE_PROJECT);
     }
 
     public Scene getScene() {

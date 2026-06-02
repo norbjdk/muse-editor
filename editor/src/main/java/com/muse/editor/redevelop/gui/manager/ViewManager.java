@@ -27,7 +27,6 @@ public class ViewManager {
         views = new HashMap<>();
 
         initViews();
-        setupEventListener();
     }
 
     public static ViewManager getInstance() {
@@ -47,14 +46,6 @@ public class ViewManager {
         if (view != null && !views.containsKey(name)) {
             views.put(name, view);
         }
-    }
-
-    private void setupEventListener() {
-        EventBus.getInstance().subscribe(ChangeViewEvent.class, event -> {
-            if (event.getViewName() != null) {
-                changeView(event.getViewName());
-            }
-        });
     }
 
     public void changeView(Viewable.Name viewName) {
