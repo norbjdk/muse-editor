@@ -1,8 +1,27 @@
 package com.muse.editor.redevelop.core.model.music;
 
 public class ScorePart {
+    public enum Name {
+        Piano("Piano"),
+        Violin("Violin"),
+        Viola("Viola"),
+        Cello("Cello"),
+        Flute("Flute"),
+        Trumpet("Trumpet");
+
+        private final String value;
+
+        Name(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
     private final String          id;
-    private final String          partName;
+    private final Name            partName;
     private final String          partAbbreviation;
     private final ScoreInstrument scoreInstrument;
 
@@ -17,7 +36,7 @@ public class ScorePart {
         return id;
     }
 
-    public String getPartName() {
+    public Name getPartName() {
         return partName;
     }
 
@@ -31,7 +50,7 @@ public class ScorePart {
 
     public static class Builder {
         private String          id;
-        private String          partName;
+        private Name            partName;
         private String          partAbbreviation;
         private ScoreInstrument scoreInstrument;
 
@@ -50,7 +69,7 @@ public class ScorePart {
             return this;
         }
 
-        public Builder setPartName(String partName) {
+        public Builder setPartName(Name partName) {
             this.partName = partName;
 
             return this;
