@@ -3,7 +3,10 @@ package com.muse.editor.redevelop.app;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
+
+import java.util.Objects;
 
 /**
  * Muse Editor Application
@@ -30,6 +33,7 @@ public class EditorApp extends Application {
         appManager.init();
 
         primaryStage.setTitle(titleProperty.get());
+        primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResource("/com/muse/editor/assets/images/logo.png")).toExternalForm()));
         primaryStage.setMinWidth(MIN_WIDTH);
         primaryStage.setMinHeight(MIN_HEIGHT);
         primaryStage.setMaximized(true);
