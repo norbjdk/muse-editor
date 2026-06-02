@@ -7,6 +7,7 @@ import com.muse.editor.redevelop.event.view.ViewChangedEvent;
 import com.muse.editor.redevelop.gui.model.Viewable;
 import com.muse.editor.redevelop.gui.view.CreateProjectView;
 import com.muse.editor.redevelop.gui.view.HomeView;
+import com.muse.editor.redevelop.gui.view.ProjectView;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +41,7 @@ public class ViewManager {
     private void initViews() {
         addView(Viewable.Name.HOME, new HomeView());
         addView(Viewable.Name.CREATE_PROJECT, new CreateProjectView());
+        addView(Viewable.Name.PROJECT, new ProjectView());
     }
 
     private void addView(Viewable.Name name, Viewable view) {

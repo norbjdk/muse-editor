@@ -49,7 +49,7 @@ public class AppManager {
 
     public void init() {
         Platform.runLater(() -> {
-            EventBus.getInstance().publish(new ChangeViewEvent(Viewable.Name.HOME));
+            EventBus.getInstance().publish(new ChangeViewEvent(Viewable.Name.PROJECT));
         });
     }
 
