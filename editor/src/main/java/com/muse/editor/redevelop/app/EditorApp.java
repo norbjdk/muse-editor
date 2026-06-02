@@ -32,6 +32,7 @@ public class EditorApp extends Application {
         primaryStage.setTitle(titleProperty.get());
         primaryStage.setMinWidth(MIN_WIDTH);
         primaryStage.setMinHeight(MIN_HEIGHT);
+        primaryStage.setMaximized(true);
         primaryStage.setScene(mainWindow.getScene());
         primaryStage.show();
 

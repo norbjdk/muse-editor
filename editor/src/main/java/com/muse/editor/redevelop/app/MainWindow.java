@@ -36,7 +36,7 @@ public class MainWindow {
 
         EventBus.getInstance().subscribe(ViewChangedEvent.class, this::handleViewChanged);
 
-        ViewManager.getInstance().changeView(Viewable.Name.HOME);
+        ViewManager.getInstance().changeView(Viewable.Name.CREATE_PROJECT);
     }
 
     public Scene getScene() {
