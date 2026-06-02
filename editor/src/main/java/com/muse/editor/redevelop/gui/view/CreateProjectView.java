@@ -1,5 +1,9 @@
 package com.muse.editor.redevelop.gui.view;
 
+import com.muse.editor.redevelop.event.EventBus;
+import com.muse.editor.redevelop.core.model.dto.NewProjectRequest;
+import com.muse.editor.redevelop.event.project.CreateProjectEvent;
+import com.muse.editor.redevelop.event.view.ChangeViewEvent;
 import com.muse.editor.redevelop.gui.util.ButtonFactory;
 import com.muse.editor.redevelop.core.model.music.ScorePart;
 import com.muse.editor.redevelop.gui.model.Presentable;
@@ -282,6 +286,10 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
         creatorInput.setOnKeyTyped(keyEvent -> {
             handleRedrawPreview();
         });
+
+        createProjectBtn.setOnAction(actionEvent -> handleCreateProjectBtnClicked());
+        cancelProjectBtn.setOnAction(actionEvent -> handleCancelProjectBtnClicked());
+
     }
 
     private void handleInstrumentButtonClicked(Button target) {
@@ -368,6 +376,38 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
             graphicsContext.setFont(Font.font("Times New Roman", 14));
             graphicsContext.fillText(creator, PREVIEW_WIDTH - (creator.length() + 30), 100);
         }
+    }
+
+    private void handleCreateProjectBtnClicked() {
+        final NewProjectRequest request = new NewProjectRequest();
+
+        final String workTitle = workTitleInput.getText();
+        final String creator   = creatorInput.getText();
+        final int    beats     = Integer.parseInt(beatsInput.getText());
+        final int    beatType  = Integer.parseInt(beatTypeInput.getText());
+        final int    tempo     = Integer.parseInt(tempoInput.getText());
+        final int    measures  = Integer.parseInt(measuresInput.getText());
+
+        request.setWorkTitle(workTitle);
+        request.setCreator(creator);
+        request.setBeats(beats);
+        request.setBeatType(beatType);
+        request.setTempo(tempo);
+        request.setMeasures(measures);
+
+        for (Node button : instrumentsBox.getChildren())
+            if (button.getPseudoClassStates().contains(ACTIVE_PSEUDO)) {
+                request.getInstruments().add(((Button) button).getText());
+            }
+
+        EventBus.getInstance().publish(new CreateProjectEvent(request));
+    }
+
+    private void handleCancelProjectBtnClicked() {
+        workTitleInput.setText("");
+        creatorInput.setText("");
+
+        EventBus.getInstance().publish(new ChangeViewEvent(Name.HOME));
     }
 
     private void addEffect(Node target) {
