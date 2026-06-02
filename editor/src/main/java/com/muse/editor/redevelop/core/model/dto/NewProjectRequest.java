@@ -31,14 +31,6 @@ public class NewProjectRequest {
         this.creator = creator;
     }
 
-    public int getMeasuresCount() {
-        return measures;
-    }
-
-    public void setMeasuresCount(int measuresCount) {
-        this.measures = measuresCount;
-    }
-
     public int getBeats() {
         return beats;
     }

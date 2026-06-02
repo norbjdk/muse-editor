@@ -1,5 +1,7 @@
 package com.muse.editor.redevelop.app;
 
+import com.muse.editor.redevelop.core.project.ProjectManager;
+import com.muse.editor.redevelop.core.project.ProjectService;
 import com.muse.editor.redevelop.event.EventBus;
 import com.muse.editor.redevelop.event.view.ChangeViewEvent;
 import com.muse.editor.redevelop.gui.manager.ViewManager;
@@ -18,7 +20,10 @@ import java.util.concurrent.TimeUnit;
 public class AppManager {
     private final static int MONITOR_DELAY = 8;
 
-    private final ViewManager viewManager = ViewManager.getInstance();
+    private final ViewManager    viewManager = ViewManager.getInstance();
+    private final ProjectManager projectManager = ProjectManager.getInstance();
+
+    private final ProjectService projectService = ProjectService.getInstance();
 
     public enum ServerStatus {
         RUNNING(true),
@@ -49,7 +54,7 @@ public class AppManager {
 
     public void init() {
         Platform.runLater(() -> {
-            EventBus.getInstance().publish(new ChangeViewEvent(Viewable.Name.PROJECT));
+            EventBus.getInstance().publish(new ChangeViewEvent(Viewable.Name.HOME));
         });
     }
 

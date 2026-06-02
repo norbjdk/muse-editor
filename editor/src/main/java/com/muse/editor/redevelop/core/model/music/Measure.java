@@ -39,11 +39,15 @@ public class Measure implements Comparable<Measure> {
         public Builder(Measure existing) {
             this.id         = existing.id;
             this.attributes = existing.attributes;
-            this.notes      = existing.notes;
+            this.notes = new ArrayList<>();
+
+            for (Note note : existing.notes) {
+                this.notes.add(new Note.Builder(note).build());
+            }
         }
 
         public Builder() {
-            notes = new ArrayList<>();
+            this.notes = new ArrayList<>();
         }
 
         public Builder setId(int id) {

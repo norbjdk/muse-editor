@@ -36,4 +36,6 @@ public class ScorePartwise {
     public List<Part> getParts() {
         return parts;
     }
+
+
 }
