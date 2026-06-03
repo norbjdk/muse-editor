@@ -36,15 +36,15 @@ public class Project {
         return project;
     }
 
-    void markUnsaved() {
+    public void markUnsaved() {
         isSaved.set(false);
     }
 
-    void markSaved() {
+    public void markSaved() {
         isSaved.set(true);
     }
 
-    BooleanProperty isSavedProperty() {
+    public BooleanProperty isSavedProperty() {
         return isSaved;
     }
 
@@ -54,6 +54,10 @@ public class Project {
 
     public String getId() {
         return id;
+    }
+
+    public StringProperty titleProperty() {
+        return title;
     }
 
     private static String generateId() {

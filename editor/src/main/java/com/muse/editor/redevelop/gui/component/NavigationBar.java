@@ -3,12 +3,15 @@ package com.muse.editor.redevelop.gui.component;
 import com.muse.editor.develop.model.dto.internal.ViewRequest;
 import com.muse.editor.develop.model.event.ChangeViewRequestedEvent;
 import com.muse.editor.develop.ui.model.ViewName;
+import com.muse.editor.redevelop.core.project.ProjectManager;
 import com.muse.editor.redevelop.event.EventBus;
+import com.muse.editor.redevelop.event.project.ProjectCreatedEvent;
 import com.muse.editor.redevelop.event.view.ChangeViewEvent;
 import com.muse.editor.redevelop.gui.util.ButtonFactory;
 import com.muse.editor.redevelop.gui.model.Presentable;
 import com.muse.editor.redevelop.gui.model.Viewable;
 import com.muse.editor.redevelop.gui.util.SpaceFactory;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -24,6 +27,8 @@ import java.util.Objects;
 
 
 public class NavigationBar extends Presentable<VBox> implements Viewable {
+    private final ProjectManager projectManager = ProjectManager.getInstance();
+
     private ChangeListener<Boolean> connectionListener;
 
     private Button homeBtn;
@@ -68,6 +73,8 @@ public class NavigationBar extends Presentable<VBox> implements Viewable {
         currentProjectBtn.setVisible(false);
         currentProjectBtn.setManaged(false);
 
+        collectionBtn.setDisable(true);
+
         setupLogo();
     }
 
@@ -87,6 +94,7 @@ public class NavigationBar extends Presentable<VBox> implements Viewable {
                 SpaceFactory.createSpacer(SpaceFactory.Direction.VERTICAL),
                 currentProjectBtn,
                 SpaceFactory.createSpacer(SpaceFactory.Direction.VERTICAL),
+                SpaceFactory.createSpacer(SpaceFactory.Direction.VERTICAL),
                 collectionBtn,
                 learnBtn,
                 settingsBtn
@@ -95,7 +103,16 @@ public class NavigationBar extends Presentable<VBox> implements Viewable {
 
     @Override
     protected void setupEventListeners() {
+        EventBus.getInstance().subscribe(ProjectCreatedEvent.class, projectCreatedEvent -> {
+            Platform.runLater(() -> {
+                currentProjectBtn.setText(projectCreatedEvent.getProjectTitle());
+                currentProjectBtn.setVisible(true);
+                currentProjectBtn.setManaged(true);
 
+                createProjectBtn.setDisable(true);
+                openProjectBtn.setDisable(true);
+            });
+        });
     }
 
     @Override

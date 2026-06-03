@@ -3,7 +3,7 @@
  */
 .sheet-pane {
     -fx-padding:           20px 40px;
-    -fx-background-color:  #F0EDE8;
+    -fx-background-color: transparent;
     -fx-background-radius: 8;
     -fx-alignment:         top-center;
 }

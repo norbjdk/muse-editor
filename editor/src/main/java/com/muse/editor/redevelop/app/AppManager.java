@@ -1,5 +1,6 @@
 package com.muse.editor.redevelop.app;
 
+import com.muse.editor.redevelop.core.project.Project;
 import com.muse.editor.redevelop.core.project.ProjectManager;
 import com.muse.editor.redevelop.core.project.ProjectService;
 import com.muse.editor.redevelop.event.EventBus;
@@ -91,4 +92,8 @@ public class AppManager {
             }
         }, 0, MONITOR_DELAY, TimeUnit.SECONDS);
     }
+
+    /* ==========================
+           PROJECT MANAGER
+     ========================== */
 }

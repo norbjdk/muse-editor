@@ -32,7 +32,7 @@ public class ProjectService {
         CompletableFuture
                 .supplyAsync(() -> projectManager.newProject(request))
                 .thenAccept(project -> {
-                    Platform.runLater(() -> onCreateSuccess());
+                    Platform.runLater(() -> onCreateSuccess(project));
                 })
                 .exceptionally(throwable -> {
                     Platform.runLater(() -> onCreateFailure(throwable));
@@ -40,8 +40,8 @@ public class ProjectService {
                 });
     }
 
-    private void onCreateSuccess() {
-        EventBus.getInstance().publish(new ProjectCreatedEvent());
+    private void onCreateSuccess(Project project) {
+        EventBus.getInstance().publish(new ProjectCreatedEvent(project.getId(), project.titleProperty().get()));
         EventBus.getInstance().publish(new ChangeViewEvent(Viewable.Name.PROJECT));
     }
 
