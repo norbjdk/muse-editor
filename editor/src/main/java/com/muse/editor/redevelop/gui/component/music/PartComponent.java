@@ -3,7 +3,10 @@ package com.muse.editor.redevelop.gui.component.music;
 import com.muse.editor.redevelop.core.model.music.Part;
 import com.muse.editor.redevelop.core.model.music.ScorePart;
 import com.muse.editor.redevelop.core.project.ProjectManager;
+import com.muse.editor.redevelop.event.EventBus;
+import com.muse.editor.redevelop.event.project.PartComponentChangedEvent;
 import com.muse.editor.redevelop.gui.model.Presentable;
+import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 
 public class PartComponent extends Presentable<FlowPane> {
@@ -43,7 +46,9 @@ public class PartComponent extends Presentable<FlowPane> {
 
     @Override
     protected void setupEventListeners() {
-
+        EventBus.getInstance().subscribe(PartComponentChangedEvent.class, partComponentChangedEvent -> {
+            redraw();
+        });
     }
 
     @Override
@@ -61,5 +66,11 @@ public class PartComponent extends Presentable<FlowPane> {
 
     public ScorePart.Name getPartName() {
         return partName;
+    }
+
+    private void redraw() {
+        root.getChildren().clear();
+
+        root.getChildren().add(new Label(partName.getValue()));
     }
 }

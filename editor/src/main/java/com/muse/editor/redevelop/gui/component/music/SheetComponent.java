@@ -4,10 +4,11 @@ import com.muse.editor.redevelop.core.model.music.Part;
 import com.muse.editor.redevelop.core.model.music.PartList;
 import com.muse.editor.redevelop.core.model.music.ScorePart;
 import com.muse.editor.redevelop.core.model.music.ScorePartwise;
-import com.muse.editor.redevelop.core.project.Project;
 import com.muse.editor.redevelop.core.project.ProjectManager;
 import com.muse.editor.redevelop.event.EventBus;
-import com.muse.editor.redevelop.event.project.ProjectCreatedEvent;
+import com.muse.editor.redevelop.event.project.ChangePartComponentEvent;
+import com.muse.editor.redevelop.event.project.PartComponentChangedEvent;
+import com.muse.editor.redevelop.event.project.PartComponentsCreatedEvent;
 import com.muse.editor.redevelop.gui.model.Presentable;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -32,7 +33,7 @@ public class SheetComponent extends Presentable<ScrollPane> {
     private final double PAGE_MARGIN_V = 60;
 
     private VBox pageContainer;
-    private VBox componentContainer;
+    private VBox partContainer;
 
     private TextField workTitleInput;
     private TextField creatorInput;
@@ -45,8 +46,8 @@ public class SheetComponent extends Presentable<ScrollPane> {
 
     @Override
     protected void initComponents() {
-        pageContainer      = new VBox();
-        componentContainer = new VBox();
+        pageContainer = new VBox();
+        partContainer = new VBox();
 
         workTitleInput = new TextField();
         creatorInput = new TextField();
@@ -91,11 +92,23 @@ public class SheetComponent extends Presentable<ScrollPane> {
             });
         };
         ProjectManager.getInstance().scoreProperty().addListener(scoreListener);
+
+        EventBus.getInstance().subscribe(PartComponentsCreatedEvent.class, partComponentsCreatedEvent -> {
+            EventBus.getInstance().publish(new ChangePartComponentEvent(partComponents.getFirst().getPartName().getValue()));
+        });
     }
 
     @Override
     protected void setupEventHandlers() {
-
+        EventBus.getInstance().subscribe(ChangePartComponentEvent.class, changePartComponentEvent -> {
+                for (PartComponent partComponent : partComponents) {
+                    if (partComponent.getPartName().getValue().equals(changePartComponentEvent.getPartName())) {
+                        partContainer.getChildren().clear();
+                        partContainer.getChildren().add(partComponent.getRoot());
+                        EventBus.getInstance().publish(new PartComponentChangedEvent());
+                    }
+                }
+        });
     }
 
     public void load() {
@@ -115,6 +128,8 @@ public class SheetComponent extends Presentable<ScrollPane> {
         }
 
         Platform.runLater(() -> pageContainer.getChildren().add(buildPage()));
+
+        EventBus.getInstance().publish(new PartComponentsCreatedEvent());
     }
 
     private VBox buildPage() {
@@ -142,6 +157,7 @@ public class SheetComponent extends Presentable<ScrollPane> {
         );
 
         page.getChildren().add(header);
+        page.getChildren().add(partContainer);
 
         return page;
     }
