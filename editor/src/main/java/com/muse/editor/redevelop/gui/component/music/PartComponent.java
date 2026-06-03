@@ -6,6 +6,8 @@ import com.muse.editor.redevelop.core.project.ProjectManager;
 import com.muse.editor.redevelop.event.EventBus;
 import com.muse.editor.redevelop.event.project.PartComponentChangedEvent;
 import com.muse.editor.redevelop.gui.model.Presentable;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 
@@ -15,7 +17,7 @@ public class PartComponent extends Presentable<FlowPane> {
     private final String         partID;
     private final ScorePart.Name partName;
 
-    private Part part;
+    private ObjectProperty<Part> partProperty = new SimpleObjectProperty<>(null);
 
     public PartComponent(String partID, ScorePart.Name partName) {
         super(new FlowPane());
@@ -49,6 +51,11 @@ public class PartComponent extends Presentable<FlowPane> {
         EventBus.getInstance().subscribe(PartComponentChangedEvent.class, partComponentChangedEvent -> {
             redraw();
         });
+        partProperty.addListener((observableValue, part, t1) -> {
+            if (t1 != null) {
+
+            }
+        });
     }
 
     @Override
@@ -57,7 +64,7 @@ public class PartComponent extends Presentable<FlowPane> {
     }
 
     public void assignPart(Part part) {
-        this.part = part;
+        partProperty.set(part);
     }
 
     public String getPartID() {
