@@ -1,5 +1,6 @@
 package com.muse.editor.redevelop.gui.component.music;
 
+import com.muse.editor.redevelop.core.model.music.Part;
 import com.muse.editor.redevelop.core.model.music.PartList;
 import com.muse.editor.redevelop.core.model.music.ScorePart;
 import com.muse.editor.redevelop.core.model.music.ScorePartwise;
@@ -102,7 +103,15 @@ public class SheetComponent extends Presentable<ScrollPane> {
 
         PartList partList = projectManager.scoreProperty().get().getPartList();
         for (ScorePart scorePart : partList.getScoreParts()) {
-            partComponents.add(new PartComponent());
+            partComponents.add(new PartComponent(scorePart.getId(), scorePart.getPartName()));
+        }
+
+        for (PartComponent partComponent : partComponents) {
+            for (Part part : projectManager.scoreProperty().get().getParts()) {
+                if (part.getId().equals(partComponent.getPartID())) {
+                    partComponent.assignPart(part);
+                }
+            }
         }
 
         Platform.runLater(() -> pageContainer.getChildren().add(buildPage()));
