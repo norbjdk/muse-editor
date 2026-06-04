@@ -3,6 +3,7 @@ package com.muse.editor.redevelop.gui.view;
 import com.muse.editor.redevelop.core.project.ProjectManager;
 import com.muse.editor.redevelop.event.EventBus;
 import com.muse.editor.redevelop.event.project.ProjectCreatedEvent;
+import com.muse.editor.redevelop.gui.component.ScorePalette;
 import com.muse.editor.redevelop.gui.component.ToolBar;
 import com.muse.editor.redevelop.gui.component.music.SheetComponent;
 import com.muse.editor.redevelop.gui.model.Presentable;
@@ -18,7 +19,8 @@ import java.util.Objects;
 public class ProjectView extends Presentable<BorderPane> implements Viewable {
     private final ProjectManager projectManager = ProjectManager.getInstance();
 
-    private ToolBar toolBar;
+    private ToolBar      toolBar;
+    private ScorePalette scorePalette;
 
     public ProjectView() {
         super(new BorderPane());
@@ -26,7 +28,8 @@ public class ProjectView extends Presentable<BorderPane> implements Viewable {
 
     @Override
     protected void initComponents() {
-        toolBar = new ToolBar();
+        toolBar      = new ToolBar();
+        scorePalette = new ScorePalette();
     }
 
     @Override
@@ -40,11 +43,13 @@ public class ProjectView extends Presentable<BorderPane> implements Viewable {
         root.getStyleClass().add("project-root");
 
         BorderPane.setMargin(root, new Insets(20));
+        BorderPane.setMargin(scorePalette.getRoot(), new Insets(10, 0, 0,0 ));
     }
 
     @Override
     protected void setupLayout() {
-        getRoot().setTop(toolBar.getRoot());
+        root.setTop(toolBar.getRoot());
+        root.setRight(scorePalette.getRoot());
     }
 
     @Override
@@ -54,6 +59,7 @@ public class ProjectView extends Presentable<BorderPane> implements Viewable {
                 final SheetComponent sheetComponent = new SheetComponent();
                 sheetComponent.load();
                 root.setCenter(sheetComponent.getRoot());
+                BorderPane.setMargin(root.getCenter(), new Insets(10));
             });
         });
     }
