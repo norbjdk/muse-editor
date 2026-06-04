@@ -1,6 +1,7 @@
 package com.muse.editor.redevelop.gui.manager;
 
 import com.muse.editor.redevelop.gui.component.music.MeasureComponent;
+import com.muse.editor.redevelop.gui.util.MusicMetrics;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -19,8 +20,17 @@ public class LayoutManager {
         if (measureComponents.contains(measureComponent)) return;
 
         measureComponents.add(measureComponent);
-        sync();
+        measureComponent.measureWidthProperty().addListener((observableValue, number, t1) -> {
+            sync();
+        });
     }
 
-    private void sync() {}
+    private void sync() {
+        final double maxWidth = measureComponents.stream()
+                .mapToDouble(m -> m.measureWidthProperty().get())
+                .max()
+                .orElse(MusicMetrics.BASE_MEASURE_WIDTH);
+
+        measureComponents.forEach(m -> m.measureWidthProperty().set(maxWidth));
+    }
 }

@@ -1,5 +1,6 @@
 package com.muse.editor.redevelop.gui.component.music;
 
+import com.muse.editor.redevelop.core.model.music.Attributes;
 import com.muse.editor.redevelop.core.model.music.Measure;
 import com.muse.editor.redevelop.gui.manager.LayoutManager;
 import com.muse.editor.redevelop.gui.model.Presentable;
@@ -10,6 +11,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -95,7 +97,12 @@ public class MeasureComponent extends Presentable<Pane> {
 
     @Override
     protected void setupEventListeners() {
-
+        measureProperty.addListener((observableValue, measure, t1) -> {
+            if (t1 != null && t1.getAttributes() != null) {
+                this.getRoot().getChildren().add(buildClef());
+                this.getRoot().getChildren().add(buildMetre());
+            }
+        });
     }
 
     @Override
@@ -115,6 +122,44 @@ public class MeasureComponent extends Presentable<Pane> {
 
     public DoubleProperty measureWidthProperty() {
         return measureWidth;
+    }
+
+    private Canvas buildClef() {
+        if (measureProperty.get() == null)                 return null;
+        if (measureProperty.get().getAttributes() == null) return null;
+
+        final Attributes attributes = measureProperty.get().getAttributes();
+        final ClefComponent clefComponent = new ClefComponent(
+                attributes.getClefs().getFirst().getSign(),
+                attributes.getClefs().getFirst().getLine()
+        );
+
+        if (attributes.getClefs().getFirst().getLine() == 2)  {
+            clefComponent.getRoot().setLayoutY(staffComponents.getFirst().getY());
+            clefComponent.getRoot().setLayoutX(5);
+        }
+
+        expand(MusicMetrics.CLEF_CANVAS_WIDTH);
+
+        return clefComponent.getRoot();
+    }
+
+    private Canvas buildMetre() {
+        if (measureProperty.get() == null)                 return null;
+        if (measureProperty.get().getAttributes() == null) return null;
+
+        final Attributes attributes = measureProperty.get().getAttributes();
+        final MetreComponent metreComponent = new MetreComponent(
+                attributes.getBeats(),
+                attributes.getBeatType()
+        );
+
+        metreComponent.getRoot().setLayoutY(staffComponents.get(2).getY());
+        metreComponent.getRoot().setLayoutX(35);
+
+        expand(MusicMetrics.METRE_CANVAS_WIDTH);
+
+        return metreComponent.getRoot();
     }
 
     private Line buildBarLine() {
@@ -155,5 +200,9 @@ public class MeasureComponent extends Presentable<Pane> {
                 MusicMetrics.TOTAL_BLANK_SPACES_NUMBER
                 *
                 MusicMetrics.BLANK_SPACE_HEIGHT;
+    }
+
+    private void expand(double amount) {
+        measureWidth.set(measureWidth.get() + amount);
     }
 }

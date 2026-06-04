@@ -29,6 +29,7 @@ public class ProjectManager {
         int P = 0;
         int staves = 0;
 
+
         for (String instrument : request.getInstruments()) {
             P++;
 
@@ -45,9 +46,14 @@ public class ProjectManager {
             part.setId("P" + P);
 
             for (int m = 0; m < request.getMeasures(); m++) {
+                final Clef clef = new Clef();
+                clef.setLine(2);
+                clef.setSign('G');
+
                 final Attributes attributes = new Attributes.Builder()
                         .setDivisions(2)
                         .setFifths(0)
+                        .addClef(clef)
                         .setStaves(staves)
                         .setTime(request.getBeats(), request.getBeatType())
                         .build();

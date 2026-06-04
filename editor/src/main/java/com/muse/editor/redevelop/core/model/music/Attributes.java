@@ -13,10 +13,11 @@ public class Attributes {
 
     private Attributes(Builder builder) {
         this.divisions = builder.divisions;
-        this.fifths = builder.fifths;
-        this.beats = builder.beats;
-        this.beatType = builder.beatType;
-        this.staves = builder.staves;
+        this.fifths    = builder.fifths;
+        this.beats     = builder.beats;
+        this.beatType  = builder.beatType;
+        this.staves    = builder.staves;
+        this.clefs.addAll(builder.clefs);
     }
 
     public int getDivisions() {
