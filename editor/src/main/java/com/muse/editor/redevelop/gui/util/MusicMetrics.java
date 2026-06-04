@@ -11,7 +11,7 @@ public class MusicMetrics {
 
     public static final double NOTE_CANVAS_WIDTH = 30.0;
     public static final double NOTE_CANVAS_HEIGHT = 60.0;
-    public static final int NOTE_FONT_SIZE = 48;
+    public static final int NOTE_FONT_SIZE = 50;
 
     public static final double BASE_MEASURE_WIDTH = 120.0;
     public static final int VISIBLE_LINES_NUMBER = 5;
