@@ -27,9 +27,12 @@ public class ProjectManager {
         scorePartwise.setCreator(request.getCreator());
 
         int P = 0;
+        int staves = 0;
 
         for (String instrument : request.getInstruments()) {
             P++;
+
+            staves = instrument.equals("Piano") ? 2 : 1;
 
             final ScorePart scorePart = new ScorePart.Builder()
                     .setId("P" + P)
@@ -45,11 +48,11 @@ public class ProjectManager {
                 final Attributes attributes = new Attributes.Builder()
                         .setDivisions(2)
                         .setFifths(0)
-                        .setStaves(1)
+                        .setStaves(staves)
                         .setTime(request.getBeats(), request.getBeatType())
                         .build();
 
-                final Measure measure = m > 0 ?
+                final Measure measure = m == 0 ?
                         new Measure.Builder()
                                 .setId(m)
                                 .setAttributes(attributes)

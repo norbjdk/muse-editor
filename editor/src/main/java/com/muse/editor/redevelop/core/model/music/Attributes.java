@@ -19,6 +19,30 @@ public class Attributes {
         this.staves = builder.staves;
     }
 
+    public int getDivisions() {
+        return divisions;
+    }
+
+    public int getFifths() {
+        return fifths;
+    }
+
+    public int getBeats() {
+        return beats;
+    }
+
+    public int getBeatType() {
+        return beatType;
+    }
+
+    public int getStaves() {
+        return staves;
+    }
+
+    public List<Clef> getClefs() {
+        return clefs;
+    }
+
     public static class Builder {
         private int        divisions;
         private int        fifths;
