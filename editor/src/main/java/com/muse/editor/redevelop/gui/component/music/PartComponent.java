@@ -78,6 +78,10 @@ public class PartComponent extends Presentable<FlowPane> {
         return partName;
     }
 
+    public ObjectProperty<Part> partProperty() {
+        return partProperty;
+    }
+
     private void redraw() {
         root.getChildren().clear();
 

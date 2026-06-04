@@ -6,6 +6,7 @@ import com.muse.editor.redevelop.core.model.music.ScorePart;
 import com.muse.editor.redevelop.core.model.music.ScorePartwise;
 import com.muse.editor.redevelop.core.project.ProjectManager;
 import com.muse.editor.redevelop.event.EventBus;
+import com.muse.editor.redevelop.event.editor.ChangeInputModeEvent;
 import com.muse.editor.redevelop.event.project.ChangePartComponentEvent;
 import com.muse.editor.redevelop.event.project.PartComponentChangedEvent;
 import com.muse.editor.redevelop.event.project.PartComponentsCreatedEvent;
@@ -105,9 +106,16 @@ public class SheetComponent extends Presentable<ScrollPane> {
                     if (partComponent.getPartName().getValue().equals(changePartComponentEvent.getPartName())) {
                         partContainer.getChildren().clear();
                         partContainer.getChildren().add(partComponent.getRoot());
-                        EventBus.getInstance().publish(new PartComponentChangedEvent());
+                        EventBus.getInstance().publish(new PartComponentChangedEvent(partComponent.partProperty().get()));
                     }
                 }
+        });
+
+        getRoot().setOnKeyPressed(keyEvent -> {
+            switch (keyEvent.getCode()) {
+                case N -> EventBus.getInstance().publish(new ChangeInputModeEvent());
+                case P -> System.out.println("Switch part!");
+            }
         });
     }
 

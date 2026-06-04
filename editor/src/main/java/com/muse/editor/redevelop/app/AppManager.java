@@ -1,6 +1,7 @@
 package com.muse.editor.redevelop.app;
 
-import com.muse.editor.redevelop.core.project.Project;
+import com.muse.editor.redevelop.core.edit.CursorModel;
+import com.muse.editor.redevelop.core.edit.EditorState;
 import com.muse.editor.redevelop.core.project.ProjectManager;
 import com.muse.editor.redevelop.core.project.ProjectService;
 import com.muse.editor.redevelop.event.EventBus;
@@ -24,6 +25,9 @@ public class AppManager {
     private final ProjectManager projectManager = ProjectManager.getInstance();
 
     private final ProjectService projectService = ProjectService.getInstance();
+
+    private final CursorModel cursorModel = CursorModel.getInstance();
+    private final EditorState editorState = EditorState.getInstance();
 
     public enum ServerStatus {
         RUNNING(true),
@@ -92,8 +96,4 @@ public class AppManager {
             }
         }, 0, MONITOR_DELAY, TimeUnit.SECONDS);
     }
-
-    /* ==========================
-           PROJECT MANAGER
-     ========================== */
 }
