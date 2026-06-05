@@ -56,9 +56,6 @@ public class CursorModel {
                             editorState.inputModeProperty().set(true);
                         }
 
-                        System.out.println("Current Note ID:" + noteId);
-                        System.out.println("Current Measure ID:" + measureId);
-
                         EventBus.getInstance().publish(new NoteSelectedEvent(this.noteId));
                         return;
                     }

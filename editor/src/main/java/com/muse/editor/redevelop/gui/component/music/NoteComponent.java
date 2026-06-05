@@ -49,7 +49,7 @@ public class NoteComponent extends Measurable<Canvas> {
         graphicsContext.clearRect(0, 0, root.getWidth(), root.getHeight());
 
         graphicsContext.setFont(FontFactory.getBravura(MusicMetrics.NOTE_FONT_SIZE));
-        graphicsContext.setFill(Color.LIGHTGREEN);
+        graphicsContext.setFill(Color.rgb(239, 239, 168));
         graphicsContext.setTextAlign(TextAlignment.CENTER);
         graphicsContext.fillText(getNoteGlyph(), 15, noteHeadYPosition);
     }

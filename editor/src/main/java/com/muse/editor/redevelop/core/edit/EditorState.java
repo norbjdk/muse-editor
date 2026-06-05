@@ -69,4 +69,8 @@ public class EditorState {
     public BooleanProperty inputModeProperty() {
         return inputMode;
     }
+
+    public InputType getInputType() {
+        return inputType;
+    }
 }
