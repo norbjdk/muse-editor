@@ -1,5 +1,8 @@
 package com.muse.editor.redevelop.core.model.music;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +11,7 @@ public class Measure implements Comparable<Measure> {
 
     private final int        id;
     private final Attributes attributes;
-    private final List<Note> notes = new ArrayList<>();
+    private final ObservableList<Note> notes = FXCollections.observableArrayList();
 
     private Measure(Builder builder) {
         this.id         = builder.id;
@@ -27,7 +30,7 @@ public class Measure implements Comparable<Measure> {
         return attributes;
     }
 
-    public List<Note> getNotes() {
+    public ObservableList<Note> getNotes() {
         return notes;
     }
 
