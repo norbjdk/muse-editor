@@ -1,8 +1,13 @@
 package com.muse.editor.redevelop.gui.component;
 
+import com.muse.editor.redevelop.core.model.music.Note;
+import com.muse.editor.redevelop.event.EventBus;
+import com.muse.editor.redevelop.event.editor.SetNoteInputEvent;
 import com.muse.editor.redevelop.gui.util.ButtonFactory;
 import com.muse.editor.redevelop.gui.util.FontFactory;
 import com.muse.editor.redevelop.gui.model.Presentable;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.TitledPane;
@@ -12,6 +17,7 @@ import javafx.scene.layout.VBox;
 import java.util.Objects;
 
 public class ScorePalette extends Presentable<VBox> {
+    private ObjectProperty<Button> activeButton;
 
     private TitledPane notesPane;
     private TitledPane restsPane;
@@ -64,6 +70,8 @@ public class ScorePalette extends Presentable<VBox> {
 
     @Override
     protected void initComponents() {
+        activeButton = new SimpleObjectProperty<>(null);
+
         notesPane       = new TitledPane();
         restsPane       = new TitledPane();
         clefsPane       = new TitledPane();
@@ -182,8 +190,39 @@ public class ScorePalette extends Presentable<VBox> {
     }
 
     @Override
-    protected void setupEventListeners() {}
+    protected void setupEventListeners() {
+        activeButton.addListener((observableValue, button, t1) -> {
+            if (t1 != null) {
+                if (button != null) {
+                    button.setStyle("-fx-background-color: #f3f3f3");
+                }
+                t1.setStyle("-fx-background-color: #efefa8");
+            }
+
+        });
+    }
 
     @Override
-    protected void setupEventHandlers() {}
+    protected void setupEventHandlers() {
+        wholeNoteBtn.setOnAction(actionEvent -> {
+            activeButton.set(wholeNoteBtn);
+            EventBus.getInstance().publish(new SetNoteInputEvent(Note.Type.Whole, false));
+        });
+        halfNoteBtn.setOnAction(actionEvent -> {
+            activeButton.set(halfNoteBtn);
+            EventBus.getInstance().publish(new SetNoteInputEvent(Note.Type.Half, false));
+        });
+        quarterNoteBtn.setOnAction(actionEvent -> {
+            activeButton.set(quarterNoteBtn);
+            EventBus.getInstance().publish(new SetNoteInputEvent(Note.Type.Quarter, false));
+        });
+        quaverNoteBtn.setOnAction(actionEvent -> {
+            activeButton.set(quaverNoteBtn);
+            EventBus.getInstance().publish(new SetNoteInputEvent(Note.Type.Eighth, false));
+        });
+        semiquaverNoteBtn.setOnAction(actionEvent -> {
+            activeButton.set(semiquaverNoteBtn);
+            EventBus.getInstance().publish(new SetNoteInputEvent(Note.Type.Semiquaver, false));
+        });
+    }
 }
