@@ -7,10 +7,12 @@ import com.muse.editor.redevelop.gui.manager.LayoutManager;
 import com.muse.editor.redevelop.gui.model.Presentable;
 import com.muse.editor.redevelop.gui.model.Staffable;
 import com.muse.editor.redevelop.gui.util.MusicMetrics;
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Pane;
@@ -28,6 +30,8 @@ public class MeasureComponent extends Presentable<Pane> {
     private DoubleProperty          measureWidth;
     private ObjectProperty<Measure> measureProperty;
     private List<Staffable<?>>      staffComponents;
+
+    private int stave;
 
     public MeasureComponent() {
         super(new Pane());
@@ -106,6 +110,11 @@ public class MeasureComponent extends Presentable<Pane> {
             }
             if (t1 != null && !t1.getNotes().isEmpty())
                 this.getRoot().getChildren().addAll(buildNotes());
+            if (t1 != null) {
+                t1.getNotes().addListener((ListChangeListener<Note>) change -> {
+                    Platform.runLater(() -> rebuildNotes());
+                });
+            }
         });
     }
 
@@ -114,8 +123,9 @@ public class MeasureComponent extends Presentable<Pane> {
 
     }
 
-    public void assignMeasure(Measure measure) {
+    public void assignMeasure(Measure measure, int stave) {
         this.measureProperty.set(measure);
+        this.stave = stave;
 
         LayoutManager.getInstance().register(this);
     }
@@ -186,6 +196,7 @@ public class MeasureComponent extends Presentable<Pane> {
             Staffable<?> staffable = evaluateStaffPlace(note);
 
             NoteComponent noteComponent = new NoteComponent(note);
+            noteComponent.getRoot().setUserData("note");
             noteComponent.getRoot().setLayoutY(staffable.getY());
             noteComponent.getRoot().setLayoutX(xOffset);
 
@@ -195,6 +206,14 @@ public class MeasureComponent extends Presentable<Pane> {
 
         expand(notes.size() * MusicMetrics.NOTE_CANVAS_WIDTH);
         return notes;
+    }
+
+    private void rebuildNotes() {
+        root.getChildren().removeIf(node -> node instanceof Canvas
+                && node.getUserData() != null
+                && node.getUserData().equals("note"));
+
+        root.getChildren().addAll(buildNotes());
     }
 
     private Line buildBarLine() {
