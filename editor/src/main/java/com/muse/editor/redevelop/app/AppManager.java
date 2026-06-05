@@ -1,7 +1,9 @@
 package com.muse.editor.redevelop.app;
 
 import com.muse.editor.redevelop.core.edit.CursorModel;
+import com.muse.editor.redevelop.core.edit.EditorService;
 import com.muse.editor.redevelop.core.edit.EditorState;
+import com.muse.editor.redevelop.core.edit.ScoreManager;
 import com.muse.editor.redevelop.core.project.ProjectManager;
 import com.muse.editor.redevelop.core.project.ProjectService;
 import com.muse.editor.redevelop.event.EventBus;
@@ -26,8 +28,10 @@ public class AppManager {
 
     private final ProjectService projectService = ProjectService.getInstance();
 
-    private final CursorModel cursorModel = CursorModel.getInstance();
-    private final EditorState editorState = EditorState.getInstance();
+    private final CursorModel   cursorModel = CursorModel.getInstance();
+    private final EditorState   editorState = EditorState.getInstance();
+    private final ScoreManager  scoreManager = ScoreManager.getInstance();
+    private final EditorService editorService = EditorService.getInstance();
 
     public enum ServerStatus {
         RUNNING(true),
