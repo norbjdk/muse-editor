@@ -48,12 +48,15 @@ public class ProjectService {
         final List<Part> partList = project.getScoreProperty().get().getParts();
 
         for (Part part : partList) {
+            int n = 0;
             for (Measure measure : part.getMeasures()) {
                 measure.getNotes().add(new Note.Builder()
+                        .setId(n)
                         .isRest(true)
                         .setDuration(2)
                         .setType(Note.Type.Whole)
                         .build());
+                n++;
             }
         }
 

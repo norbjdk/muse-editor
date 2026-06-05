@@ -1,8 +1,6 @@
 package com.muse.editor.redevelop.core.model.music;
 
 public class Note {
-    private static int counter = 0;
-
     private final int id;
 
     public enum Type {
@@ -35,10 +33,7 @@ public class Note {
     private final int     staff;
 
     private Note(Builder builder) {
-        counter += 1;
-
-        this.id = counter;
-
+        this.id       = builder.id;
         this.isRest   = builder.isRest;
         this.isChord  = builder.isChord;
         this.step     = builder.step;
@@ -49,10 +44,6 @@ public class Note {
         this.type     = builder.type;
         this.stem     = builder.stem;
         this.staff    = builder.staff;
-    }
-
-    public static int getCounter() {
-        return counter;
     }
 
     public int getId() {
@@ -100,6 +91,7 @@ public class Note {
     }
 
     public static class Builder {
+        private int     id;
         private boolean isRest;
         private boolean isChord;
         private char    step;
@@ -112,6 +104,7 @@ public class Note {
         private int     staff;
 
         public Builder(Note existing) {
+            this.id       = existing.id;
             this.isRest   = existing.isRest;
             this.isChord  = existing.isChord;
             this.step     = existing.step;
@@ -125,6 +118,12 @@ public class Note {
         }
 
         public Builder() {}
+
+        public Builder setId(int id) {
+            this.id = id;
+
+            return this;
+        }
 
         public Builder isRest(boolean isRest) {
             this.isRest = isRest;
