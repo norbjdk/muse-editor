@@ -55,8 +55,10 @@ public class CursorModel {
     private void bindPart(Part part) {
         this.partProperty.set(part);
 
+        this.measureId = 0;
+        this.noteId = 0;
         this.measureIndex = 0;
-        this.noteIndex    = 0;
+        this.noteIndex = 0;
 
         System.out.println("New bind for part:" + part.getId());
     }
