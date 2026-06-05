@@ -60,6 +60,12 @@ public class NoteComponent extends Measurable<Canvas> {
             if (event.getNoteId() == note.getId()) highlight();
             else draw();
         });
+
+        EditorState.getInstance().inputModeProperty().addListener((observableValue, aBoolean, t1) -> {
+            if (!t1) {
+                draw();
+            }
+        });
     }
 
     @Override
