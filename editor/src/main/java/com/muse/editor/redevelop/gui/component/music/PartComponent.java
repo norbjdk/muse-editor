@@ -13,7 +13,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.util.List;
@@ -57,7 +56,9 @@ public class PartComponent extends Presentable<FlowPane> {
     @Override
     protected void setupEventListeners() {
         EventBus.getInstance().subscribe(PartComponentChangedEvent.class, partComponentChangedEvent -> {
-            redraw();
+            if (partComponentChangedEvent.getPart() != null && partComponentChangedEvent.getPart().getId().equals(this.partID)) {
+                redraw();
+            }
         });
     }
 
@@ -91,7 +92,7 @@ public class PartComponent extends Presentable<FlowPane> {
             if (!partName.equals(ScorePart.Name.Piano)) {
                 final MeasureComponent measureComponent = new MeasureComponent();
 
-                measureComponent.assignMeasure(measure);
+                measureComponent.assignMeasure(measure, 1);
 
                 root.getChildren().add(measureComponent.getRoot());
             } else {
@@ -100,8 +101,8 @@ public class PartComponent extends Presentable<FlowPane> {
                 final MeasureComponent upperMeasureComponent = new MeasureComponent();
                 final MeasureComponent bottomMeasureComponent = new MeasureComponent();
 
-                upperMeasureComponent.assignMeasure(measure);
-                bottomMeasureComponent.assignMeasure(measure);
+                upperMeasureComponent.assignMeasure(measure, 1);
+                bottomMeasureComponent.assignMeasure(measure, 2);
 
                 measuresContainer.getChildren().addAll(
                         upperMeasureComponent.getRoot(),
