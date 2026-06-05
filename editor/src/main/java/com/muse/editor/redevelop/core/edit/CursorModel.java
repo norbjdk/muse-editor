@@ -10,6 +10,8 @@ import com.muse.editor.redevelop.event.project.PartComponentChangedEvent;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
+import java.util.List;
+
 public class CursorModel {
     private static final CursorModel instance = new CursorModel();
 
@@ -27,6 +29,8 @@ public class CursorModel {
 
     private int measureIndex;
     private int noteIndex;
+    private int measureId;
+    private int noteId;
 
     private void setupEventListeners() {
         EventBus.getInstance().subscribe(PartComponentChangedEvent.class, partComponentChangedEvent -> {
@@ -34,18 +38,26 @@ public class CursorModel {
                 bindPart(partComponentChangedEvent.getPart());
             }
         });
+
         EventBus.getInstance().subscribe(SelectNoteEvent.class, selectNoteEvent -> {
-            for (Measure measure : partProperty.get().getMeasures()) {
-                for (Note note : measure.getNotes()) {
-                    if (note.getId() == selectNoteEvent.getNoteId()) {
-                        this.noteIndex    = selectNoteEvent.getNoteId();
-                        this.measureIndex = measure.getId();
+            if (partProperty.get() == null) return;
+
+            List<Measure> measures = partProperty.get().getMeasures();
+            for (int mi = 0; mi < measures.size(); mi++) {
+                List<Note> notes = measures.get(mi).getNotes();
+                for (int ni = 0; ni < notes.size(); ni++) {
+                    if (notes.get(ni).getId() == selectNoteEvent.getNoteId()) {
+                        this.noteId      = selectNoteEvent.getNoteId();
+                        this.measureId   = measures.get(mi).getId();
+                        this.measureIndex = mi;
+                        this.noteIndex    = ni;
 
                         if (!editorState.inputModeProperty().get()) {
                             editorState.inputModeProperty().set(true);
                         }
 
-                        EventBus.getInstance().publish(new NoteSelectedEvent(this.noteIndex)); // ←
+                        EventBus.getInstance().publish(new NoteSelectedEvent(this.noteId));
+                        return;
                     }
                 }
             }
@@ -67,11 +79,23 @@ public class CursorModel {
         return partProperty;
     }
 
-    public int getNoteIndex() {
-        return noteIndex;
+    public int getNoteId() {
+        return noteId;
+    }
+
+    public int getMeasureId() {
+        return measureId;
     }
 
     public int getMeasureIndex() {
         return measureIndex;
+    }
+
+    public int getNoteIndex() {
+        return noteIndex;
+    }
+
+    public String getPartId() {
+        return partProperty.get().getId();
     }
 }
