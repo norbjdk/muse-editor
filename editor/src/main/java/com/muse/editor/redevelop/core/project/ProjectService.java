@@ -48,16 +48,16 @@ public class ProjectService {
     private void onCreateSuccess(Project project) {
         final List<Part> partList = project.getScoreProperty().get().getParts();
 
+        int noteId = 0;
+
         for (Part part : partList) {
-            int n = 0;
             for (Measure measure : part.getMeasures()) {
                 measure.getNotes().add(new Note.Builder()
-                        .setId(n)
+                        .setId(noteId++)
                         .isRest(true)
                         .setDuration(2)
                         .setType(Note.Type.Whole)
                         .build());
-                n++;
             }
         }
 

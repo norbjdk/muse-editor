@@ -46,9 +46,13 @@ public class ScoreManager {
         System.out.println("Total measures: " + measureProperties.size());
         System.out.println("Total notes: " + noteProperties.size());
         System.out.println("Score assigned:");
+    }
 
-        List<String> link = new LinkedList<>();
-
+    public int nextNoteId() {
+        return noteProperties.stream()
+                .mapToInt(np -> np.get().getId())
+                .max()
+                .orElse(0) + 1;
     }
 
     public Measure getMeasure(String partId, int measureIndex) {

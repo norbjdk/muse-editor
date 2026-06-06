@@ -32,6 +32,8 @@ public class MeasureComponent extends Presentable<Pane> {
     private ObjectProperty<Measure> measureProperty;
     private List<Staffable<?>>      staffComponents;
 
+    private ListChangeListener<Note> notesListener;
+
     private int stave;
 
     public MeasureComponent() {
@@ -104,17 +106,22 @@ public class MeasureComponent extends Presentable<Pane> {
 
     @Override
     protected void setupEventListeners() {
-        measureProperty.addListener((observableValue, measure, t1) -> {
-            if (t1 != null && t1.getAttributes() != null) {
-                this.getRoot().getChildren().add(buildClef());
-                this.getRoot().getChildren().add(buildMetre());
+        measureProperty.addListener((observableValue, oldMeasure, newMeasure) -> {
+            if (oldMeasure != null && notesListener != null) {
+                oldMeasure.getNotes().removeListener(notesListener);
             }
-            if (t1 != null && !t1.getNotes().isEmpty())
-                this.getRoot().getChildren().addAll(buildNotes());
-            if (t1 != null) {
-                t1.getNotes().addListener((ListChangeListener<Note>) change -> {
-                    Platform.runLater(this::rebuildNotes);
-                });
+
+            if (newMeasure != null) {
+                if (newMeasure.getAttributes() != null) {
+                    this.getRoot().getChildren().add(buildClef());
+                    this.getRoot().getChildren().add(buildMetre());
+                }
+                if (!newMeasure.getNotes().isEmpty()) {
+                    this.getRoot().getChildren().addAll(buildNotes());
+                }
+
+                notesListener = change -> Platform.runLater(this::rebuildNotes);
+                newMeasure.getNotes().addListener(notesListener);
             }
         });
     }
@@ -122,6 +129,12 @@ public class MeasureComponent extends Presentable<Pane> {
     @Override
     protected void setupEventHandlers() {
 
+    }
+
+    public void dispose() {
+        if (measureProperty.get() != null && notesListener != null) {
+            measureProperty.get().getNotes().removeListener(notesListener);
+        }
     }
 
     public void assignMeasure(ObjectProperty<Measure> measureProp, int stave) {
@@ -192,11 +205,14 @@ public class MeasureComponent extends Presentable<Pane> {
 
         xOffset += measureWidth.get() / (measureProperty.get().getNotes().size() + 2);
 
+        System.out.println("building notes: note size: " + notes.size());
+
         for (Note note : measureProperty.get().getNotes()) {
+            System.out.println("Note: " + note.getId()  + ",type: " + note.getType().getValue());
             Staffable<?> staffable = evaluateStaffPlace(note);
 
             NoteComponent noteComponent = new NoteComponent(note);
-            noteComponent.getRoot().setUserData("note");
+            noteComponent.getRoot().setUserData(noteComponent);
             noteComponent.getRoot().setLayoutY(Objects.requireNonNull(staffable).getY());
             noteComponent.getRoot().setLayoutX(xOffset);
 
@@ -204,14 +220,30 @@ public class MeasureComponent extends Presentable<Pane> {
             xOffset += MusicMetrics.NOTE_CANVAS_WIDTH + 4;
         }
 
-        expand(notes.size() * MusicMetrics.NOTE_CANVAS_WIDTH);
+        double notesWidth = notes.size() * (MusicMetrics.NOTE_CANVAS_WIDTH + 4);
+        measureWidth.set(MusicMetrics.BASE_MEASURE_WIDTH
+                + (measureProperty.get().getAttributes() != null
+                ? MusicMetrics.CLEF_CANVAS_WIDTH + MusicMetrics.METRE_CANVAS_WIDTH
+                : 0)
+                + notesWidth);
         return notes;
     }
 
     private void rebuildNotes() {
+        root.getChildren().stream()
+                .filter(node -> node instanceof Canvas && node.getUserData() instanceof NoteComponent)
+                .forEach(node -> ((NoteComponent) node.getUserData()).dispose());
+
         root.getChildren().removeIf(node -> node instanceof Canvas
-                && node.getUserData() != null
-                && node.getUserData().equals("note"));
+                && node.getUserData() instanceof NoteComponent);
+
+        double baseWidth = MusicMetrics.BASE_MEASURE_WIDTH;
+
+        if (measureProperty.get() != null && measureProperty.get().getAttributes() != null) {
+            baseWidth += MusicMetrics.CLEF_CANVAS_WIDTH;
+            baseWidth += MusicMetrics.METRE_CANVAS_WIDTH;
+        }
+        measureWidth.set(baseWidth);
 
         root.getChildren().addAll(buildNotes());
     }

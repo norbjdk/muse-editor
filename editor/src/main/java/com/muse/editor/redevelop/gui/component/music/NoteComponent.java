@@ -14,8 +14,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Translate;
 
+import java.util.function.Consumer;
+
 public class NoteComponent extends Measurable<Canvas> {
     private final Note note;
+
+    private Consumer<NoteSelectedEvent> noteSelectedListener;
 
     final double noteHeadYPosition  = 32;
     final Translate shiftToNoteHead = new Translate();
@@ -56,15 +60,17 @@ public class NoteComponent extends Measurable<Canvas> {
 
     @Override
     protected void setupEventListeners() {
-        EventBus.getInstance().subscribe(NoteSelectedEvent.class, event -> {
-            if (event.getNoteId() == note.getId()) highlight();
+        noteSelectedListener = event -> {
+            if (event.getNoteId() == note.getId()) {
+                highlight();
+                System.out.println("Selected: " + note.getId() + ", type:" + note.getType().getValue());
+            }
             else draw();
-        });
+        };
+        EventBus.getInstance().subscribe(NoteSelectedEvent.class, noteSelectedListener);
 
         EditorState.getInstance().inputModeProperty().addListener((observableValue, aBoolean, t1) -> {
-            if (!t1) {
-                draw();
-            }
+            if (!t1) draw();
         });
     }
 
@@ -73,6 +79,10 @@ public class NoteComponent extends Measurable<Canvas> {
         getRoot().setOnMouseClicked(mouseEvent -> {
             EventBus.getInstance().publish(new SelectNoteEvent(note.getId()));
         });
+    }
+
+    public void dispose() {
+        EventBus.getInstance().unsubscribe(NoteSelectedEvent.class, noteSelectedListener);
     }
 
     private String getNoteGlyph() {
@@ -103,5 +113,9 @@ public class NoteComponent extends Measurable<Canvas> {
             case Semiquaver -> FontFactory.getSixteenthRest();
             case null       -> throw new IllegalArgumentException("Unknown rest type: " + note.getType());
         };
+    }
+
+    public Note getNote() {
+        return note;
     }
 }

@@ -42,6 +42,7 @@ public class EditorService {
         final List<Note> toAdd = new ArrayList<>();
 
         final Note newNote = new Note.Builder(current)
+                .setId(ScoreManager.getInstance().nextNoteId())
                 .isRest(false)
                 .setType(type)
                 .setStep(step)

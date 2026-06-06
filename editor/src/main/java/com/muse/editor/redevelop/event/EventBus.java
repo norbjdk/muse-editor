@@ -23,6 +23,13 @@ public class EventBus extends Bus {
         listeners.computeIfAbsent(eventType, k -> new ArrayList<>()).add(listener);
     }
 
+    public <T extends AppEvent> void unsubscribe(Class<T> eventType, Consumer<T> listener) {
+        List<Consumer> eventListeners = listeners.get(eventType);
+        if (eventListeners != null) {
+            eventListeners.remove(listener);
+        }
+    }
+
     public <T extends AppEvent> void publish(T event) {
         Class<?> eventClass = event.getClass();
         List<Consumer> eventListeners = listeners.get(eventClass);

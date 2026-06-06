@@ -26,11 +26,11 @@ public class LayoutManager {
     }
 
     private void sync() {
-        final double maxWidth = measureComponents.stream()
-                .mapToDouble(m -> m.measureWidthProperty().get())
-                .max()
-                .orElse(MusicMetrics.BASE_MEASURE_WIDTH);
-
-        measureComponents.forEach(m -> m.measureWidthProperty().set(maxWidth));
+//        final double maxWidth = measureComponents.stream()
+//                .mapToDouble(m -> m.measureWidthProperty().get())
+//                .max()
+//                .orElse(MusicMetrics.BASE_MEASURE_WIDTH);
+//
+//        measureComponents.forEach(m -> m.measureWidthProperty().set(maxWidth));
     }
 }
