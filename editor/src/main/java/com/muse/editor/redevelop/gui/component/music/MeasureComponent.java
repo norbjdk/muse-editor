@@ -248,11 +248,11 @@ public class MeasureComponent extends Presentable<Pane> {
     private Staffable<?> evaluateStaffPlace(final Note note) {
         if (note.isRest()) {
             return switch (note.getType()) {
-                case Whole -> staffComponents.get(5);
-                case Half -> staffComponents.get(6);
-                case Quarter -> null;
-                case Eighth -> null;
-                case Semiquaver -> null;
+                case Whole      -> staffComponents.get(5);
+                case Half       -> staffComponents.get(6);
+                case Quarter    -> staffComponents.get(7);
+                case Eighth     -> staffComponents.get(7);
+                case Semiquaver -> staffComponents.get(7);
                 case null -> throw new IllegalArgumentException();
             };
         }

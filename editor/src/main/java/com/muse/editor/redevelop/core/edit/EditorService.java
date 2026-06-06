@@ -4,9 +4,7 @@ import com.muse.editor.redevelop.core.model.music.Note;
 import com.muse.editor.redevelop.event.EventBus;
 import com.muse.editor.redevelop.event.editor.AddValueEvent;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 
 public class EditorService {
@@ -32,16 +30,16 @@ public class EditorService {
     }
 
     private void addNote(char step, int octave) {
-        final List<Note> toAdd = new ArrayList<>();
-        final Note.Type type = EditorState.getInstance().getSelectedNoteType();
-
-        final Note current = scoreManager.getNote(
+        final Note.Type type    = editorState.getSelectedNoteType();
+        final Note      current = scoreManager.getNote(
                 cursorModel.getPartId(),
                 cursorModel.getMeasureIndex(),
                 cursorModel.getNoteIndex()
         );
 
         if (!BeatCalculator.canBeUsed(current.getType(), type)) return;
+
+        final List<Note> toAdd = new ArrayList<>();
 
         final Note newNote = new Note.Builder(current)
                 .isRest(false)
@@ -52,17 +50,24 @@ public class EditorService {
 
         toAdd.add(newNote);
 
-        final int diff = BeatCalculator.leftDifference(current.getType(), newNote.getType());
+        int remaining = BeatCalculator.leftDifference(current.getType(), type);
 
-        if (diff > 0) {
-            final Note newRest = new Note.Builder()
-                    .setId(current.getId() + 1)
+        while (remaining > 0) {
+            int finalRemaining = remaining;
+            Note.Type restType = Arrays.stream(Note.Type.values())
+                    .sorted(Comparator.comparingInt(BeatCalculator::noteValue).reversed())
+                    .filter(t -> BeatCalculator.noteValue(t) <= finalRemaining)
+                    .findFirst()
+                    .orElseThrow();
+
+            toAdd.add(new Note.Builder()
+                    .setId(current.getId() + toAdd.size())
                     .isRest(true)
-                    .setType(BeatCalculator.valueToType(diff))
-                    .setDuration(diff)
-                    .build();
+                    .setType(restType)
+                    .setDuration(BeatCalculator.noteValue(restType))
+                    .build());
 
-            toAdd.add(newRest);
+            remaining -= BeatCalculator.noteValue(restType);
         }
 
         scoreManager.replaceNote(
