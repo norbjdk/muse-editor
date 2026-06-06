@@ -1,5 +1,6 @@
 package com.muse.editor.redevelop.core.project;
 
+import com.muse.editor.redevelop.core.edit.ScoreManager;
 import com.muse.editor.redevelop.core.model.dto.NewProjectRequest;
 import com.muse.editor.redevelop.core.model.music.Measure;
 import com.muse.editor.redevelop.core.model.music.Note;
@@ -59,6 +60,8 @@ public class ProjectService {
                 n++;
             }
         }
+
+        ScoreManager.getInstance().assignScore(project.getScoreProperty().get());
 
         EventBus.getInstance().publish(new ProjectCreatedEvent(project.getId(), project.titleProperty().get()));
         EventBus.getInstance().publish(new ChangeViewEvent(Viewable.Name.PROJECT));

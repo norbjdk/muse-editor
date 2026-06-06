@@ -61,6 +61,11 @@ public class SpaceComponent extends Staffable<Pane> {
     }
 
     @Override
+    public double getY() {
+        return y + 5;
+    }
+
+    @Override
     public void bindWidth(DoubleProperty width) {
         hitArea.widthProperty().bind(width);
     }

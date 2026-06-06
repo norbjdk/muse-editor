@@ -21,6 +21,7 @@ import javafx.scene.shape.Line;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class MeasureComponent extends Presentable<Pane> {
@@ -112,7 +113,7 @@ public class MeasureComponent extends Presentable<Pane> {
                 this.getRoot().getChildren().addAll(buildNotes());
             if (t1 != null) {
                 t1.getNotes().addListener((ListChangeListener<Note>) change -> {
-                    Platform.runLater(() -> rebuildNotes());
+                    Platform.runLater(this::rebuildNotes);
                 });
             }
         });
@@ -123,10 +124,9 @@ public class MeasureComponent extends Presentable<Pane> {
 
     }
 
-    public void assignMeasure(Measure measure, int stave) {
-        this.measureProperty.set(measure);
+    public void assignMeasure(ObjectProperty<Measure> measureProp, int stave) {
+        this.measureProperty.bind(measureProp);
         this.stave = stave;
-
         LayoutManager.getInstance().register(this);
     }
 
@@ -149,7 +149,7 @@ public class MeasureComponent extends Presentable<Pane> {
         );
 
         if (attributes.getClefs().getFirst().getLine() == 2)  {
-            clefComponent.getRoot().setLayoutY(staffComponents.getFirst().getY());
+            clefComponent.getRoot().setLayoutY(staffComponents.getFirst().getY() - 5);
             clefComponent.getRoot().setLayoutX(5);
         }
 
@@ -168,7 +168,7 @@ public class MeasureComponent extends Presentable<Pane> {
                 attributes.getBeatType()
         );
 
-        metreComponent.getRoot().setLayoutY(staffComponents.get(2).getY());
+        metreComponent.getRoot().setLayoutY(staffComponents.get(2).getY() - 5);
         metreComponent.getRoot().setLayoutX(35);
 
         expand(MusicMetrics.METRE_CANVAS_WIDTH);
@@ -197,7 +197,7 @@ public class MeasureComponent extends Presentable<Pane> {
 
             NoteComponent noteComponent = new NoteComponent(note);
             noteComponent.getRoot().setUserData("note");
-            noteComponent.getRoot().setLayoutY(staffable.getY());
+            noteComponent.getRoot().setLayoutY(Objects.requireNonNull(staffable).getY());
             noteComponent.getRoot().setLayoutX(xOffset);
 
             notes.add(noteComponent.getRoot());

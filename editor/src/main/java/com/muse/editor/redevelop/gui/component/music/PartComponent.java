@@ -1,5 +1,6 @@
 package com.muse.editor.redevelop.gui.component.music;
 
+import com.muse.editor.redevelop.core.edit.ScoreManager;
 import com.muse.editor.redevelop.core.model.music.Attributes;
 import com.muse.editor.redevelop.core.model.music.Measure;
 import com.muse.editor.redevelop.core.model.music.Part;
@@ -10,6 +11,7 @@ import com.muse.editor.redevelop.event.project.PartComponentChangedEvent;
 import com.muse.editor.redevelop.gui.model.Presentable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.layout.FlowPane;
@@ -19,6 +21,7 @@ import java.util.List;
 
 public class PartComponent extends Presentable<FlowPane> {
     private final ProjectManager projectManager = ProjectManager.getInstance();
+    private final ScoreManager   scoreManager   = ScoreManager.getInstance();
 
     private final String         partID;
     private final ScorePart.Name partName;
@@ -67,8 +70,8 @@ public class PartComponent extends Presentable<FlowPane> {
 
     }
 
-    public void assignPart(Part part) {
-        this.partProperty.set(part);
+    public void assignPart(ObjectProperty<Part> part) {
+        this.partProperty.bind(part);
     }
 
     public String getPartID() {
@@ -86,13 +89,13 @@ public class PartComponent extends Presentable<FlowPane> {
     private void redraw() {
         root.getChildren().clear();
 
-        final List<Measure> measures = partProperty.get().getMeasures();
+        final ObservableList<ObjectProperty<Measure>> measures = ScoreManager.getInstance().getMeasures(partID);
 
-        for (Measure measure : measures) {
+        for (ObjectProperty<Measure> measureProperty : measures) {
             if (!partName.equals(ScorePart.Name.Piano)) {
                 final MeasureComponent measureComponent = new MeasureComponent();
 
-                measureComponent.assignMeasure(measure, 1);
+                measureComponent.assignMeasure(measureProperty, 1);
 
                 root.getChildren().add(measureComponent.getRoot());
             } else {
@@ -101,8 +104,8 @@ public class PartComponent extends Presentable<FlowPane> {
                 final MeasureComponent upperMeasureComponent = new MeasureComponent();
                 final MeasureComponent bottomMeasureComponent = new MeasureComponent();
 
-                upperMeasureComponent.assignMeasure(measure, 1);
-                bottomMeasureComponent.assignMeasure(measure, 2);
+                upperMeasureComponent.assignMeasure(measureProperty, 1);
+                bottomMeasureComponent.assignMeasure(measureProperty, 2);
 
                 measuresContainer.getChildren().addAll(
                         upperMeasureComponent.getRoot(),

@@ -73,4 +73,12 @@ public class EditorState {
     public InputType getInputType() {
         return inputType;
     }
+
+    public Note.Type getSelectedNoteType() {
+        return selectedNoteType;
+    }
+
+    public boolean isRestNote() {
+        return isRestNote;
+    }
 }

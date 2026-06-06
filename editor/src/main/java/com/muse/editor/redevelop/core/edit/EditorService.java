@@ -1,13 +1,20 @@
 package com.muse.editor.redevelop.core.edit;
 
+import com.muse.editor.redevelop.core.model.music.Note;
 import com.muse.editor.redevelop.event.EventBus;
 import com.muse.editor.redevelop.event.editor.AddValueEvent;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 
 public class EditorService {
     private static final EditorService instance = new EditorService();
 
-    private final CursorModel cursor = CursorModel.getInstance();
+    private final ScoreManager  scoreManager  = ScoreManager.getInstance();
+    private final CursorModel   cursorModel   = CursorModel.getInstance();
+    private final EditorState   editorState   = EditorState.getInstance();
 
     public static EditorService getInstance() {
         return instance;
@@ -18,36 +25,51 @@ public class EditorService {
     }
 
     private void setupEventListeners() {
-        EventBus.getInstance().subscribe(AddValueEvent.class, addValueEvent -> {
-            addNote(addValueEvent.getOctave(), addValueEvent.getStep());
+        EventBus.getInstance().subscribe(AddValueEvent.class, event -> {
+            if (!editorState.inputModeProperty().get()) return;
+            addNote(event.getStep(), event.getOctave());
         });
     }
 
-    private void addNote(int octave, char step) {
-        if (!EditorState.getInstance().inputModeProperty().get()) return;
+    private void addNote(char step, int octave) {
+        final List<Note> toAdd = new ArrayList<>();
+        final Note.Type type = EditorState.getInstance().getSelectedNoteType();
 
-        System.out.println("=================================");
-        System.out.println("Current Note ID:" + CursorModel.getInstance().getNoteId());
-        System.out.println("Current Measure ID:" + CursorModel.getInstance().getMeasureId());
-        System.out.println("Which octave ? " + octave);
-        System.out.println("What step ? " +  step);
-        System.out.println("Selected type: " + EditorState.getInstance().getInputType().toString());
-        System.out.println("Adding...");
+        final Note current = scoreManager.getNote(
+                cursorModel.getPartId(),
+                cursorModel.getMeasureIndex(),
+                cursorModel.getNoteIndex()
+        );
+
+        if (!BeatCalculator.canBeUsed(current.getType(), type)) return;
+
+        final Note newNote = new Note.Builder(current)
+                .isRest(false)
+                .setType(type)
+                .setStep(step)
+                .setOctave(octave)
+                .build();
+
+        toAdd.add(newNote);
+
+        final int diff = BeatCalculator.leftDifference(current.getType(), newNote.getType());
+
+        if (diff > 0) {
+            final Note newRest = new Note.Builder()
+                    .setId(current.getId() + 1)
+                    .isRest(true)
+                    .setType(BeatCalculator.valueToType(diff))
+                    .setDuration(diff)
+                    .build();
+
+            toAdd.add(newRest);
+        }
+
+        scoreManager.replaceNote(
+                cursorModel.getPartId(),
+                cursorModel.getMeasureIndex(),
+                cursorModel.getNoteIndex(),
+                toAdd
+        );
     }
-
-//    private void addNote(Note.Type type, boolean isRest) {
-//        if (!EditorState.getInstance().inputModeProperty().get()) return;
-//
-//        Note newNote = new Note.Builder()
-//                .setType(type)
-//                        .isRest(isRest)
-//                                .build();
-//
-//        ScoreManager.getInstance().replaceNote(
-//                cursor.getPartId(),
-//                cursor.getMeasureIndex(),
-//                cursor.getNoteIndex(),
-//                newNote
-//        );
-//    }
 }

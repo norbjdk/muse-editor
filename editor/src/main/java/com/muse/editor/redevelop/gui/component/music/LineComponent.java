@@ -1,5 +1,7 @@
 package com.muse.editor.redevelop.gui.component.music;
 
+import com.muse.editor.redevelop.event.EventBus;
+import com.muse.editor.redevelop.event.editor.AddValueEvent;
 import com.muse.editor.redevelop.gui.model.Staffable;
 import com.muse.editor.redevelop.gui.util.MusicMetrics;
 import javafx.beans.property.DoubleProperty;
@@ -75,6 +77,7 @@ public class LineComponent extends Staffable<Pane> {
     protected void setupEventHandlers() {
         hitArea.setOnMouseEntered(mouseEvent -> hitArea.setFill(Color.color(1.0, 0.4, 0.0, 0.2)));
         hitArea.setOnMouseExited(mouseEvent -> hitArea.setFill(Color.TRANSPARENT));
+        hitArea.setOnMouseClicked(mouseEvent -> EventBus.getInstance().publish(new AddValueEvent(octave, step)));
     }
 
     @Override
