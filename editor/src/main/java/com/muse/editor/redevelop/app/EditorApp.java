@@ -22,8 +22,8 @@ import java.util.Objects;
  */
 
 public class EditorApp extends Application {
-    private static final int MIN_WIDTH = 900;
-    private static final int MIN_HEIGHT = 600;
+    private static final int MIN_WIDTH = 800;
+    private static final int MIN_HEIGHT = 500;
 
     private static final StringProperty titleProperty = new SimpleStringProperty("MUSE Editor");
 

@@ -1,3 +1,117 @@
 .login-view {
+    -fx-background-image: url('../../assets/images/bg.png');
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-position: center;
+}
+
+.hero-section, .login-section {
+    -fx-alignment: center;
+    -fx-padding: 16;
+}
+
+.hero-section {
     -fx-background-color: #E8E4DD;
+}
+
+.login-section {
+    -fx-alignment:   center;
+    -fx-padding:     10;
+    -fx-spacing: 20;
+    -fx-background-color: linear-gradient(
+            to right,
+            rgba(255, 255, 255, 0.78),
+            rgba(255, 255, 255, 0.60)
+    );
+    -fx-background-radius: 16;
+    -fx-effect:           dropshadow(gaussian, rgba(0, 0, 0, 0.18), 14, 0.4, 0, 3);
+}
+
+.login-form {
+    -fx-vgap: 8;
+    -fx-padding: 12;
+    -fx-alignment: center;
+}
+
+.no-acc-container {
+    -fx-background-color: transparent;
+    -fx-alignment: center;
+    -fx-padding: 4;
+    -fx-fill-width: true;
+    -fx-spacing: 6;
+}
+
+.forgot-pwd-container {
+    -fx-alignment: center-right;
+}
+
+.login-labels {
+    -fx-spacing: 4;
+    -fx-alignment: center;
+}
+
+.input {
+    -fx-background-color: #E8E4DD;
+    -fx-padding: 10 4;
+    -fx-font-size: 14;
+    -fx-text-alignment: left;
+    -fx-background-radius: 8;
+    -fx-border-width: 1;
+    -fx-border-color: #cfc8c8;
+    -fx-border-radius: 8;
+    -fx-min-width: 240;
+    -fx-effect:           dropshadow(gaussian, rgba(0, 0, 0, 0.18), 14, 0.4, 0, 3);
+}
+
+.sign-in-btn {
+    -fx-background-color: #E8E4DD;
+    -fx-padding: 6 4;
+    -fx-font-size: 18;
+    -fx-text-alignment: left;
+    -fx-background-radius: 8;
+    -fx-border-width: 1;
+    -fx-font-weight: 700;
+    -fx-border-color: #cfc8c8;
+    -fx-border-radius: 8;
+    -fx-min-width: 240;
+    -fx-cursor: hand;
+    -fx-effect:           dropshadow(gaussian, rgba(0, 0, 0, 0.18), 14, 0.4, 0, 3);
+}
+
+.sign-up-btn, .forgot-pwd-btn {
+    -fx-background-color: transparent;
+    -fx-text-alignment: center;
+    -fx-padding: 0;
+    -fx-font-family: "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-font-size:   14px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #3a3939;
+    -fx-cursor: hand;
+    -fx-effect:      dropshadow(gaussian, rgba(0, 0, 0, 0.18), 14, 0.4, 0, 3);
+
+}
+
+.hero-header-label {
+    -fx-font-family: "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-font-weight: 700;
+    -fx-font-size:   24px;
+    -fx-text-fill:   #1a1714;
+    -fx-effect:      dropshadow(gaussian, rgba(0, 0, 0, 0.18), 14, 0.4, 0, 3);
+}
+
+.login-header-label {
+    -fx-font-family: "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-font-size:   28px;
+    -fx-font-weight: 700;
+    -fx-text-fill:   #1a1714;
+    -fx-text-alignment: center;
+}
+
+.login-paragraph-label {
+    -fx-font-family: "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-font-size:   14px;
+    -fx-font-weight: 500;
+    -fx-text-fill: #3a3939;
+    -fx-text-alignment: center;
+    -fx-effect:      dropshadow(gaussian, rgba(0, 0, 0, 0.18), 14, 0.4, 0, 3);
 }

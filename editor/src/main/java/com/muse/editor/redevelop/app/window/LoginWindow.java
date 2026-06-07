@@ -7,8 +7,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 
 public class LoginWindow {
-    private static final int WINDOW_WIDTH  = 900;
-    private static final int WINDOW_HEIGHT = 600;
+    private static final int WINDOW_WIDTH  = 800;
+    private static final int WINDOW_HEIGHT = 500;
 
     private final LoginView loginView;
 
