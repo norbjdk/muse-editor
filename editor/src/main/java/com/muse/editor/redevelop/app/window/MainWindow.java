@@ -1,11 +1,8 @@
-package com.muse.editor.redevelop.app;
+package com.muse.editor.redevelop.app.window;
 
 import com.muse.editor.redevelop.event.EventBus;
-import com.muse.editor.redevelop.event.view.ChangeViewEvent;
 import com.muse.editor.redevelop.event.view.ViewChangedEvent;
 import com.muse.editor.redevelop.gui.component.NavigationBar;
-import com.muse.editor.redevelop.gui.manager.ViewManager;
-import com.muse.editor.redevelop.gui.model.Viewable;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -22,7 +19,7 @@ public class MainWindow {
 
     private NavigationBar navigationBar;
 
-    MainWindow() {
+    public MainWindow() {
         navigationBar = new NavigationBar();
 
         root  = new BorderPane();

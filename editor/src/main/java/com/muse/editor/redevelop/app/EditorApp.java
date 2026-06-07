@@ -1,5 +1,7 @@
 package com.muse.editor.redevelop.app;
 
+import com.muse.editor.redevelop.app.window.LoginWindow;
+import com.muse.editor.redevelop.app.window.MainWindow;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -20,14 +22,16 @@ import java.util.Objects;
  */
 
 public class EditorApp extends Application {
-    private static final int MIN_WIDTH = 1200;
-    private static final int MIN_HEIGHT = 650;
+    private static final int MIN_WIDTH = 900;
+    private static final int MIN_HEIGHT = 600;
 
     private static final StringProperty titleProperty = new SimpleStringProperty("MUSE Editor");
 
     @Override
     public void start(Stage primaryStage){
-        final MainWindow mainWindow = new MainWindow();
+        final MainWindow mainWindow   = new MainWindow();
+        final LoginWindow loginWindow = new LoginWindow();
+
         final AppManager appManager = AppManager.getInstance();
 
         appManager.init();
@@ -36,8 +40,8 @@ public class EditorApp extends Application {
         primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResource("/com/muse/editor/assets/images/logo.png")).toExternalForm()));
         primaryStage.setMinWidth(MIN_WIDTH);
         primaryStage.setMinHeight(MIN_HEIGHT);
-        primaryStage.setMaximized(true);
-        primaryStage.setScene(mainWindow.getScene());
+//        primaryStage.setMaximized(true);
+        primaryStage.setScene(loginWindow.getScene());
         primaryStage.show();
 
         titleProperty.addListener(((obs, t0, t1) -> {
