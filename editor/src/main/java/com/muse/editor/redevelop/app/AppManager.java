@@ -6,6 +6,9 @@ import com.muse.editor.redevelop.core.edit.EditorState;
 import com.muse.editor.redevelop.core.edit.ScoreManager;
 import com.muse.editor.redevelop.core.project.ProjectManager;
 import com.muse.editor.redevelop.core.project.ProjectService;
+import com.muse.editor.redevelop.core.user.TokenStorage;
+import com.muse.editor.redevelop.core.user.User;
+import com.muse.editor.redevelop.core.user.UserManager;
 import com.muse.editor.redevelop.event.EventBus;
 import com.muse.editor.redevelop.event.view.ChangeViewEvent;
 import com.muse.editor.redevelop.gui.manager.ViewManager;
@@ -14,6 +17,7 @@ import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.Executors;
@@ -22,6 +26,8 @@ import java.util.concurrent.TimeUnit;
 
 public class AppManager {
     private final static int MONITOR_DELAY = 8;
+
+    private final UserManager userManager = UserManager.getInstance();
 
     private final ViewManager    viewManager = ViewManager.getInstance();
     private final ProjectManager projectManager = ProjectManager.getInstance();
@@ -64,6 +70,14 @@ public class AppManager {
         Platform.runLater(() -> {
             EventBus.getInstance().publish(new ChangeViewEvent(Viewable.Name.HOME));
         });
+
+        if (TokenStorage.isLoggedIn()) {
+            try {
+                final User user = UserManager.getInstance().getCurrentUser();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private void setupEventListener() {

@@ -40,8 +40,8 @@ public class EditorApp extends Application {
         primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResource("/com/muse/editor/assets/images/logo.png")).toExternalForm()));
         primaryStage.setMinWidth(MIN_WIDTH);
         primaryStage.setMinHeight(MIN_HEIGHT);
-//        primaryStage.setMaximized(true);
-        primaryStage.setScene(loginWindow.getScene());
+        primaryStage.setMaximized(true);
+        primaryStage.setScene(mainWindow.getScene());
         primaryStage.show();
 
         titleProperty.addListener(((obs, t0, t1) -> {

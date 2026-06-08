@@ -1,0 +1,6 @@
+package com.muse.editor.redevelop.event.user;
+
+import com.muse.editor.redevelop.event.model.AppEvent;
+
+public class LoggedInEvent extends AppEvent {
+}

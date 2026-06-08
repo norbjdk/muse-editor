@@ -94,7 +94,6 @@ public class NavigationBar extends Presentable<VBox> implements Viewable {
                 SpaceFactory.createSpacer(SpaceFactory.Direction.VERTICAL),
                 currentProjectBtn,
                 SpaceFactory.createSpacer(SpaceFactory.Direction.VERTICAL),
-                SpaceFactory.createSpacer(SpaceFactory.Direction.VERTICAL),
                 collectionBtn,
                 learnBtn,
                 settingsBtn

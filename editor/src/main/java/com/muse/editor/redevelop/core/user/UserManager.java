@@ -1,5 +1,8 @@
 package com.muse.editor.redevelop.core.user;
 
+import com.muse.editor.redevelop.event.EventBus;
+import com.muse.editor.redevelop.event.view.ShowMainScene;
+import com.muse.editor.redevelop.event.view.ShowLoginScene;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
@@ -14,7 +17,15 @@ public class UserManager {
         return instance;
     }
 
-    private UserManager() {}
+    private UserManager() {
+        currentUser.addListener(((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                EventBus.getInstance().publish(new ShowMainScene());
+            } else {
+                EventBus.getInstance().publish(new ShowLoginScene());
+            }
+        }));
+    }
 
     public ObjectProperty<User> currentUserProperty() {
         return currentUser;
