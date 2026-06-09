@@ -1,6 +1,8 @@
 package com.muse.editor.redevelop.core.model.dto;
 
-public class LoginResponse {
+import com.muse.editor.redevelop.core.api.ResponseDTO;
+
+public class LoginResponse implements ResponseDTO {
     private Long id;
     private String token;
     private String username;

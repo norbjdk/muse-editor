@@ -1,6 +1,8 @@
 package com.muse.editor.redevelop.core.model.dto;
 
-public class LoginRequest {
+import com.muse.editor.redevelop.core.api.RequestDTO;
+
+public class LoginRequest implements RequestDTO {
     private String username;
     private String password;
 
