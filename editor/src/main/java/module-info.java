@@ -19,6 +19,8 @@ module com.norbjdk.museeditor {
 
     opens com.muse.editor.develop.core.model.dto to com.fasterxml.jackson.databind;
     opens com.muse.editor.develop.core.user to com.fasterxml.jackson.databind;
+    opens com.muse.editor.redevelop.core.model.dto to com.fasterxml.jackson.databind;
+    opens com.muse.editor.redevelop.core.user to com.fasterxml.jackson.databind;
     exports com.muse.editor.redevelop.app.window;
     opens com.muse.editor.redevelop.app.window to javafx.fxml;
     exports com.muse.editor.redevelop.core.api;
