@@ -1,11 +1,9 @@
 package com.muse.editor.redevelop.gui.component;
 
-import com.muse.editor.develop.model.dto.internal.ViewRequest;
-import com.muse.editor.develop.model.event.ChangeViewRequestedEvent;
-import com.muse.editor.develop.ui.model.ViewName;
 import com.muse.editor.redevelop.core.project.ProjectManager;
 import com.muse.editor.redevelop.event.EventBus;
 import com.muse.editor.redevelop.event.project.ProjectCreatedEvent;
+import com.muse.editor.redevelop.event.user.LogoutEvent;
 import com.muse.editor.redevelop.event.view.ChangeViewEvent;
 import com.muse.editor.redevelop.gui.util.ButtonFactory;
 import com.muse.editor.redevelop.gui.model.Presentable;
@@ -38,6 +36,7 @@ public class NavigationBar extends Presentable<VBox> implements Viewable {
     private Button learnBtn;
     private Button settingsBtn;
     private Button currentProjectBtn;
+    private Button logoutBtn;
 
     private StackPane logoContainer;
     private Rectangle logoView;
@@ -58,6 +57,7 @@ public class NavigationBar extends Presentable<VBox> implements Viewable {
         learnBtn          = ButtonFactory.createButton("Learn", "home-btn", "Home View", "navigation-btn");
         settingsBtn       = ButtonFactory.createButton("Settings", "home-btn", "Home View", "navigation-btn");
         currentProjectBtn = ButtonFactory.createButton("Project Name", "project-btn", "Go to your open project", "navigation-btn");
+        logoutBtn         = ButtonFactory.createButton("Sign Out", "logout-btn", "Logout", "navigation-btn");
     }
 
     @Override
@@ -69,6 +69,7 @@ public class NavigationBar extends Presentable<VBox> implements Viewable {
         ButtonFactory.addIcon(learnBtn, FontAwesomeSolid.GRADUATION_CAP, 15, Color.rgb(5, 5, 5));
         ButtonFactory.addIcon(settingsBtn, FontAwesomeSolid.COG, 15, Color.rgb(5, 5, 5));
         ButtonFactory.addIcon(currentProjectBtn, FontAwesomeSolid.EDIT, 15, Color.rgb(5,5 ,5));
+        ButtonFactory.addIcon(logoutBtn, FontAwesomeSolid.SIGN_OUT_ALT, 15, Color.rgb(5,5 ,5));
 
         currentProjectBtn.setVisible(false);
         currentProjectBtn.setManaged(false);
@@ -96,7 +97,8 @@ public class NavigationBar extends Presentable<VBox> implements Viewable {
                 SpaceFactory.createSpacer(SpaceFactory.Direction.VERTICAL),
                 collectionBtn,
                 learnBtn,
-                settingsBtn
+                settingsBtn,
+                logoutBtn
         );
     }
 
@@ -119,6 +121,7 @@ public class NavigationBar extends Presentable<VBox> implements Viewable {
         homeBtn.setOnAction(actionEvent -> handleHomeButtonClicked());
         createProjectBtn.setOnAction(actionEvent -> handleNewProjectButtonClicked());
         currentProjectBtn.setOnAction(actionEvent -> handleCurrentProjectButtonClicked());
+        logoutBtn.setOnAction(actionEvent -> handleLogoutButtonClicked());
     }
 
     private void handleHomeButtonClicked() {
@@ -131,6 +134,10 @@ public class NavigationBar extends Presentable<VBox> implements Viewable {
 
     private void handleCurrentProjectButtonClicked() {
         EventBus.getInstance().publish(new ChangeViewEvent(Name.PROJECT));
+    }
+
+    private void handleLogoutButtonClicked() {
+        EventBus.getInstance().publish(new LogoutEvent());
     }
 
     private void setupLogo() {

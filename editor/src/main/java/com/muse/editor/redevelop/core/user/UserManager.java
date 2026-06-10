@@ -17,23 +17,18 @@ public class UserManager {
         return instance;
     }
 
-    private UserManager() {
-        currentUser.addListener(((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                EventBus.getInstance().publish(new ShowMainScene());
-            } else {
-                EventBus.getInstance().publish(new ShowLoginScene());
-            }
-        }));
-    }
+    private UserManager() {}
 
     public ObjectProperty<User> currentUserProperty() {
         return currentUser;
     }
 
     public User getCurrentUser() throws IOException {
+        return currentUser.get();
+    }
 
-        return null;
+    public void setCurrentUser(User user) {
+        currentUser.set(user);
     }
 
     public User getUserByUsername(String username) throws IOException {

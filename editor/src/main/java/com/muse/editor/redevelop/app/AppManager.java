@@ -6,10 +6,9 @@ import com.muse.editor.redevelop.core.edit.EditorState;
 import com.muse.editor.redevelop.core.edit.ScoreManager;
 import com.muse.editor.redevelop.core.project.ProjectManager;
 import com.muse.editor.redevelop.core.project.ProjectService;
-import com.muse.editor.redevelop.core.user.TokenStorage;
-import com.muse.editor.redevelop.core.user.User;
-import com.muse.editor.redevelop.core.user.UserManager;
+import com.muse.editor.redevelop.core.user.*;
 import com.muse.editor.redevelop.event.EventBus;
+import com.muse.editor.redevelop.event.user.LoggedInEvent;
 import com.muse.editor.redevelop.event.view.ChangeViewEvent;
 import com.muse.editor.redevelop.gui.manager.ViewManager;
 import com.muse.editor.redevelop.gui.model.Viewable;
@@ -28,6 +27,7 @@ public class AppManager {
     private final static int MONITOR_DELAY = 8;
 
     private final UserManager userManager = UserManager.getInstance();
+    private final AuthService authService = AuthService.getInstance();
 
     private final ViewManager    viewManager = ViewManager.getInstance();
     private final ProjectManager projectManager = ProjectManager.getInstance();
@@ -72,11 +72,22 @@ public class AppManager {
         });
 
         if (TokenStorage.isLoggedIn()) {
-            try {
-                final User user = UserManager.getInstance().getCurrentUser();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            Thread autoLoginThread = new Thread(() -> {
+                final User user = UserService.getInstance().getCurrentUser();
+
+                if (user != null) {
+                    Platform.runLater(() -> {
+                        UserManager.getInstance().setCurrentUser(user);
+                        EventBus.getInstance().publish(new LoggedInEvent());
+                    });
+                } else {
+                    Platform.runLater(() -> TokenStorage.clear());
+                }
+
+            });
+
+            autoLoginThread.setDaemon(true);
+            autoLoginThread.start();
         }
     }
 

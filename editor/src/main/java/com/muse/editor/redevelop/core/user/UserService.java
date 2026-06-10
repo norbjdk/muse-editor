@@ -1,20 +1,23 @@
 package com.muse.editor.redevelop.core.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.muse.editor.redevelop.core.api.ApiBuilder;
 import com.muse.editor.redevelop.core.model.dto.UserResponse;
+import com.muse.editor.redevelop.event.EventBus;
 
 import java.io.IOException;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserService {
     private static final UserService instance = new UserService();
+
+    private UserManager userManager = UserManager.getInstance();
 
     public static UserService getInstance() {
         return instance;
     }
 
-    private UserService() {}
-
-    private User getCurrentUser() {
+    public User getCurrentUser() {
         try {
             UserResponse response = ApiBuilder.get("/api/v1/users/me", UserResponse.class);
 

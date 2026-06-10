@@ -1,11 +1,15 @@
 package com.muse.editor.redevelop.gui.view;
 
+import com.muse.editor.redevelop.core.model.dto.LoginRequest;
+import com.muse.editor.redevelop.event.EventBus;
+import com.muse.editor.redevelop.event.user.LoginEvent;
 import com.muse.editor.redevelop.gui.model.Presentable;
 import com.muse.editor.redevelop.gui.util.SpaceFactory;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
@@ -39,7 +43,7 @@ public class LoginView extends Presentable<HBox> {
     private Button forgotPwdBtn;
 
     private TextField usernameInput;
-    private TextField passwordInput;
+    private PasswordField passwordInput;
 
     public LoginView() {
         super(new HBox());
@@ -70,7 +74,7 @@ public class LoginView extends Presentable<HBox> {
         forgotPwdBtn = new Button();
 
         usernameInput = new TextField();
-        passwordInput = new TextField();
+        passwordInput = new PasswordField();
     }
 
     @Override
@@ -171,12 +175,23 @@ public class LoginView extends Presentable<HBox> {
 
     @Override
     protected void setupEventListeners() {
-
+        signInBtn.setOnAction(actionEvent -> handleSignInBtn());
     }
 
     @Override
     protected void setupEventHandlers() {
 
+    }
+
+    private void handleSignInBtn() {
+        final String username = usernameInput.getText();
+        final String password = passwordInput.getText();
+
+        final LoginRequest request = new LoginRequest();
+        request.setUsername(username);
+        request.setPassword(password);
+
+        EventBus.getInstance().publish(new LoginEvent(request));
     }
 
     private void setupLogo() {
