@@ -55,7 +55,8 @@ public class ProjectManager {
                         .setFifths(0)
                         .addClef(clef)
                         .setStaves(staves)
-                        .setTime(request.getBeats(), request.getBeatType())
+                        .setBeats(request.getBeats())
+                        .setBeatType(request.getBeatType())
                         .build();
 
                 final Measure measure = m == 0 ?

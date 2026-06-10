@@ -75,8 +75,8 @@ public class MXMLWriter {
             final Element partName = doc.createElement("part-name");
             final Element partAbbreviation = doc.createElement("part-abbreviation");
 
-            partName.setTextContent(clean(scorePart.getPartName().getValue())); // Zabezpieczone
-            partAbbreviation.setTextContent(clean(scorePart.getPartAbbreviation().getValue())); // Zabezpieczone
+            partName.setTextContent(clean(scorePart.getPartName().getValue()));
+            partAbbreviation.setTextContent(clean(scorePart.getPartAbbreviation().getValue()));
 
             sP.appendChild(partName);
             sP.appendChild(partAbbreviation);
@@ -105,9 +105,7 @@ public class MXMLWriter {
                 for (Note note : measure.getNotes()) {
                     final Element nt = doc.createElement("note");
 
-                    final Element rest = doc.createElement("rest");
-
-                    if (rest == null) {
+                    if (!note.isRest()) {
                         final Element pitch = doc.createElement("pitch");
                         final Element step = doc.createElement("step");
                         final Element octave = doc.createElement("octave");
@@ -133,6 +131,7 @@ public class MXMLWriter {
                         nt.appendChild(type);
                         nt.appendChild(stem);
                     } else {
+                        final Element rest = doc.createElement("rest");
                         final Element duration = doc.createElement("duration");
                         final Element voice = doc.createElement("voice");
                         final Element type = doc.createElement("type");

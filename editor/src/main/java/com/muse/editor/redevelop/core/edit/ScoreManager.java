@@ -10,7 +10,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,17 +19,43 @@ public class ScoreManager {
 
     private final ObjectProperty<ScorePartwise> scoreProperty = new SimpleObjectProperty<>(null);
 
-    private final ObservableList<ObjectProperty<Part>>    partProperties    = FXCollections.observableList(new LinkedList<>());
-    private final ObservableList<ObjectProperty<Measure>> measureProperties = FXCollections.observableList(new LinkedList<>());
-    private final ObservableList<ObjectProperty<Note>>    noteProperties    = FXCollections.observableList(new LinkedList<>());
+    private final ObservableList<ObjectProperty<Part>> partProperties =
+            FXCollections.observableList(new LinkedList<>(), partProp -> new javafx.beans.Observable[]{partProp});
+
+    private final ObservableList<ObjectProperty<Measure>> measureProperties =
+            FXCollections.observableList(new LinkedList<>(), measProp -> new javafx.beans.Observable[]{measProp});
+
+    private final ObservableList<ObjectProperty<Note>> noteProperties =
+            FXCollections.observableList(new LinkedList<>(), noteProp -> {
+                if (noteProp.get() == null) return new javafx.beans.Observable[]{noteProp};
+                return new javafx.beans.Observable[]{
+                        noteProp,
+                        noteProp.get().stepProperty(),
+                        noteProp.get().octaveProperty(),
+                        noteProp.get().durationProperty(),
+                        noteProp.get().typeProperty()
+                };
+            });
 
     public static ScoreManager getInstance() { return instance; }
 
     private ScoreManager() {
-        scoreProperty.addListener((observableValue, scorePartwise, t1) -> {
-            System.out.println("score changed");
+        scoreProperty.addListener((observableValue, oldScore, newScore) -> {
+            System.out.println("Główny ScorePartwise uległ zmianie!");
+            if (projectManager.currentProjectProperty().get() != null) {
+                projectManager.scoreProperty().set(newScore);
+            }
+        });
+
+        noteProperties.addListener((javafx.collections.ListChangeListener.Change<? extends ObjectProperty<Note>> c) -> {
+//            while (c.next()) {
+//                if (projectManager.getCurrentProject() != null) {
+//                    projectManager.markProjectAsModified();
+//                }
+//            }
         });
     }
+
 
     public void assignScore(ScorePartwise scorePartwise) {
         scoreProperty.set(scorePartwise);
@@ -71,14 +96,12 @@ public class ScoreManager {
                 .get(noteIndex);
     }
 
-    public void replaceNote(String partId, int measureIndex, int noteIndex, Note newNote) {
-        getMeasure(partId, measureIndex)
-                .getNotes()
-                .set(noteIndex, newNote);
-    }
-
     public void replaceNote(String partId, int measureIndex, int noteIndex, List<Note> newNotes) {
+        if (newNotes == null || newNotes.isEmpty()) return;
+
         final ObservableList<Note> notes = getMeasure(partId, measureIndex).getNotes();
+
+        if (noteIndex < 0 || noteIndex >= notes.size()) return;
 
         notes.set(noteIndex, newNotes.getFirst());
 
@@ -86,6 +109,7 @@ public class ScoreManager {
             notes.add(noteIndex + i, newNotes.get(i));
         }
     }
+
 
     public ObjectProperty<Part> getPart(String partId) {
         return partProperties.stream()

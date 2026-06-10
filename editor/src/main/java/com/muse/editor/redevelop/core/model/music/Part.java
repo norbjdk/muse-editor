@@ -1,11 +1,12 @@
 package com.muse.editor.redevelop.core.model.music;
 
-import java.util.ArrayList;
-import java.util.List;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class Part {
     private String id;
-    private List<Measure> measures = new ArrayList<>();
+
+    private ObservableList<Measure> measures = FXCollections.observableArrayList();
 
     public String getId() {
         return id;
@@ -15,11 +16,11 @@ public class Part {
         this.id = id;
     }
 
-    public List<Measure> getMeasures() {
+    public ObservableList<Measure> getMeasures() {
         return measures;
     }
 
-    public void setMeasures(List<Measure> measures) {
+    public void setMeasures(ObservableList<Measure> measures) {
         this.measures = measures;
     }
 }
