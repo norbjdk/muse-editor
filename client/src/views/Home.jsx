@@ -61,18 +61,6 @@ function Home() {
                 </div>
             </div>
         </div>
-        <div className={`flex-2 flex flex-col`}>
-            <h1 className={`font-bold text-3xl border-b w-fit pb-3`}>
-                You might like it
-            </h1>
-            <div className={`p-8`}>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                    {recommendedData.map(score => (
-                        <SheetCard key={score.id} score={score} />
-                    ))}
-                </div>
-            </div>
-        </div>
     </div>
     );
 }
