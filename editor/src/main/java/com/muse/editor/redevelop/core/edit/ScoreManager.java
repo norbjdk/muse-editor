@@ -26,7 +26,11 @@ public class ScoreManager {
 
     public static ScoreManager getInstance() { return instance; }
 
-    private ScoreManager() {}
+    private ScoreManager() {
+        scoreProperty.addListener((observableValue, scorePartwise, t1) -> {
+            System.out.println("score changed");
+        });
+    }
 
     public void assignScore(ScorePartwise scorePartwise) {
         scoreProperty.set(scorePartwise);

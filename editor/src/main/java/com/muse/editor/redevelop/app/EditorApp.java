@@ -2,6 +2,7 @@ package com.muse.editor.redevelop.app;
 
 import com.muse.editor.redevelop.app.window.LoginWindow;
 import com.muse.editor.redevelop.app.window.MainWindow;
+import com.muse.editor.redevelop.core.io.FileService;
 import com.muse.editor.redevelop.core.user.User;
 import com.muse.editor.redevelop.core.user.UserManager;
 import javafx.application.Application;
@@ -34,7 +35,10 @@ public class EditorApp extends Application {
     public void start(Stage primaryStage) throws IOException {
         final MainWindow mainWindow   = new MainWindow();
         final LoginWindow loginWindow = new LoginWindow();
-        final AppManager appManager = AppManager.getInstance();
+        final AppManager appManager   = AppManager.getInstance();
+        final FileService fileService = FileService.getInstance();
+
+        fileService.init(primaryStage);
 
         primaryStage.setTitle(titleProperty.get());
         primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResource("/com/muse/editor/assets/images/logo.png")).toExternalForm()));

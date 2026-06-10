@@ -62,6 +62,7 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
 
     private Button createProjectBtn;
     private Button cancelProjectBtn;
+    private Button inviteCollaboratorFriend;
 
     private TextField workTitleInput;
     private TextField creatorInput;

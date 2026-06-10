@@ -1,6 +1,7 @@
 package com.muse.editor.redevelop.core.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.muse.editor.redevelop.core.user.TokenStorage;
 import okhttp3.*;
 
 import java.io.IOException;
@@ -17,6 +18,7 @@ public class ApiBuilder {
         Request request = new Request.Builder()
                 .url(buildUrl(endpoint))
                 .get()
+                .addHeader("Authorization", "Bearer " + TokenStorage.getToken())
                 .build();
 
         return executeRequest(request, responseType);
@@ -31,6 +33,7 @@ public class ApiBuilder {
         Request request = new Request.Builder()
                 .url(buildUrl(endpoint))
                 .post(body)
+                .addHeader("Authorization", "Bearer " + TokenStorage.getToken())
                 .build();
 
         return executeRequest(request, responseType);
