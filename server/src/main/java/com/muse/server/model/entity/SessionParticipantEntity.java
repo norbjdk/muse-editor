@@ -21,6 +21,30 @@ public class SessionParticipantEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
+    public SessionParticipantId getId() {
+        return id;
+    }
+
+    public void setId(SessionParticipantId id) {
+        this.id = id;
+    }
+
+    public CollabSessionEntity getSession() {
+        return session;
+    }
+
+    public void setSession(CollabSessionEntity session) {
+        this.session = session;
+    }
+
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
+
     @Embeddable
     public static class SessionParticipantId implements Serializable {
         private Long sessionId;
