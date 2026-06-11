@@ -11,18 +11,13 @@ module com.norbjdk.museeditor {
     requires annotations;
     requires java.desktop;
 
-    opens com.muse.editor.develop.app to javafx.fxml;
-    exports com.muse.editor.develop.app;
+    opens com.muse.editor.app to javafx.fxml;
+    exports com.muse.editor.app;
 
-    opens com.muse.editor.redevelop.app to javafx.fxml;
-    exports com.muse.editor.redevelop.app;
-
-    opens com.muse.editor.develop.core.model.dto to com.fasterxml.jackson.databind;
-    opens com.muse.editor.develop.core.user to com.fasterxml.jackson.databind;
-    opens com.muse.editor.redevelop.core.model.dto to com.fasterxml.jackson.databind;
-    opens com.muse.editor.redevelop.core.user to com.fasterxml.jackson.databind;
-    exports com.muse.editor.redevelop.app.window;
-    opens com.muse.editor.redevelop.app.window to javafx.fxml;
-    exports com.muse.editor.redevelop.core.api;
-    opens com.muse.editor.redevelop.core.api to javafx.fxml;
+    opens com.muse.editor.core.model.dto to com.fasterxml.jackson.databind;
+    opens com.muse.editor.core.user to com.fasterxml.jackson.databind;
+    exports com.muse.editor.app.window;
+    opens com.muse.editor.app.window to javafx.fxml;
+    exports com.muse.editor.core.api;
+    opens com.muse.editor.core.api to javafx.fxml;
 }
