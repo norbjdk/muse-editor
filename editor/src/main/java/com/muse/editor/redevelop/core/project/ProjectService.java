@@ -59,10 +59,13 @@ public class ProjectService {
                 .thenAcceptAsync(project -> Platform.runLater(() -> {
                     project.titleProperty().set(scorePartwise.getWorkTitle());
 
+                    ScoreManager.getInstance().assignScore(project.getScoreProperty().get());
+
                     EventBus.getInstance().publish(new ProjectOpenedEvent(
                             project.getId(),
                             project.titleProperty().get()
                     ));
+                    EventBus.getInstance().publish(new ChangeViewEvent(Viewable.Name.PROJECT));
                 }));
     }
 
