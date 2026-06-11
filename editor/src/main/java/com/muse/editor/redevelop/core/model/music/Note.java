@@ -41,7 +41,6 @@ public class Note {
         setStaff(builder.staff);
     }
 
-    // --- Getters, Setters & Properties ---
     public int getId() { return id.get(); }
     public IntegerProperty idProperty() { return id; }
     public void setId(int id) { this.id.set(id); }

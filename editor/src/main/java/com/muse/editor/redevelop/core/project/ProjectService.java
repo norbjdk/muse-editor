@@ -5,9 +5,12 @@ import com.muse.editor.redevelop.core.model.dto.NewProjectRequest;
 import com.muse.editor.redevelop.core.model.music.Measure;
 import com.muse.editor.redevelop.core.model.music.Note;
 import com.muse.editor.redevelop.core.model.music.Part;
+import com.muse.editor.redevelop.core.model.music.ScorePartwise;
 import com.muse.editor.redevelop.event.EventBus;
 import com.muse.editor.redevelop.event.project.CreateProjectEvent;
+import com.muse.editor.redevelop.event.project.LoadProjectEvent;
 import com.muse.editor.redevelop.event.project.ProjectCreatedEvent;
+import com.muse.editor.redevelop.event.project.ProjectOpenedEvent;
 import com.muse.editor.redevelop.event.view.ChangeViewEvent;
 import com.muse.editor.redevelop.gui.model.Viewable;
 
@@ -29,6 +32,9 @@ public class ProjectService {
         EventBus.getInstance().subscribe(CreateProjectEvent.class, event -> {
             handleCreateProject(event.getRequest());
         });
+        EventBus.getInstance().subscribe(LoadProjectEvent.class, loadProjectEvent -> {
+            handleOpenProject(loadProjectEvent.getScorePartwise());
+        });
     }
 
     private void handleCreateProject(final NewProjectRequest request) {
@@ -43,6 +49,21 @@ public class ProjectService {
                     Platform.runLater(() -> onCreateFailure(throwable));
                     return null;
                 });
+    }
+
+    private void handleOpenProject(final ScorePartwise scorePartwise) {
+        if (scorePartwise == null) return;
+
+        CompletableFuture
+                .supplyAsync(() -> projectManager.openProject(scorePartwise))
+                .thenAcceptAsync(project -> Platform.runLater(() -> {
+                    project.titleProperty().set(scorePartwise.getWorkTitle());
+
+                    EventBus.getInstance().publish(new ProjectOpenedEvent(
+                            project.getId(),
+                            project.titleProperty().get()
+                    ));
+                }));
     }
 
     private void onCreateSuccess(Project project) {

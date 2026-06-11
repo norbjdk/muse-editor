@@ -6,6 +6,7 @@ import com.muse.editor.redevelop.core.project.ProjectManager;
 import com.muse.editor.redevelop.event.EventBus;
 import com.muse.editor.redevelop.event.project.ChangePartComponentEvent;
 import com.muse.editor.redevelop.event.project.ProjectCreatedEvent;
+import com.muse.editor.redevelop.event.project.ProjectOpenedEvent;
 import com.muse.editor.redevelop.event.project.SaveProjectEvent;
 import com.muse.editor.redevelop.gui.model.Presentable;
 import com.muse.editor.redevelop.gui.util.ButtonFactory;
@@ -85,6 +86,15 @@ public class ToolBar extends Presentable<HBox> {
     @Override
     protected void setupEventListeners() {
         EventBus.getInstance().subscribe(ProjectCreatedEvent.class, projectCreatedEvent -> {
+            Platform.runLater(() -> {
+                PartList partList = projectManager.scoreProperty().get().getPartList();
+                for (ScorePart scorePart : partList.getScoreParts()) {
+                    partsBox.getItems().add(scorePart.getPartName().getValue());
+                }
+                partsBox.getSelectionModel().selectFirst();
+            });
+        });
+        EventBus.getInstance().subscribe(ProjectOpenedEvent.class, projectOpenedEvent -> {
             Platform.runLater(() -> {
                 PartList partList = projectManager.scoreProperty().get().getPartList();
                 for (ScorePart scorePart : partList.getScoreParts()) {

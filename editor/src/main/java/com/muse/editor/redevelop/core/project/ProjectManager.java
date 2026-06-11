@@ -16,6 +16,16 @@ public class ProjectManager {
 
     private ProjectManager() {}
 
+    public Project openProject(ScorePartwise scorePartwise) {
+        final Project project = Project.createNew();
+
+        project.getScoreProperty().set(scorePartwise);
+
+        currentProject.set(project);
+
+        return project;
+    }
+
     public Project newProject(NewProjectRequest request) {
         if (request == null) return null;
 

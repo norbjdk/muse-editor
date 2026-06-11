@@ -3,6 +3,7 @@ package com.muse.editor.redevelop.gui.view;
 import com.muse.editor.redevelop.core.project.ProjectManager;
 import com.muse.editor.redevelop.event.EventBus;
 import com.muse.editor.redevelop.event.project.ProjectCreatedEvent;
+import com.muse.editor.redevelop.event.project.ProjectOpenedEvent;
 import com.muse.editor.redevelop.gui.component.ScorePalette;
 import com.muse.editor.redevelop.gui.component.ToolBar;
 import com.muse.editor.redevelop.gui.component.music.SheetComponent;
@@ -55,6 +56,14 @@ public class ProjectView extends Presentable<BorderPane> implements Viewable {
     @Override
     protected void setupEventListeners() {
         EventBus.getInstance().subscribe(ProjectCreatedEvent.class, projectCreatedEvent -> {
+            Platform.runLater(() -> {
+                final SheetComponent sheetComponent = new SheetComponent();
+                sheetComponent.load();
+                root.setCenter(sheetComponent.getRoot());
+                BorderPane.setMargin(root.getCenter(), new Insets(10));
+            });
+        });
+        EventBus.getInstance().subscribe(ProjectOpenedEvent.class, projectOpenedEvent -> {
             Platform.runLater(() -> {
                 final SheetComponent sheetComponent = new SheetComponent();
                 sheetComponent.load();

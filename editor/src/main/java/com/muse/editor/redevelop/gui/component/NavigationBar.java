@@ -2,7 +2,9 @@ package com.muse.editor.redevelop.gui.component;
 
 import com.muse.editor.redevelop.core.project.ProjectManager;
 import com.muse.editor.redevelop.event.EventBus;
+import com.muse.editor.redevelop.event.project.OpenProjectEvent;
 import com.muse.editor.redevelop.event.project.ProjectCreatedEvent;
+import com.muse.editor.redevelop.event.project.ProjectOpenedEvent;
 import com.muse.editor.redevelop.event.user.LogoutEvent;
 import com.muse.editor.redevelop.event.view.ChangeViewEvent;
 import com.muse.editor.redevelop.gui.util.ButtonFactory;
@@ -114,6 +116,16 @@ public class NavigationBar extends Presentable<VBox> implements Viewable {
                 openProjectBtn.setDisable(true);
             });
         });
+        EventBus.getInstance().subscribe(ProjectOpenedEvent.class, projectOpenedEvent -> {
+            Platform.runLater(() -> {
+                currentProjectBtn.setText(projectOpenedEvent.getTitle());
+                currentProjectBtn.setVisible(true);
+                currentProjectBtn.setManaged(true);
+
+                createProjectBtn.setDisable(true);
+                openProjectBtn.setDisable(true);
+            });
+        });
     }
 
     @Override
@@ -122,6 +134,7 @@ public class NavigationBar extends Presentable<VBox> implements Viewable {
         createProjectBtn.setOnAction(actionEvent -> handleNewProjectButtonClicked());
         currentProjectBtn.setOnAction(actionEvent -> handleCurrentProjectButtonClicked());
         logoutBtn.setOnAction(actionEvent -> handleLogoutButtonClicked());
+        openProjectBtn.setOnAction(actionEvent -> handleOpenProjectButtonClicked());
     }
 
     private void handleHomeButtonClicked() {
@@ -134,6 +147,10 @@ public class NavigationBar extends Presentable<VBox> implements Viewable {
 
     private void handleCurrentProjectButtonClicked() {
         EventBus.getInstance().publish(new ChangeViewEvent(Name.PROJECT));
+    }
+
+    private void handleOpenProjectButtonClicked() {
+        EventBus.getInstance().publish(new OpenProjectEvent());
     }
 
     private void handleLogoutButtonClicked() {
