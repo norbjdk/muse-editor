@@ -107,6 +107,62 @@ public class MinioService {
         return buildUrl(path);
     }
 
+    public String uploadSharedProjectFile(Long userId, Long projectId, MultipartFile file) {
+        final String path = userId + "/projects/shared/" + projectId + "/score.musicxml";
+        addFile(path, file);
+        return buildUrl(path);
+    }
+
+    public String extractSharedProjectFileUrl(Long userId, Long projectId) {
+        final String path = userId + "/projects/shared/" + projectId + "/score.musicxml";
+        if (fileExists(path)) return buildUrl(path);
+        throw new RuntimeException("Shared project file not found. ID: " + projectId);
+    }
+
+    public void createProjectFolders(Long userId, Long projectId) {
+        createFolder(userId + "/projects/shared/" + projectId + "/.keep");
+        createFolder(userId + "/projects/published/" + projectId + "/.keep");
+    }
+
+    public String uploadSharedFile(Long userId, Long projectId, MultipartFile file) {
+        final String path = userId + "/projects/shared/" + projectId + "/score.musicxml";
+        addFile(path, file);
+        return buildUrl(path);
+    }
+
+    public String uploadSharedFileBytes(Long userId, Long projectId, byte[] bytes) {
+        final String path = userId + "/projects/shared/" + projectId + "/score.musicxml";
+        try {
+            minioClient.putObject(
+                    PutObjectArgs.builder()
+                            .bucket(bucket)
+                            .object(path)
+                            .stream(new ByteArrayInputStream(bytes), bytes.length, -1)
+                            .contentType("application/xml")
+                            .build()
+            );
+            return buildUrl(path);
+        } catch (Exception e) {
+            throw new RuntimeException("Upload failed: " + path, e);
+        }
+    }
+
+    public void copySharedToPublished(Long userId, Long projectId) {
+        final String src  = userId + "/projects/shared/"    + projectId + "/score.musicxml";
+        final String dest = userId + "/projects/published/" + projectId + "/score.musicxml";
+        try {
+            minioClient.copyObject(
+                    CopyObjectArgs.builder()
+                            .bucket(bucket)
+                            .object(dest)
+                            .source(CopySource.builder().bucket(bucket).object(src).build())
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Copy failed: " + src + " -> " + dest, e);
+        }
+    }
+
     public String extractProjectFileUrl(Long userId, Long projectId) {
         final List<String> extensions = List.of(".musicxml", ".xml");
 
@@ -135,12 +191,13 @@ public class MinioService {
 
     private String extractExtension(String contentType) {
         if (contentType == null) return ".bin";
-
         return switch (contentType) {
-            case "image/jpeg" -> ".jpg";
-            case "image/png"  -> ".png";
-            case "image/webp" -> ".webp";
-            default           -> ".bin";
+            case "image/jpeg"                  -> ".jpg";
+            case "image/png"                   -> ".png";
+            case "image/webp"                  -> ".webp";
+            case "application/xml", "text/xml" -> ".xml";
+            case "application/octet-stream"    -> ".musicxml";
+            default                            -> ".bin";
         };
     }
 

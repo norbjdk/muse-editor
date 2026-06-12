@@ -51,6 +51,30 @@ public class StorageService {
         return url;
     }
 
+    public String uploadSharedProjectFile(Long userId, Long projectId, MultipartFile file) {
+        final ProjectEntity project = findProject(projectId);
+
+        if (!accessGuard.isMember(project, userId))
+            throw new RuntimeException("Access denied");
+
+        final String url = minioService.uploadSharedProjectFile(userId, projectId, file);
+        project.setCloudFilePath(url);
+        projectRepository.save(project);
+
+        return url;
+    }
+
+    public String getSharedProjectFileUrl(Long userId, Long projectId) {
+        final ProjectEntity project = findProject(projectId);
+
+        if (!accessGuard.hasReadAccess(project, userId))
+            throw new RuntimeException("Access denied");
+
+        return minioService.extractSharedProjectFileUrl(
+                project.getOwner().getId(), projectId
+        );
+    }
+
     public String getProjectFileUrl(Long userId, Long projectId) {
         final ProjectEntity project = findProject(projectId);
 
@@ -58,6 +82,17 @@ public class StorageService {
             throw new RuntimeException("Access denied");
 
         return minioService.extractProjectFileUrl(project.getOwner().getId(), projectId);
+    }
+
+    public void autoSave(Long userId, Long projectId, byte[] content) {
+        final ProjectEntity project = findProject(projectId);
+
+        if (!accessGuard.isMember(project, userId) && !accessGuard.isOwner(project, userId))
+            throw new RuntimeException("Access denied");
+
+        final String url = minioService.uploadSharedFileBytes(userId, projectId, content);
+        project.setCloudFilePath(url);
+        projectRepository.save(project);
     }
 
     private ProjectEntity findProject(Long projectId) {
