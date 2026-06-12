@@ -21,6 +21,30 @@ public class ProjectMemberEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
+    public ProjectMemberId getId() {
+        return id;
+    }
+
+    public void setId(ProjectMemberId id) {
+        this.id = id;
+    }
+
+    public ProjectEntity getProject() {
+        return project;
+    }
+
+    public void setProject(ProjectEntity project) {
+        this.project = project;
+    }
+
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
+
     @Embeddable
     public static class ProjectMemberId implements Serializable {
         private Long projectId;
