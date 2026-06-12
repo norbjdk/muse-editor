@@ -7,14 +7,14 @@ import com.muse.editor.core.model.music.Note;
 import com.muse.editor.core.model.music.Part;
 import com.muse.editor.core.model.music.ScorePartwise;
 import com.muse.editor.event.EventBus;
-import com.muse.editor.event.project.CreateProjectEvent;
-import com.muse.editor.event.project.LoadProjectEvent;
-import com.muse.editor.event.project.ProjectCreatedEvent;
-import com.muse.editor.event.project.ProjectOpenedEvent;
+import com.muse.editor.event.project.*;
 import com.muse.editor.event.view.ChangeViewEvent;
+import com.muse.editor.gui.dialog.PublishDialog;
 import com.muse.editor.gui.model.Viewable;
 
+import com.muse.editor.gui.util.SnapshotUtil;
 import javafx.application.Platform;
+import javafx.scene.image.WritableImage;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -35,7 +35,25 @@ public class ProjectService {
         EventBus.getInstance().subscribe(LoadProjectEvent.class, loadProjectEvent -> {
             handleOpenProject(loadProjectEvent.getScorePartwise());
         });
+        EventBus.getInstance().subscribe(PublishProjectEvent.class, publishProjectEvent -> {
+            handlePublishProject();
+        });
     }
+
+    private void handlePublishProject() {
+        PublishDialog dialog = new PublishDialog(
+            ScoreManager.getInstance().scoreProperty().get().getWorkTitle(),
+            ScoreManager.getInstance().scoreProperty().get().getCreator()
+        );
+
+        WritableImage myRenderedImage = SnapshotUtil.getInstance().snapSheet();
+        dialog.setPreviewImage(myRenderedImage);
+
+        dialog.showAndWait().ifPresent(result -> {
+            System.out.println("Otrzymano credentiale: " + result);
+        });
+    }
+
 
     private void handleCreateProject(final NewProjectRequest request) {
         if (request == null) return;

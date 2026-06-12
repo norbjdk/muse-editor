@@ -1,3 +1,8 @@
+/*
+================ LOGIN VIEW ================
+*/
+
+
 .login-view {
     -fx-background-image: url('../../assets/images/bg.png');
     -fx-background-repeat: no-repeat;
@@ -114,4 +119,20 @@
     -fx-text-fill: #3a3939;
     -fx-text-alignment: center;
     -fx-effect:      dropshadow(gaussian, rgba(0, 0, 0, 0.18), 14, 0.4, 0, 3);
+}
+
+.error-label {
+    -fx-font-family: "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-font-size:   17px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #fa3737;
+    -fx-text-alignment: center;
+    -fx-background-color: linear-gradient(
+            to right,
+            rgba(255, 255, 255, 0.78),
+            rgba(255, 255, 255, 0.60)
+    );
+    -fx-background-radius: 8;
+    -fx-padding: 6 10;
+    -fx-effect:           dropshadow(gaussian, rgba(0, 0, 0, 0.18), 14, 0.4, 0, 3);
 }

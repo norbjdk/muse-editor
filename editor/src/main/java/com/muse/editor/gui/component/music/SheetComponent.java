@@ -11,6 +11,7 @@ import com.muse.editor.event.project.ChangePartComponentEvent;
 import com.muse.editor.event.project.PartComponentChangedEvent;
 import com.muse.editor.event.project.PartComponentsCreatedEvent;
 import com.muse.editor.gui.model.Presentable;
+import com.muse.editor.gui.util.SnapshotUtil;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
@@ -43,6 +44,8 @@ public class SheetComponent extends Presentable<ScrollPane> {
 
     public SheetComponent() {
         super(new ScrollPane());
+
+        SnapshotUtil.getInstance().init(pageContainer);
     }
 
     @Override

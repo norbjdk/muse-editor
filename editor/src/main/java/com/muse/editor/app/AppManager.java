@@ -87,6 +87,8 @@ public class AppManager {
 
             autoLoginThread.setDaemon(true);
             autoLoginThread.start();
+        } else {
+
         }
     }
 
@@ -123,5 +125,9 @@ public class AppManager {
                 Platform.runLater(() -> serverStatus.set(ServerStatus.DOWN));
             }
         }, 0, MONITOR_DELAY, TimeUnit.SECONDS);
+    }
+
+    public ObjectProperty<ServerStatus> getServerStatus() {
+        return serverStatus;
     }
 }

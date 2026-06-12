@@ -4,10 +4,7 @@ import com.muse.editor.core.model.music.PartList;
 import com.muse.editor.core.model.music.ScorePart;
 import com.muse.editor.core.project.ProjectManager;
 import com.muse.editor.event.EventBus;
-import com.muse.editor.event.project.ChangePartComponentEvent;
-import com.muse.editor.event.project.ProjectCreatedEvent;
-import com.muse.editor.event.project.ProjectOpenedEvent;
-import com.muse.editor.event.project.SaveProjectEvent;
+import com.muse.editor.event.project.*;
 import com.muse.editor.gui.model.Presentable;
 import com.muse.editor.gui.util.ButtonFactory;
 import com.muse.editor.gui.util.SpaceFactory;
@@ -26,7 +23,7 @@ public class ToolBar extends Presentable<HBox> {
     private Button cloudBtn;
     private Button undoBtn;
     private Button redoBtn;
-    private Button shareBtn;
+    private Button publishBtn;
     private Button saveBtn;
     private Button closeBtn;
     private Button collaboratorsBtn;
@@ -44,7 +41,7 @@ public class ToolBar extends Presentable<HBox> {
         cloudBtn         = ButtonFactory.createButton("", "cloud-btn", "", "tool-bar-btn");
         undoBtn          = ButtonFactory.createButton("", "undo-btn", "", "tool-bar-btn");
         redoBtn          = ButtonFactory.createButton("", "redo-btn", "", "tool-bar-btn");
-        shareBtn         = ButtonFactory.createButton("Share", "share-btn", "", "tool-bar-btn-b");
+        publishBtn       = ButtonFactory.createButton("Publish", "share-btn", "", "tool-bar-btn-b");
         saveBtn          = ButtonFactory.createButton("", "save-btn", "", "tool-bar-btn");
         closeBtn         = ButtonFactory.createButton("", "close-btn", "", "tool-bar-btn");
         collaboratorsBtn = ButtonFactory.createButton("", "collaborators-btn", "", "tool-bar-btn");
@@ -55,7 +52,7 @@ public class ToolBar extends Presentable<HBox> {
         ButtonFactory.addIcon(cloudBtn, FontAwesomeSolid.CLOUD, 17, Color.rgb(5, 5, 5));
         ButtonFactory.addIcon(undoBtn, FontAwesomeSolid.UNDO, 17, Color.rgb(5, 5, 5));
         ButtonFactory.addIcon(redoBtn, FontAwesomeSolid.REDO, 17, Color.rgb(5, 5, 5));
-        ButtonFactory.addIcon(shareBtn, FontAwesomeSolid.SHARE, 17, Color.rgb(5, 5, 5));
+        ButtonFactory.addIcon(publishBtn, FontAwesomeSolid.SHARE, 17, Color.rgb(5, 5, 5));
         ButtonFactory.addIcon(saveBtn, FontAwesomeSolid.SAVE, 17, Color.rgb(5, 5, 5));
         ButtonFactory.addIcon(closeBtn, FontAwesomeSolid.DOOR_CLOSED, 17, Color.rgb(5, 5, 5));
         ButtonFactory.addIcon(collaboratorsBtn, FontAwesomeSolid.USER_FRIENDS, 17, Color.rgb(5, 5, 5));
@@ -76,7 +73,7 @@ public class ToolBar extends Presentable<HBox> {
                 undoBtn,
                 redoBtn,
                 SpaceFactory.createSpacer(SpaceFactory.Direction.HORIZONTAL),
-                shareBtn,
+                publishBtn,
                 saveBtn,
                 closeBtn,
                 collaboratorsBtn
@@ -111,5 +108,6 @@ public class ToolBar extends Presentable<HBox> {
             EventBus.getInstance().publish(new ChangePartComponentEvent(p1));
         });
         saveBtn.setOnAction(actionEvent -> EventBus.getInstance().publish(new SaveProjectEvent()));
+        publishBtn.setOnAction(actionEvent -> EventBus.getInstance().publish(new PublishProjectEvent()));
     }
 }

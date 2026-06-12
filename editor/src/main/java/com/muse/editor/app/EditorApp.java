@@ -49,6 +49,8 @@ public class EditorApp extends Application {
             if (t1 != null && !t1.isEmpty()) primaryStage.setTitle(t1);
         }));
 
+        User initialUser = UserManager.getInstance().getCurrentUser();
+
         UserManager.getInstance().currentUserProperty().addListener((observableValue, user, t1) -> {
             if (t1 != null) {
                 primaryStage.setScene(mainWindow.getScene());
@@ -61,14 +63,6 @@ public class EditorApp extends Application {
             }
         });
 
-        User initialUser = UserManager.getInstance().getCurrentUser();
-
-        if (initialUser != null) {
-            primaryStage.setMaximized(true);
-            primaryStage.setScene(mainWindow.getScene());
-        }
-
-        primaryStage.show();
         appManager.init();
     }
 

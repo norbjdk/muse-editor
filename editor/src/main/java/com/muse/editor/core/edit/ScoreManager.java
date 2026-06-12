@@ -141,4 +141,8 @@ public class ScoreManager {
     public ObservableList<ObjectProperty<Note>> getNoteProperties() {
         return noteProperties;
     }
+
+    public ObjectProperty<ScorePartwise> scoreProperty() {
+        return scoreProperty;
+    }
 }

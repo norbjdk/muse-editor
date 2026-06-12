@@ -1,10 +1,12 @@
 package com.muse.editor.gui.view;
 
+import com.muse.editor.app.AppManager;
 import com.muse.editor.core.model.dto.LoginRequest;
 import com.muse.editor.event.EventBus;
 import com.muse.editor.event.user.LoginEvent;
 import com.muse.editor.gui.model.Presentable;
 import com.muse.editor.gui.util.SpaceFactory;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -36,6 +38,7 @@ public class LoginView extends Presentable<HBox> {
     private Label loginParagraphLabel;
     private Label usernameLabel;
     private Label passwordLabel;
+    private Label errorLabel;
 
     private Button signUpBtn;
     private Button signInBtn;
@@ -67,6 +70,7 @@ public class LoginView extends Presentable<HBox> {
         loginParagraphLabel = new Label();
         usernameLabel       = new Label();
         passwordLabel       = new Label();
+        errorLabel          = new Label();
 
         signUpBtn    = new Button();
         signInBtn    = new Button();
@@ -118,6 +122,8 @@ public class LoginView extends Presentable<HBox> {
         heroHeaderLabel.getStyleClass().add("hero-header-label");
         loginHeaderLabel.getStyleClass().add("login-header-label");
         loginParagraphLabel.getStyleClass().add("login-paragraph-label");
+        errorLabel.getStyleClass().add("error-label");
+        errorLabel.setVisible(false);
 
         usernameInput.getStyleClass().add("input");
         passwordInput.getStyleClass().add("input");
@@ -160,6 +166,7 @@ public class LoginView extends Presentable<HBox> {
 
         loginSection.getChildren().addAll(
                 loginLabels,
+                errorLabel,
                 loginForm,
                 forgotPwdContainer,
                 signInBtn,
@@ -175,6 +182,8 @@ public class LoginView extends Presentable<HBox> {
     @Override
     protected void setupEventListeners() {
         signInBtn.setOnAction(actionEvent -> handleSignInBtn());
+
+        AppManager.getInstance().getServerStatus().addListener(this::changed);
     }
 
     @Override
@@ -206,5 +215,16 @@ public class LoginView extends Presentable<HBox> {
 
         heroImageContainer.setAlignment(Pos.CENTER);
         heroImageContainer.getChildren().add(heroImageView);
+    }
+
+    private void changed(ObservableValue<? extends AppManager.ServerStatus> observableValue, AppManager.ServerStatus serverStatus, AppManager.ServerStatus t1) {
+        if (!t1.equals(AppManager.ServerStatus.RUNNING)) {
+            errorLabel.setVisible(true);
+            errorLabel.setText("No connection to the server");
+            signInBtn.setDisable(true);
+        } else {
+            errorLabel.setVisible(false);
+            signInBtn.setDisable(false);
+        }
     }
 }
