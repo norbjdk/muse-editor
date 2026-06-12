@@ -1,16 +1,13 @@
 package com.muse.editor.core.model.dto;
 
-import com.muse.editor.core.model.score.Attributes;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class NewProjectRequest {
     private final List<String> instruments = new ArrayList<>();
-    private String title;
-    private String subtitle;
-    private String composer;
+    private String workTitle;
+    private String creator;
     private int    beats;
     private int    beatType;
     private int    tempo;
@@ -18,36 +15,20 @@ public class NewProjectRequest {
 
     public NewProjectRequest() {}
 
-    public String getTitle() {
-        return title;
+    public String getWorkTitle() {
+        return workTitle;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setWorkTitle(String workTitle) {
+        this.workTitle = workTitle;
     }
 
-    public String getComposer() {
-        return composer;
+    public String getCreator() {
+        return creator;
     }
 
-    public void setComposer(String composer) {
-        this.composer = composer;
-    }
-
-    public int getMeasuresCount() {
-        return measures;
-    }
-
-    public void setMeasuresCount(int measuresCount) {
-        this.measures = measuresCount;
-    }
-
-    public String getSubtitle() {
-        return subtitle;
-    }
-
-    public void setSubtitle(String subtitle) {
-        this.subtitle = subtitle;
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
     public int getBeats() {
@@ -89,6 +70,4 @@ public class NewProjectRequest {
     public void addInstruments(String ... instruments) {
         this.instruments.add(Arrays.toString(instruments));
     }
-
-
 }

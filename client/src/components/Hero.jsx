@@ -42,10 +42,10 @@ function Hero() {
             Home
             <Home size={32} className={`text-slate-500`}/>
         </Link>
-        <Link className={`flex items-center justify-between gap-4 w-full sm:w-auto px-3 py-2 bg-white/50 hover:bg-white/70 text-slate-800 font-medium rounded-xl border border-stone-900/10 shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-200 cursor-pointer backdrop-blur-sm`}>
+        {/* <Link className={`flex items-center justify-between gap-4 w-full sm:w-auto px-3 py-2 bg-white/50 hover:bg-white/70 text-slate-800 font-medium rounded-xl border border-stone-900/10 shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-200 cursor-pointer backdrop-blur-sm`}>
             Library
             <Library size={32} className={`text-slate-500`}/>
-        </Link>
+        </Link> */}
         <Link className={`flex items-center justify-between gap-4 w-full sm:w-auto px-3 py-2 bg-white/50 hover:bg-white/70 text-slate-800 font-medium rounded-xl border border-stone-900/10 shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-200 cursor-pointer backdrop-blur-sm`}>
             Editor
             <FileMusic size={32} className={`text-slate-500`}/>

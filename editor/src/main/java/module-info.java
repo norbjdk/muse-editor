@@ -8,10 +8,16 @@ module com.norbjdk.museeditor {
     requires okhttp3;
     requires com.fasterxml.jackson.databind;
     requires java.prefs;
+    requires annotations;
+    requires java.desktop;
 
     opens com.muse.editor.app to javafx.fxml;
     exports com.muse.editor.app;
 
     opens com.muse.editor.core.model.dto to com.fasterxml.jackson.databind;
     opens com.muse.editor.core.user to com.fasterxml.jackson.databind;
+    exports com.muse.editor.app.window;
+    opens com.muse.editor.app.window to javafx.fxml;
+    exports com.muse.editor.core.api;
+    opens com.muse.editor.core.api to javafx.fxml;
 }

@@ -49,3 +49,7 @@ export const userAPI = {
     getUserById: (id) =>
         api.get(`/v1/users/${id}`)
 }
+
+export const socialsAPI = {
+
+}

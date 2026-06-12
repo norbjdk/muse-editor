@@ -1,0 +1,318 @@
+package com.muse.editor.gui.component.music;
+
+import com.muse.editor.core.model.music.Attributes;
+import com.muse.editor.core.model.music.Measure;
+import com.muse.editor.core.model.music.Note;
+import com.muse.editor.gui.manager.LayoutManager;
+import com.muse.editor.gui.model.Presentable;
+import com.muse.editor.gui.model.Staffable;
+import com.muse.editor.gui.util.MusicMetrics;
+import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ListChangeListener;
+import javafx.geometry.Insets;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
+public class MeasureComponent extends Presentable<Pane> {
+    private static final Set<Character> stepSet   = Set.of('C', 'D', 'E', 'F', 'G', 'A');
+    private static final Set<Integer>   octaveSet = Set.of(4, 5);
+
+    private DoubleProperty          measureWidth;
+    private ObjectProperty<Measure> measureProperty;
+    private List<Staffable<?>>      staffComponents;
+
+    private ListChangeListener<Note> notesListener;
+
+    private int stave;
+
+    public MeasureComponent() {
+        super(new Pane());
+    }
+
+    @Override
+    protected void initComponents() {
+        measureWidth    = new SimpleDoubleProperty(MusicMetrics.BASE_MEASURE_WIDTH);
+        measureProperty = new SimpleObjectProperty<>(null);
+
+        staffComponents = List.of(
+                new LineComponent(3, 'A'),
+                new SpaceComponent(3, 'B'),
+                new LineComponent(4, 'C'),
+                new SpaceComponent(4, 'D'),
+                new LineComponent(4, 'E'),
+                new SpaceComponent(4, 'F'),
+                new LineComponent(4, 'G'),
+                new SpaceComponent(4, 'A'),
+                new LineComponent(4, 'B'),
+                new SpaceComponent(5, 'C'),
+                new LineComponent(5, 'D'),
+                new SpaceComponent(5, 'E'),
+                new LineComponent(5, 'F'),
+                new SpaceComponent(5, 'G'),
+                new LineComponent(5, 'A'),
+                new SpaceComponent(5, 'B')
+        );
+    }
+
+    @Override
+    protected void setupComponents() {
+
+    }
+
+    @Override
+    protected void setupStyle() {
+        root.setMinHeight(computeMinHeight());
+        root.prefWidthProperty().bind(measureWidth);
+        root.setPadding(new Insets(0, 10, 0, 10));
+        root.setStyle("-fx-background-color: transparent");
+    }
+
+    @Override
+    protected void setupLayout() {
+        double y       = 0;
+
+        staffComponents = staffComponents.reversed();
+
+        for (Staffable<?> component : staffComponents) {
+            component.bindWidth(measureWidth);
+            component.setPosition(y);
+            if (component instanceof SpaceComponent)
+                y += MusicMetrics.BLANK_SPACE_HEIGHT;
+            else if (component instanceof LineComponent)
+                y += MusicMetrics.LINE_HEIGHT;
+
+        }
+
+        staffComponents.forEach(staffable -> {
+            root.getChildren().add(staffable.getRoot());
+        });
+
+        root.getChildren().addAll(
+                buildBarLine(),
+                buildRightBarLine()
+        );
+    }
+
+    @Override
+    protected void setupEventListeners() {
+        measureProperty.addListener((observableValue, oldMeasure, newMeasure) -> {
+            if (oldMeasure != null && notesListener != null) {
+                oldMeasure.getNotes().removeListener(notesListener);
+            }
+
+            if (newMeasure != null) {
+                if (newMeasure.getAttributes() != null) {
+                    this.getRoot().getChildren().add(buildClef());
+                    this.getRoot().getChildren().add(buildMetre());
+                }
+                if (!newMeasure.getNotes().isEmpty()) {
+                    this.getRoot().getChildren().addAll(buildNotes());
+                }
+
+                notesListener = change -> Platform.runLater(this::rebuildNotes);
+                newMeasure.getNotes().addListener(notesListener);
+            }
+        });
+    }
+
+    @Override
+    protected void setupEventHandlers() {
+
+    }
+
+    public void dispose() {
+        if (measureProperty.get() != null && notesListener != null) {
+            measureProperty.get().getNotes().removeListener(notesListener);
+        }
+    }
+
+    public void assignMeasure(ObjectProperty<Measure> measureProp, int stave) {
+        this.measureProperty.bind(measureProp);
+        this.stave = stave;
+        LayoutManager.getInstance().register(this);
+    }
+
+    public ObjectProperty<Measure> measureProperty() {
+        return measureProperty;
+    }
+
+    public DoubleProperty measureWidthProperty() {
+        return measureWidth;
+    }
+
+    private Canvas buildClef() {
+        if (measureProperty.get() == null)                 return null;
+        if (measureProperty.get().getAttributes() == null) return null;
+
+        final Attributes attributes = measureProperty.get().getAttributes();
+        final ClefComponent clefComponent = new ClefComponent(
+                attributes.getClefs().getFirst().getSign(),
+                attributes.getClefs().getFirst().getLine()
+        );
+
+        if (attributes.getClefs().getFirst().getLine() == 2)  {
+            clefComponent.getRoot().setLayoutY(staffComponents.getFirst().getY() - 5);
+            clefComponent.getRoot().setLayoutX(5);
+        }
+
+        expand(MusicMetrics.CLEF_CANVAS_WIDTH);
+
+        return clefComponent.getRoot();
+    }
+
+    private Canvas buildMetre() {
+        if (measureProperty.get() == null)                 return null;
+        if (measureProperty.get().getAttributes() == null) return null;
+
+        final Attributes attributes = measureProperty.get().getAttributes();
+        final MetreComponent metreComponent = new MetreComponent(
+                attributes.getBeats(),
+                attributes.getBeatType()
+        );
+
+        metreComponent.getRoot().setLayoutY(staffComponents.get(2).getY() - 5);
+        metreComponent.getRoot().setLayoutX(35);
+
+        expand(MusicMetrics.METRE_CANVAS_WIDTH);
+
+        return metreComponent.getRoot();
+    }
+
+    private List<Canvas> buildNotes() {
+        if (measureProperty.get() == null) return List.of();
+        if (
+            measureProperty.get().getNotes() == null
+            ||
+            measureProperty.get().getNotes().isEmpty()
+        ) return List.of();
+
+        final List<Canvas> notes = new ArrayList<>();
+
+        double xOffset = measureProperty.get().getAttributes() == null
+                ? MusicMetrics.NOTE_CANVAS_WIDTH / 2
+                : MusicMetrics.CLEF_CANVAS_WIDTH + 30;
+
+        xOffset += measureWidth.get() / (measureProperty.get().getNotes().size() + 2);
+
+        System.out.println("building notes: note size: " + notes.size());
+
+        for (Note note : measureProperty.get().getNotes()) {
+            System.out.println("Note: " + note.getId()  + ",type: " + note.getType().getValue());
+            Staffable<?> staffable = evaluateStaffPlace(note);
+
+            NoteComponent noteComponent = new NoteComponent(note);
+            noteComponent.getRoot().setUserData(noteComponent);
+            noteComponent.getRoot().setLayoutY(Objects.requireNonNull(staffable).getY());
+            noteComponent.getRoot().setLayoutX(xOffset);
+
+            notes.add(noteComponent.getRoot());
+            xOffset += MusicMetrics.NOTE_CANVAS_WIDTH + 4;
+        }
+
+        double notesWidth = notes.size() * (MusicMetrics.NOTE_CANVAS_WIDTH + 4);
+        measureWidth.set(MusicMetrics.BASE_MEASURE_WIDTH
+                + (measureProperty.get().getAttributes() != null
+                ? MusicMetrics.CLEF_CANVAS_WIDTH + MusicMetrics.METRE_CANVAS_WIDTH
+                : 0)
+                + notesWidth);
+        return notes;
+    }
+
+    private void rebuildNotes() {
+        root.getChildren().stream()
+                .filter(node -> node instanceof Canvas && node.getUserData() instanceof NoteComponent)
+                .forEach(node -> ((NoteComponent) node.getUserData()).dispose());
+
+        root.getChildren().removeIf(node -> node instanceof Canvas
+                && node.getUserData() instanceof NoteComponent);
+
+        double baseWidth = MusicMetrics.BASE_MEASURE_WIDTH;
+
+        if (measureProperty.get() != null && measureProperty.get().getAttributes() != null) {
+            baseWidth += MusicMetrics.CLEF_CANVAS_WIDTH;
+            baseWidth += MusicMetrics.METRE_CANVAS_WIDTH;
+        }
+        measureWidth.set(baseWidth);
+
+        root.getChildren().addAll(buildNotes());
+    }
+
+    private Line buildBarLine() {
+        final Line barline = new Line(
+                0,
+                MusicMetrics.MEASURE_TOP_Y,
+                0,
+                MusicMetrics.MEASURE_BOTTOM_Y
+        );
+
+        barline.setStroke(Color.BLACK);
+        barline.setStrokeWidth(MusicMetrics.BAR_LINE_STROKE);
+        barline.setMouseTransparent(true);
+
+        return barline;
+    }
+
+    private Line buildRightBarLine() {
+        final Line barline = new Line();
+
+        barline.startXProperty().bind(measureWidth);
+        barline.endXProperty().bind(measureWidth);
+        barline.setStartY(MusicMetrics.MEASURE_TOP_Y);
+        barline.setEndY(MusicMetrics.MEASURE_BOTTOM_Y);
+        barline.setStroke(Color.BLACK);
+        barline.setStrokeWidth(MusicMetrics.BAR_LINE_STROKE);
+        barline.setMouseTransparent(true);
+
+        return barline;
+    }
+
+    private Staffable<?> evaluateStaffPlace(final Note note) {
+        if (note.isRest()) {
+            return switch (note.getType()) {
+                case Whole      -> staffComponents.get(5);
+                case Half       -> staffComponents.get(6);
+                case Quarter    -> staffComponents.get(7);
+                case Eighth     -> staffComponents.get(7);
+                case Semiquaver -> staffComponents.get(7);
+                case null -> throw new IllegalArgumentException();
+            };
+        }
+
+        char noteStep   = note.getStep();
+        int  noteOctave = note.getOctave();
+
+        for (Staffable<?> component : staffComponents) {
+            if (component.getStep() == noteStep && component.getOctave() == noteOctave) {
+                return component;
+            }
+        }
+
+        throw new IllegalArgumentException("No staff place for: " + noteStep + noteOctave);
+    }
+
+    private double computeMinHeight() {
+        return
+                MusicMetrics.TOTAL_LINES_NUMBER
+                *
+                MusicMetrics.LINE_HEIGHT
+                +
+                MusicMetrics.TOTAL_BLANK_SPACES_NUMBER
+                *
+                MusicMetrics.BLANK_SPACE_HEIGHT;
+    }
+
+    private void expand(double amount) {
+        measureWidth.set(measureWidth.get() + amount);
+    }
+}

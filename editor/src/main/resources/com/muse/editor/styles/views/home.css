@@ -1,0 +1,165 @@
+/*
+================ HOME VIEW ================
+ */
+
+.home-content {
+    -fx-padding:    32 72 60 72;
+    -fx-spacing:    40;
+    -fx-fill-width: true;
+}
+
+.home-page-header {
+    -fx-font-family: "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-font-weight: 700;
+    -fx-font-size:   38px;
+    -fx-text-fill:   #1a1714;
+    -fx-padding:     10;
+    -fx-alignment:        center-left;
+    -fx-background-color: linear-gradient(
+            to right,
+            rgba(255, 255, 255, 0.78),
+            rgba(255, 255, 255, 0.60)
+    );
+    -fx-background-radius: 16;
+    -fx-effect:           dropshadow(gaussian, rgba(0, 0, 0, 0.18), 14, 0.4, 0, 3);
+}
+
+.home-hero-section {
+    -fx-padding:          28 32;
+    -fx-spacing:          0;
+    -fx-alignment:        center-left;
+    -fx-background-color: linear-gradient(
+            to right,
+            rgba(255, 255, 255, 0.78),
+            rgba(255, 255, 255, 0.60)
+    );
+    -fx-background-radius: 16;
+    -fx-effect:           dropshadow(gaussian, rgba(0, 0, 0, 0.18), 14, 0.4, 0, 3);
+}
+
+.home-hero-image-wrapper {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.30), 18, 0.4, 0, 2);
+}
+
+.home-hero-text {
+    -fx-spacing:    16;
+    -fx-alignment:  center-left;
+    -fx-max-width:  560;
+}
+
+.home-hero-header {
+    -fx-font-family: "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-font-size:   40px;
+    -fx-font-weight: 700;
+    -fx-text-fill:   #1a1714;
+    -fx-wrap-text:   true;
+    -fx-max-width:   540;
+}
+
+.home-hero-paragraph {
+    -fx-font-family: "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-font-size:   16px;
+    -fx-font-weight: 500;
+    -fx-text-fill:   #4a4540;
+    -fx-wrap-text:   true;
+    -fx-max-width:   500;
+    -fx-line-spacing: 3;
+}
+
+.home-info-section {
+    -fx-spacing:    28;
+    -fx-fill-height: true;
+}
+
+.home-card {
+    -fx-padding:          26;
+    -fx-spacing:          15;
+    -fx-background-color: rgba(255, 255, 255, 0.88);
+    -fx-background-radius: 12;
+    -fx-border-color:     rgba(200, 192, 180, 0.55);
+    -fx-border-width:     1;
+    -fx-border-radius:    12;
+    -fx-effect:           dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+    -fx-pref-width:       1e9;
+}
+
+.home-card-title {
+    -fx-font-family: "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-font-size:   32px;
+    -fx-font-weight: bold;
+    -fx-text-fill:   #1a1714;
+    -fx-padding:     0 0 8 0;
+    -fx-border-color: rgba(180, 170, 155, 0.6);
+    -fx-border-width: 0 0 1 0;
+}
+
+.home-card-subtitle {
+    -fx-font-family: "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-font-size:   20px;
+    -fx-font-weight: bold;
+    -fx-text-fill:   #2e2a25;
+    -fx-padding:     14 0 4 0;
+}
+
+.home-card-body {
+    -fx-font-family: "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-font-size:   18px;
+    -fx-text-fill:   #3d3830;
+    -fx-line-spacing: 4;
+    -fx-wrap-text:   true;
+}
+
+.home-step {
+    -fx-padding:          6 10 6 12;
+    -fx-background-color: rgba(230, 220, 205, 0.45);
+    -fx-background-radius: 6;
+}
+
+.home-card-name {
+    -fx-font-family: "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-font-size:   15px;
+    -fx-font-style: oblique;
+    -fx-font-weight: 600;
+    -fx-text-fill:   #1a1714;
+}
+
+.home-card-link {
+    -fx-font-family: "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-font-size:   14px;
+    -fx-text-fill:   #0969da;
+    -fx-cursor:      hand;
+}
+
+.home-btn-primary {
+    -fx-font-family:      "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-font-size:        18px;
+    -fx-font-weight:      700;
+    -fx-padding:          9 20;
+    -fx-background-color: #1a1714;
+    -fx-text-fill:        #f5f0e8;
+    -fx-background-radius: 8;
+    -fx-border-radius:    8;
+    -fx-cursor:           hand;
+}
+
+.home-btn-primary:hover {
+    -fx-background-color: #3a3530;
+}
+
+.home-btn-secondary {
+    -fx-font-family:      "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-font-size:        18px;
+    -fx-font-weight:      700;
+    -fx-padding:          9 20;
+    -fx-background-color: transparent;
+    -fx-border-color:     #1a1714;
+    -fx-border-width:     1;
+    -fx-text-fill:        #1a1714;
+    -fx-background-radius: 8;
+    -fx-border-radius:    8;
+    -fx-cursor:           hand;
+}
+
+.home-btn-secondary:hover {
+    -fx-background-color: rgba(26, 23, 20, 0.07);
+}

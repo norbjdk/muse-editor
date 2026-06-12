@@ -2,8 +2,6 @@ package com.muse.editor.core.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.muse.editor.core.project.Project;
-import javafx.beans.property.*;
 
 @JsonDeserialize(builder = User.Builder.class)
 public class User {
@@ -20,7 +18,7 @@ public class User {
     }
 
     public User changeUsername(String username) {
-        return new Builder(this).setUsername(username).build();
+        return new User.Builder(this).setUsername(username).build();
     }
 
     public long getId() {
@@ -55,25 +53,25 @@ public class User {
         public Builder() {}
 
         @JsonProperty("id")
-        public Builder setId(long id) {
+        public User.Builder setId(long id) {
             this.id = id;
             return this;
         }
 
         @JsonProperty("username")
-        public Builder setUsername(String username) {
+        public User.Builder setUsername(String username) {
             this.username = username;
             return this;
         }
 
         @JsonProperty("email")
-        public Builder setEmail(String email) {
+        public User.Builder setEmail(String email) {
             this.email = email;
             return this;
         }
 
         @JsonProperty("role")
-        public Builder declareRole(String role) {
+        public User.Builder declareRole(String role) {
             this.role = role;
             return this;
         }

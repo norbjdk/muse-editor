@@ -1,0 +1,129 @@
+/*
+================ TOOL BAR ================
+ */
+
+
+.tool-bar {
+    -fx-spacing:          16;
+    -fx-padding:          12;
+    -fx-background-color: rgba(255, 255, 255, 0.88);
+    -fx-background-radius: 12;
+    -fx-border-color:     rgba(200, 192, 180, 0.55);
+    -fx-border-width:     1;
+    -fx-border-radius:    12;
+    -fx-effect:           dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+}
+
+.tool-bar-btn {
+    -fx-padding:           10;
+    -fx-font-family:       "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-font-size:         16px;
+    -fx-font-weight:       800;
+    -fx-text-fill:         #4a4540;
+    -fx-background-color:  #f3f3f3;
+    -fx-background-radius: 50%;
+    -fx-border-color:      rgba(200, 192, 180, 0.55);
+    -fx-border-width:      1;
+    -fx-border-radius:     50%;
+    -fx-effect:            dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+}
+
+.tool-bar-btn-b {
+    -fx-padding:           10;
+    -fx-font-family:       "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-font-size:         16px;
+    -fx-font-weight:       800;
+    -fx-text-fill:         #4a4540;
+    -fx-background-color:  #f3f3f3;
+    -fx-background-radius: 8;
+    -fx-border-color:      rgba(200, 192, 180, 0.55);
+    -fx-border-width:      1;
+    -fx-border-radius:     8;
+    -fx-effect:            dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+}
+
+.tool-bar-btn:hover, .tool-bar-btn-b:hover {
+    -fx-cursor:           hand;
+    -fx-background-color: #dddcdc;
+}
+
+.combo-box {
+    -fx-padding:           6 12 6 16;
+    -fx-font-family:       "David Libre", "Segoe UI Variable Display", "Segoe UI";
+    -fx-font-size:         13px;
+    -fx-font-weight:       600;
+    -fx-text-fill:         #4a4540;
+    -fx-background-color:  #f5f4f2;
+    -fx-background-radius: 20;
+    -fx-border-color:      rgba(180, 170, 158, 0.6);
+    -fx-border-width:      1;
+    -fx-border-radius:     20;
+    -fx-effect:            dropshadow(gaussian, rgba(0,0,0,0.09), 8, 0.2, 0, 2);
+}
+
+.combo-box:hover {
+    -fx-cursor:           hand;
+    -fx-background-color: #eceae7;
+    -fx-border-color:     rgba(160, 150, 138, 0.75);
+}
+
+.combo-box:focused {
+    -fx-border-color: rgba(130, 118, 105, 0.85);
+    -fx-effect:       dropshadow(gaussian, rgba(0,0,0,0.14), 10, 0.3, 0, 2);
+}
+
+.combo-box .text-field,
+.combo-box .list-cell {
+    -fx-font-family:      "David Libre", "Segoe UI Variable Display", "Segoe UI";
+    -fx-font-size:        13px;
+    -fx-font-weight:      600;
+    -fx-text-fill:        #4a4540;
+    -fx-background-color: transparent;
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding:          0 8 0 4;
+}
+
+.combo-box .arrow-button .arrow {
+    -fx-background-color: #7a7168;
+    -fx-shape:            "M 0 0 L 4 4 L 8 0 Z";
+    -fx-padding:          3;
+    -fx-background-insets: 0;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color:  #f5f4f2;
+    -fx-background-radius: 10;
+    -fx-border-color:      rgba(180, 170, 158, 0.5);
+    -fx-border-width:      1;
+    -fx-border-radius:     10;
+    -fx-effect:            dropshadow(gaussian, rgba(0,0,0,0.12), 14, 0.25, 0, 4);
+    -fx-padding:           4 0;
+}
+
+.combo-box-popup .list-cell {
+    -fx-font-family:      "David Libre", "Segoe UI Variable Display", "Segoe UI";
+    -fx-font-size:        13px;
+    -fx-font-weight:      500;
+    -fx-text-fill:        #4a4540;
+    -fx-background-color: transparent;
+    -fx-padding:          7 16;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #e8e5e0;
+    -fx-cursor:           hand;
+}
+
+.combo-box-popup .list-cell:selected {
+    -fx-background-color: #dedad3;
+    -fx-text-fill:        #2c2825;
+    -fx-font-weight:      700;
+}
+
+.combo-box:editable .text-field {
+    -fx-background-color: transparent;
+    -fx-border-width:     0;
+}
