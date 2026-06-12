@@ -2,7 +2,7 @@ package com.muse.server.model.dto.project;
 
 public class ProjectRequest {
     private String  title;
-    private String  composer;
+    private String creator;
     private Boolean isPublic;
 
     public String getTitle() {
@@ -13,12 +13,12 @@ public class ProjectRequest {
         this.title = title;
     }
 
-    public String getComposer() {
-        return composer;
+    public String getCreator() {
+        return creator;
     }
 
-    public void setComposer(String composer) {
-        this.composer = composer;
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
     public Boolean getPublic() {
