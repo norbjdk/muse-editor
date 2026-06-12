@@ -19,6 +19,12 @@ public class ProjectAccessGuard {
         return projectMemberRepository.existsByProjectIdAndUserId(projectId, userId);
     }
 
+    public boolean isMember(ProjectEntity project, Long userId) {
+        if (isOwner(project, userId)) return true;
+        return project.getMembers().stream()
+                .anyMatch(m -> m.getUser().getId().equals(userId));
+    }
+
     public boolean hasEditAccess(ProjectEntity project, Long userId) {
         return isOwner(project, userId) || isMember(project.getId(), userId);
     }
