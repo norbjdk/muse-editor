@@ -8,6 +8,7 @@ public class ProjectResponse {
     private String  composer;
     private String  cloudCoverUrl;
     private Boolean isPublic;
+    private String cloudFilePath;
 
     public Long getId() {
         return id;
@@ -63,5 +64,13 @@ public class ProjectResponse {
 
     public void setPublic(Boolean aPublic) {
         isPublic = aPublic;
+    }
+
+    public String getCloudFilePath() {
+        return cloudFilePath;
+    }
+
+    public void setCloudFilePath(String cloudFilePath) {
+        this.cloudFilePath = cloudFilePath;
     }
 }
