@@ -9,6 +9,8 @@ import java.util.Objects;
 public class Project {
     private final String id;
 
+    private Long serverId;
+
     private final StringProperty title   = new SimpleStringProperty("Unnamed");
 
     private final ObjectProperty<Path>          filePath      = new SimpleObjectProperty<>(null);
@@ -48,7 +50,7 @@ public class Project {
         return isSaved;
     }
 
-    ObjectProperty<ScorePartwise> getScoreProperty() {
+    public ObjectProperty<ScorePartwise> getScoreProperty() {
         return scoreProperty;
     }
 
@@ -58,6 +60,13 @@ public class Project {
 
     public StringProperty titleProperty() {
         return title;
+    }
+
+    public Long getServerId() {
+        return serverId;
+    }
+    public void setServerId(Long id) {
+        this.serverId = id;
     }
 
     private static String generateId() {
