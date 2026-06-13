@@ -44,12 +44,13 @@ public class EditorApp extends Application {
         primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResource("/com/muse/editor/assets/images/logo.png")).toExternalForm()));
         primaryStage.setMinWidth(MIN_WIDTH);
         primaryStage.setMinHeight(MIN_HEIGHT);
+        primaryStage.setScene(loginWindow.getScene());
+        primaryStage.show();
+        primaryStage.centerOnScreen();
 
         titleProperty.addListener(((obs, t0, t1) -> {
             if (t1 != null && !t1.isEmpty()) primaryStage.setTitle(t1);
         }));
-
-        User initialUser = UserManager.getInstance().getCurrentUser();
 
         UserManager.getInstance().currentUserProperty().addListener((observableValue, user, t1) -> {
             if (t1 != null) {
@@ -63,8 +64,7 @@ public class EditorApp extends Application {
             }
         });
 
-        appManager.init();
-    }
+        appManager.init();}
 
 
     public static StringProperty getTitleProperty() {
