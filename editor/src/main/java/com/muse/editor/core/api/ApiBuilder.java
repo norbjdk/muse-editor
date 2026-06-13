@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.muse.editor.core.user.TokenStorage;
 import okhttp3.*;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 public class ApiBuilder {
     private static final OkHttpClient client = ApiConfig.getClient();
@@ -31,6 +33,23 @@ public class ApiBuilder {
         RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json; charset=utf-8"));
 
         Request request = new Request.Builder()
+                .url(buildUrl(endpoint))
+                .post(body)
+                .addHeader("Authorization", "Bearer " + TokenStorage.getToken())
+                .build();
+
+        return executeRequest(request, responseType);
+    }
+
+    public static <R extends ResponseDTO> R post(String endpoint, Class<R> responseType, File file) throws IOException {
+        final RequestBody fileBody = RequestBody.create(file, MediaType.parse("application/xml"));
+
+        final MultipartBody body = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", file.getName(), fileBody)
+                .build();
+
+        final Request request = new Request.Builder()
                 .url(buildUrl(endpoint))
                 .post(body)
                 .addHeader("Authorization", "Bearer " + TokenStorage.getToken())
