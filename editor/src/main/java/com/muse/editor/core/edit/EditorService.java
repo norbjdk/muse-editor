@@ -1,5 +1,6 @@
 package com.muse.editor.core.edit;
 
+import com.muse.editor.core.cloud.CloudSyncService;
 import com.muse.editor.core.model.music.Note;
 import com.muse.editor.event.EventBus;
 import com.muse.editor.event.editor.AddValueEvent;
@@ -77,5 +78,7 @@ public class EditorService {
                 cursorModel.getNoteIndex(),
                 toAdd
         );
+
+    CloudSyncService.getInstance().markDirty();
     }
 }
