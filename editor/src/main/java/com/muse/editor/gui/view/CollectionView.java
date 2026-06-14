@@ -112,6 +112,8 @@ public class CollectionView extends Presentable<ScrollPane> implements Viewable 
         scoreImageView.setHeight(280);
         scoreImageContainer.getChildren().add(scoreImageView);
         scoreImageView.setFill(Color.WHITESMOKE);
+        scoreImageView.setStroke(Color.BLACK);
+        scoreImageView.setStrokeWidth(1);
 
         scoreCard.getChildren().add(scoreImageContainer);
         scoreCard.getChildren().add(title);
