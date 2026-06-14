@@ -1,5 +1,6 @@
 package com.muse.editor.app;
 
+import com.muse.editor.core.collection.CollectionService;
 import com.muse.editor.core.edit.CursorModel;
 import com.muse.editor.core.edit.EditorService;
 import com.muse.editor.core.edit.EditorState;
@@ -28,14 +29,15 @@ public class AppManager {
     private final UserManager userManager = UserManager.getInstance();
     private final AuthService authService = AuthService.getInstance();
 
-    private final ViewManager    viewManager = ViewManager.getInstance();
+    private final ViewManager    viewManager    = ViewManager.getInstance();
     private final ProjectManager projectManager = ProjectManager.getInstance();
 
-    private final ProjectService projectService = ProjectService.getInstance();
+    private final ProjectService    projectService    = ProjectService.getInstance();
+    private final CollectionService collectionService = CollectionService.getInstance();
 
-    private final CursorModel   cursorModel = CursorModel.getInstance();
-    private final EditorState   editorState = EditorState.getInstance();
-    private final ScoreManager  scoreManager = ScoreManager.getInstance();
+    private final CursorModel   cursorModel   = CursorModel.getInstance();
+    private final EditorState   editorState   = EditorState.getInstance();
+    private final ScoreManager  scoreManager  = ScoreManager.getInstance();
     private final EditorService editorService = EditorService.getInstance();
 
     public enum ServerStatus {

@@ -6,7 +6,8 @@ public interface Viewable {
     enum Name {
         HOME,
         CREATE_PROJECT,
-        PROJECT
+        PROJECT,
+        COLLECTION
     }
 
     Node getRoot();

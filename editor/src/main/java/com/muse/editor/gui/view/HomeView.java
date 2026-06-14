@@ -21,7 +21,7 @@ import static com.muse.editor.gui.util.SpaceFactory.createSpacer;
 
 public class HomeView extends Presentable<ScrollPane> implements Viewable {
     private VBox contentContainer;
-    private HBox heroSection;
+    private VBox heroSection;
     private HBox  infoSection;
 
     private StackPane heroImageContainer;
@@ -51,7 +51,7 @@ public class HomeView extends Presentable<ScrollPane> implements Viewable {
     @Override
     protected void initComponents() {
         contentContainer    = new VBox();
-        heroSection         = new HBox();
+        heroSection         = new VBox();
         infoSection         = new HBox();
 
         heroImageContainer  = new StackPane();

@@ -4,6 +4,7 @@ package com.muse.editor.gui.manager;
 import com.muse.editor.event.EventBus;
 import com.muse.editor.event.view.ViewChangedEvent;
 import com.muse.editor.gui.model.Viewable;
+import com.muse.editor.gui.view.CollectionView;
 import com.muse.editor.gui.view.CreateProjectView;
 import com.muse.editor.gui.view.HomeView;
 import com.muse.editor.gui.view.ProjectView;
@@ -41,6 +42,7 @@ public class ViewManager {
         addView(Viewable.Name.HOME, new HomeView());
         addView(Viewable.Name.CREATE_PROJECT, new CreateProjectView());
         addView(Viewable.Name.PROJECT, new ProjectView());
+        addView(Viewable.Name.COLLECTION, new CollectionView());
     }
 
     private void addView(Viewable.Name name, Viewable view) {

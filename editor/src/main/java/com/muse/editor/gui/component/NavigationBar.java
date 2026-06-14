@@ -76,8 +76,6 @@ public class NavigationBar extends Presentable<VBox> implements Viewable {
         currentProjectBtn.setVisible(false);
         currentProjectBtn.setManaged(false);
 
-        collectionBtn.setDisable(true);
-
         setupLogo();
     }
 
@@ -135,6 +133,7 @@ public class NavigationBar extends Presentable<VBox> implements Viewable {
         currentProjectBtn.setOnAction(actionEvent -> handleCurrentProjectButtonClicked());
         logoutBtn.setOnAction(actionEvent -> handleLogoutButtonClicked());
         openProjectBtn.setOnAction(actionEvent -> handleOpenProjectButtonClicked());
+        collectionBtn.setOnAction(actionEvent -> handleCollectionButtonClicked());
     }
 
     private void handleHomeButtonClicked() {
@@ -155,6 +154,10 @@ public class NavigationBar extends Presentable<VBox> implements Viewable {
 
     private void handleLogoutButtonClicked() {
         EventBus.getInstance().publish(new LogoutEvent());
+    }
+
+    private void handleCollectionButtonClicked()  {
+        EventBus.getInstance().publish(new ChangeViewEvent(Name.COLLECTION));
     }
 
     private void setupLogo() {

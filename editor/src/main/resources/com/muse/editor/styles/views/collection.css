@@ -1,0 +1,69 @@
+/*
+================ COLLECTION VIEW ================
+ */
+
+.collection-content {
+    -fx-padding:    32 72 60 72;
+    -fx-spacing:    40;
+    -fx-fill-width: true;
+}
+
+.collection-page-header {
+    -fx-font-family: "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-font-weight: 700;
+    -fx-font-size:   38px;
+    -fx-text-fill:   #1a1714;
+    -fx-padding:     10;
+    -fx-alignment:        center-left;
+    -fx-background-color: linear-gradient(
+            to right,
+            rgba(255, 255, 255, 0.78),
+            rgba(255, 255, 255, 0.60)
+    );
+    -fx-background-radius: 16;
+    -fx-effect:           dropshadow(gaussian, rgba(0, 0, 0, 0.18), 14, 0.4, 0, 3);
+}
+
+.scores-container {
+    -fx-vgap:    20;
+    -fx-hgap:    20;
+    -fx-padding:          28 32;
+    -fx-spacing:          0;
+    -fx-alignment:        center;
+    -fx-background-color: linear-gradient(
+            to right,
+            rgba(255, 255, 255, 0.78),
+            rgba(255, 255, 255, 0.60)
+    );
+    -fx-background-radius: 16;
+    -fx-effect:           dropshadow(gaussian, rgba(0, 0, 0, 0.18), 14, 0.4, 0, 3);
+}
+
+.score-card {
+    -fx-padding: 16px;
+    -fx-alignment: center-left;
+    -fx-background-color: linear-gradient(to bottom right, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.45));
+    -fx-background-radius: 16px;
+    -fx-border-color: rgba(255, 255, 255, 0.6);
+    -fx-border-width: 1px;
+    -fx-border-radius: 16px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 12, 0.0, 0, 4);
+}
+
+
+.score-title-label {
+    -fx-font-family: "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-font-weight: 800;
+    -fx-font-size:   20px;
+    -fx-text-fill:   #1a1714;
+    -fx-border-width: 0 0 1px 0;
+    -fx-border-color: gray;
+    -fx-padding: 0 0 4px 0;
+}
+
+.score-creator-label {
+    -fx-font-family: "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-font-weight: 600;
+    -fx-font-size:   16px;
+    -fx-text-fill:   #1a1714;
+}
