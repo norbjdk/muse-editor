@@ -21,7 +21,9 @@ public class ApiConfig {
                         var originalRequest = chain.request();
                         var token = TokenStorage.getToken();
 
-                        if (token != null && !token.isEmpty()) {
+                        String requestUrl = originalRequest.url().toString();
+
+                        if (token != null && !token.isEmpty() && requestUrl.startsWith(BASE_URL)) {
                             var requestBuilder = originalRequest.newBuilder()
                                     .header("Authorization", "Bearer " + token);
                             return chain.proceed(requestBuilder.build());
@@ -32,6 +34,7 @@ public class ApiConfig {
         }
         return httpClient;
     }
+
 
     public static ObjectMapper getObjectMapper() {
         if (objectMapper == null) {
