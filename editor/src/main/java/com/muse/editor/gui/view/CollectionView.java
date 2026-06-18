@@ -2,6 +2,8 @@ package com.muse.editor.gui.view;
 
 import com.muse.editor.core.collection.CollectionService;
 import com.muse.editor.core.model.dto.ProjectResponse;
+import com.muse.editor.event.EventBus;
+import com.muse.editor.event.project.DownloadProjectEvent;
 import com.muse.editor.gui.model.Presentable;
 import com.muse.editor.gui.model.Viewable;
 import com.muse.editor.gui.util.ButtonFactory;
@@ -97,6 +99,7 @@ public class CollectionView extends Presentable<ScrollPane> implements Viewable 
     private VBox buildScoreCard(ProjectResponse projectResponse) {
         final VBox scoreCard = new VBox(8);
 
+        scoreCard.setId(String.valueOf(projectResponse.getId()));
         scoreCard.getStyleClass().add("score-card");
 
         final Label title   = new Label(projectResponse.getTitle());
@@ -118,6 +121,10 @@ public class CollectionView extends Presentable<ScrollPane> implements Viewable 
         scoreCard.getChildren().add(scoreImageContainer);
         scoreCard.getChildren().add(title);
         scoreCard.getChildren().add(creator);
+
+        scoreCard.setOnMouseClicked(event -> {
+            EventBus.getInstance().publish(new DownloadProjectEvent(projectResponse.getId()));
+        });
 
         return scoreCard;
     }
