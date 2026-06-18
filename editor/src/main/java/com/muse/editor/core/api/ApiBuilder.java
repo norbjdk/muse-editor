@@ -26,6 +26,19 @@ public class ApiBuilder {
         return executeRequest(request, responseType);
     }
 
+    public static Map<?, ?> getAsMap(String endpoint, Class<Map> responseType) throws IOException {
+        if (endpoint == null || endpoint.isEmpty()) return null;
+
+        Request request = new Request.Builder()
+                .url(buildUrl(endpoint))
+                .get()
+                .addHeader("Authorization", "Bearer " + TokenStorage.getToken())
+                .build();
+
+        return executeRequestAsMap(request, responseType);
+    }
+
+
     public static <R extends ResponseDTO, A extends RequestDTO> R post(String endpoint, Class<R> responseType, A req) throws IOException {
         if (endpoint == null || endpoint.isEmpty()) return null;
 
@@ -66,6 +79,17 @@ public class ApiBuilder {
     }
 
     private static <R extends ResponseDTO> R executeRequest(Request request, Class<R> responseType) throws IOException {
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful() && response.body() != null) {
+                String responseBody = response.body().string();
+                return mapper.readValue(responseBody, responseType);
+            } else {
+                throw new IOException("API request failed, code: " + response.code());
+            }
+        }
+    }
+
+    private static Map<?, ?> executeRequestAsMap(Request request, Class<Map> responseType) throws IOException {
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful() && response.body() != null) {
                 String responseBody = response.body().string();
