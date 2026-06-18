@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class EventBus extends Bus {
+public class EventBus {
     private static final EventBus instance = new EventBus();
     private Map<Class<?>, List<Consumer>> listeners = new HashMap();
 
