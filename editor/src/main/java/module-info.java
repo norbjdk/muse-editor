@@ -10,6 +10,7 @@ module com.norbjdk.museeditor {
     requires java.prefs;
     requires annotations;
     requires java.desktop;
+    requires java.net.http;
 
     opens com.muse.editor.app to javafx.fxml;
     exports com.muse.editor.app;
