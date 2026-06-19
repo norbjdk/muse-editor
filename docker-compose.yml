@@ -1,6 +1,6 @@
 services:
   muse_database:
-    image: postgres:16-alpine
+    image: postgres:17-alpine
     container_name: muse-postgres
     ports:
       - "${DB_PORT}:${DB_PORT}"
@@ -33,10 +33,12 @@ services:
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:${DB_PORT}/${DB_NAME}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://muse_database:${DB_PORT}/${DB_NAME}
       - SPRING_DATASOURCE_USERNAME=${DB_USER}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
-      - MINIO_ENDPOINT=http://minio:${MINIO_API_PORT}
+      - MINIO_ENDPOINT=http://muse-file-storage:${MINIO_API_PORT}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
     volumes:
       - ./server:/app
       - /app/target
