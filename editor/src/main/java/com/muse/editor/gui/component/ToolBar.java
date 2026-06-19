@@ -109,5 +109,6 @@ public class ToolBar extends Presentable<HBox> {
         });
         saveBtn.setOnAction(actionEvent -> EventBus.getInstance().publish(new SaveProjectEvent()));
         publishBtn.setOnAction(actionEvent -> EventBus.getInstance().publish(new PublishProjectEvent()));
+        closeBtn.setOnAction(actionEvent -> EventBus.getInstance().publish(new CloseProjectEvent()));
     }
 }
