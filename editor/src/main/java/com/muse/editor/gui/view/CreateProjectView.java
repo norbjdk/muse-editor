@@ -1,5 +1,6 @@
 package com.muse.editor.gui.view;
 
+import com.muse.editor.core.user.UserManager;
 import com.muse.editor.event.EventBus;
 import com.muse.editor.core.model.dto.NewProjectRequest;
 import com.muse.editor.event.project.CreateProjectEvent;
@@ -9,6 +10,7 @@ import com.muse.editor.core.model.music.ScorePart;
 import com.muse.editor.gui.model.Presentable;
 import com.muse.editor.gui.model.Viewable;
 import com.muse.editor.gui.util.SpaceFactory;
+import javafx.application.Platform;
 import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -18,8 +20,11 @@ import javafx.scene.control.*;
 import javafx.scene.effect.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
+import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 import java.util.Objects;
@@ -46,6 +51,10 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
 
     private VBox contentContainer;
     private VBox instrumentsBox;
+    private VBox resultsBox;
+    private VBox invitationsBox;
+    private VBox membersBox;
+    private HBox inviteBox;
     private HBox metricBox;
     private HBox projectButtonsContainer;
     private HBox projectButtonsWrapper;
@@ -57,7 +66,6 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
     private Label instrumentsLabel;
     private Label scorePreviewLabel;
     private Label collaboratorsLabel;
-    private Label inviteLabel;
     private Label resultsLabel;
     private Label invitationsLabel;
     private Label membersLabel;
@@ -68,6 +76,7 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
 
     private TextField workTitleInput;
     private TextField creatorInput;
+    private TextField collaboratorInput;
     private ComboBox<String> keyBox;
     private TextField        beatsInput;
     private TextField        beatTypeInput;
@@ -98,6 +107,10 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
     protected void initComponents() {
         contentContainer        = new VBox();
         instrumentsBox          = new VBox();
+        resultsBox              = new VBox();
+        invitationsBox          = new VBox();
+        inviteBox               = new HBox();
+        membersBox              = new VBox();
         metricBox               = new HBox();
         projectButtonsContainer = new HBox();
         projectButtonsWrapper   = new HBox();
@@ -109,18 +122,21 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
         instrumentsLabel   = new Label("Instruments");
         scorePreviewLabel  = new Label("Score Preview");
         collaboratorsLabel = new Label("Collaborators");
-        inviteLabel        = new Label("Invite by email");
-        membersLabel       = new Label("Team Members");
+        resultsLabel       = new Label("Search results");
+        invitationsLabel   = new Label("Pending invitations (0)");
+        membersLabel       = new Label("Members (1)");
 
-        createProjectBtn = ButtonFactory.createButton("Create", "create-btn", "Create new project", "new-project-btn");
-        cancelProjectBtn = ButtonFactory.createButton("Cancel", "cancel-btn", "Cancel creation", "new-project-btn");
+        createProjectBtn         = ButtonFactory.createButton("Create", "create-btn", "Create new project", "new-project-btn");
+        cancelProjectBtn         = ButtonFactory.createButton("Cancel", "cancel-btn", "Cancel creation", "new-project-btn");
+        inviteCollaboratorFriend = ButtonFactory.createButton("Invite", "invite-btn", "Invite entered artist", "invite-btn");
 
-        workTitleInput = new TextField();
-        creatorInput   = new TextField();
-        beatsInput     = new TextField();
-        beatTypeInput  = new TextField();
-        tempoInput     = new TextField();
-        measuresInput  = new TextField();
+        workTitleInput    = new TextField();
+        creatorInput      = new TextField();
+        collaboratorInput = new TextField();
+        beatsInput        = new TextField();
+        beatTypeInput     = new TextField();
+        tempoInput        = new TextField();
+        measuresInput     = new TextField();
 
         keyBox = new ComboBox<>();
 
@@ -129,8 +145,8 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
         instrumentsForm    = new GridPane();
         previewForm        = new GridPane();
 
-        sheetPreview    = new Canvas();
-        graphicsContext = sheetPreview.getGraphicsContext2D();
+        sheetPreview           = new Canvas();
+        graphicsContext        = sheetPreview.getGraphicsContext2D();
         previewCanvasContainer = new Pane(sheetPreview);
 
         metaDataLabels = List.of(
@@ -180,6 +196,10 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
         pageHeaderLabel.setMaxWidth(Double.MAX_VALUE);
         pageHeaderLabel.setAlignment(Pos.CENTER_LEFT);
 
+        ButtonFactory.addIcon(inviteCollaboratorFriend, FontAwesomeSolid.USER_PLUS, 15, Color.rgb(240, 238, 235));
+
+        collaboratorInput.setMaxWidth(Double.MAX_VALUE);
+
         sheetPreview.widthProperty().bind(previewCanvasContainer.widthProperty());
         sheetPreview.heightProperty().bind(previewCanvasContainer.heightProperty());
 
@@ -224,12 +244,19 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
         additionalDataLabels.forEach(label -> label.getStyleClass().add("form-label"));
         instrumentsLabel.getStyleClass().add("form-label");
 
+        resultsLabel.getStyleClass().add("form-label");
+        invitationsLabel.getStyleClass().add("form-label");
+        membersLabel.getStyleClass().add("form-label");
+
         metaDataInputs.forEach(input -> {
             input.getStyleClass().add("form-input");
             input.setStyle("-fx-min-width: 250;");
         });
 
         additionalDataNodes.forEach(node -> node.setStyle("-fx-max-width: 150"));
+
+        collaboratorInput.getStyleClass().add("collaborators-input");
+        HBox.setHgrow(collaboratorInput, Priority.ALWAYS);
 
         beatsInput.getStyleClass().add("form-input");
         beatTypeInput.getStyleClass().add("form-input");
@@ -242,6 +269,11 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
         additionalDataForm.getStyleClass().add("form");
         instrumentsForm.getStyleClass().add("form");
         previewForm.getStyleClass().add("preview-form");
+
+        inviteBox.getStyleClass().add("invite-box");
+        resultsBox.getStyleClass().add("form");
+        invitationsBox.getStyleClass().add("form");
+        membersBox.getStyleClass().add("members-box");
 
         projectButtonsContainer.getStyleClass().add("buttons-container");
         projectButtonsWrapper.getStyleClass().add("buttons-wrapper");
@@ -337,8 +369,28 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
 
         collaboratorsColumn.getStyleClass().add("collaborators-column");
 
+        inviteBox.getChildren().addAll(
+                collaboratorInput, inviteCollaboratorFriend
+        );
+        resultsBox.getChildren().add(resultsLabel);
+        invitationsBox.getChildren().add(invitationsLabel);
+        membersBox.getChildren().add(membersLabel);
+
+        UserManager.getInstance().currentUserProperty().addListener((observableValue, user, t1) -> {
+            if (t1 != null) {
+                membersBox.getChildren().add(memberCard(
+                                UserManager.getInstance().currentUserProperty().get().getUsername(),
+                                true
+                        )
+                );
+            }
+        });
+
         collaboratorsColumn.getChildren().addAll(
-                collaboratorsLabel
+                collaboratorsLabel,
+                inviteBox,
+                invitationsBox,
+                membersBox
         );
 
         return collaboratorsColumn;
@@ -443,5 +495,44 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
         shadow.setOffsetY(2);
 
         target.setEffect(shadow);
+    }
+
+    private HBox memberCard(String username, boolean isOwner) {
+        final HBox card = new HBox();
+        HBox.setHgrow(card, Priority.ALWAYS);
+
+        final Circle pictureView = new Circle();
+        final Label  usernameLabel = new Label(username);
+        final Label  identificationLabel = new Label("@" + username);
+        final Label  roleLabel = new Label(isOwner ? "Owner" : "Editor");
+        final Button removeButton = new Button();
+
+        ButtonFactory.addIcon(removeButton, FontAwesomeSolid.USER_MINUS, 15, Color.rgb(50, 50, 50));
+
+        usernameLabel.getStyleClass().add("form-label");
+        identificationLabel.getStyleClass().add("card-id-label");
+        roleLabel.getStyleClass().add("role-label");
+        removeButton.setStyle("-fx-background-color: transparent");
+
+        if (isOwner) {
+            FontIcon icon = new FontIcon(FontAwesomeSolid.AWARD);
+            icon.setIconSize(15);
+            icon.setIconColor(Color.rgb(5, 5, 5));
+
+            usernameLabel.setGraphic(icon);
+            usernameLabel.setContentDisplay(ContentDisplay.RIGHT);
+            usernameLabel.setGraphicTextGap(13);
+        }
+
+        card.getChildren().addAll(
+                pictureView,
+                new VBox(5, usernameLabel,identificationLabel),
+                SpaceFactory.createSpacer(SpaceFactory.Direction.HORIZONTAL),
+                roleLabel
+        );
+
+        if (!isOwner) card.getChildren().add(removeButton);
+
+        return card;
     }
 }
