@@ -2,6 +2,7 @@ package com.muse.server.service;
 
 import io.minio.*;
 import io.minio.errors.ErrorResponseException;
+import io.minio.http.Method;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class MinioService {
@@ -115,8 +117,35 @@ public class MinioService {
 
     public String extractSharedProjectFileUrl(Long userId, Long projectId) {
         final String path = userId + "/projects/shared/" + projectId + "/score.musicxml";
-        if (fileExists(path)) return buildUrl(path);
+
+        if (fileExists(path)) {
+            try {
+                return minioClient.getPresignedObjectUrl(
+                        GetPresignedObjectUrlArgs.builder()
+                                .method(Method.GET)
+                                .bucket(bucket)
+                                .object(path)
+                                .expiry(15, TimeUnit.MINUTES)
+                                .build()
+                );
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to generate presigned URL", e);
+            }
+        }
         throw new RuntimeException("Shared project file not found. ID: " + projectId);
+    }
+
+    public String extractProjectFileUrl(Long userId, Long projectId) {
+        final List<String> extensions = List.of(".musicxml", ".xml");
+
+        for (String extension : extensions) {
+            final String path = userId + "/projects/published/" + projectId + "/score" + extension;
+            if (fileExists(path)) {
+                return generatePresignedUrl(path);
+            }
+        }
+
+        throw new RuntimeException("Project file not found. ID:" + projectId);
     }
 
     public void createProjectFolders(Long userId, Long projectId) {
@@ -163,17 +192,6 @@ public class MinioService {
         }
     }
 
-    public String extractProjectFileUrl(Long userId, Long projectId) {
-        final List<String> extensions = List.of(".musicxml", ".xml");
-
-        for (String extension : extensions) {
-            final String path = userId + "/projects/published/" + projectId + "/score" + extension;
-            if (fileExists(path)) return buildUrl(path);
-        }
-
-        throw new RuntimeException("Project file not found. ID:" + projectId);
-    }
-
     private void addFile(String path,MultipartFile  file) {
         try {
             minioClient.putObject(
@@ -186,6 +204,21 @@ public class MinioService {
             );
         } catch (Exception e) {
             throw new RuntimeException("Upload failed: " + path, e);
+        }
+    }
+
+    private String generatePresignedUrl(String path) {
+        try {
+            return minioClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(Method.GET)
+                            .bucket(bucket)
+                            .object(path)
+                            .expiry(10, TimeUnit.MINUTES)
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to generate presigned URL for path: " + path, e);
         }
     }
 
