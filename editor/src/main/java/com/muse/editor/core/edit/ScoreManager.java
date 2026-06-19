@@ -1,5 +1,6 @@
 package com.muse.editor.core.edit;
 
+import com.muse.editor.core.cloud.CloudSyncService;
 import com.muse.editor.core.model.music.Measure;
 import com.muse.editor.core.model.music.Note;
 import com.muse.editor.core.model.music.Part;
@@ -41,18 +42,9 @@ public class ScoreManager {
 
     private ScoreManager() {
         scoreProperty.addListener((observableValue, oldScore, newScore) -> {
-            System.out.println("Główny ScorePartwise uległ zmianie!");
             if (projectManager.currentProjectProperty().get() != null) {
                 projectManager.scoreProperty().set(newScore);
             }
-        });
-
-        noteProperties.addListener((javafx.collections.ListChangeListener.Change<? extends ObjectProperty<Note>> c) -> {
-//            while (c.next()) {
-//                if (projectManager.getCurrentProject() != null) {
-//                    projectManager.markProjectAsModified();
-//                }
-//            }
         });
     }
 
@@ -84,6 +76,13 @@ public class ScoreManager {
                 .orElse(0) + 1;
     }
 
+    public int noteId() {
+        return noteProperties.stream()
+                .mapToInt(noteProperties -> noteProperties.get().getId())
+                .max()
+                .orElse(0);
+    }
+
     public Measure getMeasure(String partId, int measureIndex) {
         return getPart(partId).get()
                 .getMeasures()
@@ -103,10 +102,17 @@ public class ScoreManager {
 
         if (noteIndex < 0 || noteIndex >= notes.size()) return;
 
+        final Note oldNote = notes.get(noteIndex);
+        noteProperties.removeIf(np -> np.get() == oldNote);
+
         notes.set(noteIndex, newNotes.getFirst());
 
         for (int i = 1; i < newNotes.size(); i++) {
             notes.add(noteIndex + i, newNotes.get(i));
+        }
+
+        for (Note newNote : newNotes) {
+            noteProperties.add(new SimpleObjectProperty<>(newNote));
         }
     }
 
