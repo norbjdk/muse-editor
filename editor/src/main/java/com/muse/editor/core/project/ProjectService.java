@@ -49,6 +49,9 @@ public class ProjectService {
         EventBus.getInstance().subscribe(PublishProjectEvent.class, publishProjectEvent -> {
             handlePublishProject();
         });
+        EventBus.getInstance().subscribe(CloseProjectEvent.class, closeProjectEvent -> {
+            handleCloseProjectEvent();
+        });
     }
 
     private void handlePublishProject() {
@@ -130,6 +133,10 @@ public class ProjectService {
                 }));
     }
 
+    private void handleCloseProjectEvent() {
+        projectManager.closeProject();
+    }
+
     private void onCreateSuccess(Project project) {
         final List<Part> partList = project.getScoreProperty().get().getParts();
 
@@ -162,6 +169,7 @@ public class ProjectService {
                     project.setServerId(response.getId());
                     CloudSyncService.getInstance().attach(project);
                     System.out.println("Project registered on server: ID=" + response.getId());
+                    CloudSyncService.getInstance().forceSave();
                 }
             } catch (IOException e) {
                 System.err.println("Server registration failed, offline mode: " + e.getMessage());
