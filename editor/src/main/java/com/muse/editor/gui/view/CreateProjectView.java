@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class CreateProjectView extends Presentable<ScrollPane> implements Viewable {
-    private final static int PREVIEW_WIDTH  = 350;
-    private final static int PREVIEW_HEIGHT = 525;
+    private final static int PREVIEW_WIDTH  = 356;
+    private final static int PREVIEW_HEIGHT = 531;
 
     private final static List<ScorePart.Name> instrumentsList = List.of(
         ScorePart.Name.Piano,
@@ -58,6 +58,8 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
     private Label scorePreviewLabel;
     private Label collaboratorsLabel;
     private Label inviteLabel;
+    private Label resultsLabel;
+    private Label invitationsLabel;
     private Label membersLabel;
 
     private Button createProjectBtn;
@@ -84,6 +86,7 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
     private List<Node>      additionalDataNodes;
     private List<TextField> metaDataInputs;
 
+    private Pane            previewCanvasContainer;
     private Canvas          sheetPreview;
     private GraphicsContext graphicsContext;
 
@@ -128,6 +131,7 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
 
         sheetPreview    = new Canvas();
         graphicsContext = sheetPreview.getGraphicsContext2D();
+        previewCanvasContainer = new Pane(sheetPreview);
 
         metaDataLabels = List.of(
                 new Label("Work Title"),
@@ -176,14 +180,16 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
         pageHeaderLabel.setMaxWidth(Double.MAX_VALUE);
         pageHeaderLabel.setAlignment(Pos.CENTER_LEFT);
 
-        sheetPreview.setWidth(PREVIEW_WIDTH);
-        sheetPreview.setHeight(PREVIEW_HEIGHT);
+        sheetPreview.widthProperty().bind(previewCanvasContainer.widthProperty());
+        sheetPreview.heightProperty().bind(previewCanvasContainer.heightProperty());
 
-        graphicsContext.setFill(Color.WHITESMOKE);
-        graphicsContext.setTextAlign(TextAlignment.CENTER);
-        graphicsContext.fillRect(0, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT);
-        graphicsContext.setStroke(Color.rgb(5, 5, 5));
-        graphicsContext.strokeRect(0, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT);
+        sheetPreview.widthProperty().addListener((obs, oldV, newV) -> handleRedrawPreview());
+        sheetPreview.heightProperty().addListener((obs, oldV, newV) -> handleRedrawPreview());
+
+        graphicsContext.clearRect(0, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT);
+        graphicsContext.setFill(Color.rgb(250, 250, 250));
+        graphicsContext.fillRoundRect(0, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT,16, 16);
+        graphicsContext.setFill(Color.BLACK);
 
         keyBox.getItems().addAll(keysList);
         keyBox.getSelectionModel().selectFirst();
@@ -235,7 +241,7 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
         metaDataForm.getStyleClass().add("form");
         additionalDataForm.getStyleClass().add("form");
         instrumentsForm.getStyleClass().add("form");
-        previewForm.getStyleClass().add("form");
+        previewForm.getStyleClass().add("preview-form");
 
         projectButtonsContainer.getStyleClass().add("buttons-container");
         projectButtonsWrapper.getStyleClass().add("buttons-wrapper");
@@ -243,7 +249,7 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
         keyBox.getStyleClass().add("key-box");
         instrumentsBox.getStyleClass().add("instruments-box");
 
-        addEffect(sheetPreview);
+        addEffect(previewCanvasContainer);
     }
 
     @Override
@@ -300,10 +306,23 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
 
     private VBox previewColumn() {
         final VBox previewColumn = new VBox(20);
-
         previewColumn.getStyleClass().add("preview-column");
 
-        previewForm.add(sheetPreview, 0,  0);
+        ColumnConstraints col = new ColumnConstraints();
+        col.setFillWidth(true);
+        col.setHgrow(Priority.ALWAYS);
+        previewForm.getColumnConstraints().add(col);
+
+        RowConstraints row = new RowConstraints();
+        row.setFillHeight(true);
+        row.setVgrow(Priority.ALWAYS);
+        previewForm.getRowConstraints().add(row);
+
+        previewForm.add(previewCanvasContainer, 0, 0);
+        GridPane.setHgrow(previewCanvasContainer, Priority.ALWAYS);
+        GridPane.setVgrow(previewCanvasContainer, Priority.ALWAYS);
+
+        VBox.setVgrow(previewForm, Priority.ALWAYS);
 
         previewColumn.getChildren().addAll(
                 scorePreviewLabel,
@@ -350,32 +369,34 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
         projectInfoColumn.getChildren().addAll(
                 projectInfoLabel,
                 metaDataForm,
-                additionalDataForm,
-                instrumentsForm
+                new HBox(10,
+                        additionalDataForm,
+                        instrumentsForm)
         );
 
         return projectInfoColumn;
     }
 
     private void handleRedrawPreview() {
-        graphicsContext.clearRect(0, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT);
-        graphicsContext.setFill(Color.WHITESMOKE);
-        graphicsContext.fillRect(0, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT);
-        graphicsContext.setStroke(Color.rgb(5, 5, 5));
-        graphicsContext.strokeRect(0, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT);
+        final double width  = sheetPreview.getWidth();
+        final double height = sheetPreview.getHeight();
+
+        graphicsContext.clearRect(0, 0, width, height);
+        graphicsContext.setFill(Color.rgb(250, 250, 250));
+        graphicsContext.fillRoundRect(0, 0, width, height, 16, 16);
         graphicsContext.setFill(Color.BLACK);
 
-        final String workTitle    = workTitleInput.getText();
-        final String creator = creatorInput.getText();
+        final String workTitle = workTitleInput.getText();
+        final String creator   = creatorInput.getText();
 
         if (!workTitle.isEmpty()) {
             graphicsContext.setFont(Font.font("Arial Black", 16));
-            graphicsContext.fillText(workTitle, (double) PREVIEW_WIDTH / 2, 60);
+            graphicsContext.fillText(workTitle, width / 2, 60);
         }
 
         if (!creator.isEmpty()) {
             graphicsContext.setFont(Font.font("Times New Roman", 14));
-            graphicsContext.fillText(creator, PREVIEW_WIDTH - (creator.length() + 30), 100);
+            graphicsContext.fillText(creator, width - (creator.length() + 30), 100);
         }
     }
 
@@ -413,24 +434,14 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
     }
 
     private void addEffect(Node target) {
-        DropShadow outerShadow = new DropShadow();
-        outerShadow.setColor(Color.rgb(0, 0, 0, 0.4));
-        outerShadow.setRadius(25);
-        outerShadow.setOffsetX(0);
-        outerShadow.setOffsetY(10);
-        outerShadow.setSpread(0.1);
+        DropShadow shadow = new DropShadow();
+        shadow.setBlurType(BlurType.GAUSSIAN);
+        shadow.setColor(Color.rgb(0, 0, 0, 0.13));
+        shadow.setRadius(12);
+        shadow.setSpread(0.35);
+        shadow.setOffsetX(0);
+        shadow.setOffsetY(2);
 
-        InnerShadow innerShadow = new InnerShadow();
-        innerShadow.setColor(Color.rgb(255, 255, 255, 0.6));
-        innerShadow.setRadius(5);
-        innerShadow.setOffsetX(-2);
-        innerShadow.setOffsetY(-2);
-        innerShadow.setChoke(0.8);
-
-        target.setEffect(new Blend(
-                BlendMode.SRC_OVER,
-                outerShadow,
-                innerShadow
-        ));
+        target.setEffect(shadow);
     }
 }

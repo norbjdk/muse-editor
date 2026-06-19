@@ -27,19 +27,17 @@
 }
 
 .columns-container, .buttons-container {
-    -fx-hgap:        80px;
+    -fx-hgap:        50px;
     -fx-vgap:        50px;
     -fx-alignment:   center;
     -fx-orientation: horizontal;
-    -fx-padding:     10;
-    -fx-background-color: linear-gradient(
-            to right,
-            rgba(255, 255, 255, 0.78),
-            rgba(255, 255, 255, 0.60)
-    );
+    -fx-background-color: transparent;
     -fx-background-radius: 16;
     -fx-effect:           dropshadow(gaussian, rgba(0, 0, 0, 0.18), 14, 0.4, 0, 3);
+}
 
+.buttons-container {
+    -fx-padding: 10;
 }
 
 .buttons-wrapper {
@@ -90,6 +88,12 @@
     -fx-border-width:     1;
     -fx-border-radius:    12;
     -fx-effect:           dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+    -fx-pref-width:       1e9;
+    -fx-alignment:        center;
+}
+
+.preview-form {
+    -fx-padding:          1;
     -fx-pref-width:       1e9;
     -fx-alignment:        center;
 }
