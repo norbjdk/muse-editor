@@ -205,10 +205,7 @@ public class MeasureComponent extends Presentable<Pane> {
 
         xOffset += measureWidth.get() / (measureProperty.get().getNotes().size() + 2);
 
-        System.out.println("building notes: note size: " + notes.size());
-
         for (Note note : measureProperty.get().getNotes()) {
-            System.out.println("Note: " + note.getId()  + ",type: " + note.getType().getValue());
             Staffable<?> staffable = evaluateStaffPlace(note);
 
             NoteComponent noteComponent = new NoteComponent(note);
