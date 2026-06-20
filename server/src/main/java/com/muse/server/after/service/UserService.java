@@ -35,8 +35,7 @@ public class UserService implements UserDetailsService {
         return new CustomUserDetails(user);
     }
 
-    @Transactional
-    public UserResponse createUser(UserCreateRequest request) {
+    public UserEntity register(UserCreateRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new RuntimeException("Username is already in use");
         }
@@ -51,9 +50,25 @@ public class UserService implements UserDetailsService {
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
 
-        final UserEntity saved = userRepository.save(user);
+        return userRepository.save(user);
+    }
 
-        return toResponse(saved);
+    public UserEntity createUser(UserCreateRequest request) {
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new RuntimeException("Username is already in use");
+        }
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email is already in use");
+        }
+
+        final UserEntity user = new UserEntity();
+
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(request.getPassword());
+
+        return userRepository.save(user);
     }
 
     public List<UserResponse> getAllUsers() {
