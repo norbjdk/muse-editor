@@ -26,7 +26,7 @@ function App() {
                             <Profile />
                         </PrivateRoute>
                     } />
-                     <Route path="/user/:username" element={<User />} />
+                     <Route path="/artist/:username" element={<User />} />
                 </Route>
             </Routes>
         </AuthProvider>
