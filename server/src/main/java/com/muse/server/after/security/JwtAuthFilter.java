@@ -1,6 +1,6 @@
 package com.muse.server.after.security;
 
-import com.muse.server.before.util.JwtUtil;
+import com.muse.server.after.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
