@@ -11,6 +11,8 @@ module com.norbjdk.museeditor {
     requires annotations;
     requires java.desktop;
     requires java.net.http;
+    requires spring.messaging;
+    requires spring.websocket;
 
     opens com.muse.editor.app to javafx.fxml;
     exports com.muse.editor.app;
