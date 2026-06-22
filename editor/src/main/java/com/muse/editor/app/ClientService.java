@@ -1,16 +1,17 @@
 package com.muse.editor.app;
 
-import com.muse.editor.core.cloud.ProjectEditMessage;
+import com.muse.editor.core.model.message.InvitationMessage;
 import com.muse.editor.core.user.TokenStorage;
+import com.muse.editor.core.user.UserManager;
+import javafx.application.Platform;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.messaging.simp.stomp.StompCommand;
-import org.springframework.messaging.simp.stomp.StompHeaders;
-import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
+import org.springframework.messaging.simp.stomp.*;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
+
+import java.lang.reflect.Type;
 
 public class ClientService {
     private static final ClientService instance = new ClientService();
@@ -42,7 +43,7 @@ public class ClientService {
             public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
                 stompSession = session;
                 System.out.println("Connected to the server");
-
+                subscribeToNotifications();
             }
 
             @Override
@@ -53,13 +54,31 @@ public class ClientService {
         });
     }
 
-    private void subscribeNotifications() {
+    private void subscribeToNotifications() {
+        stompSession.subscribe("/user/queue/notifications", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return InvitationMessage.class;
+            }
 
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                InvitationMessage invitationMessage = (InvitationMessage) payload;
+
+                Platform.runLater(() -> {
+                    System.out.println("Notif: " + invitationMessage.content());
+                });
+            }
+        });
     }
 
-    public void sendTextChange(String projectId, String textChange, int cursor) {
-//        ProjectEditMessage change = new ProjectEditMessage(projectId, username, textChange, cursor);
-//        stompSession.send("/app/project/f");
+    public void sendInvitation(String targetUser) {
+        final InvitationMessage invitationMessage = new InvitationMessage(
+                "INVITE",
+                UserManager.getInstance().currentUserProperty().get().getUsername(),
+                "Come on in");
+
+        stompSession.send("/app/invite/" + targetUser, invitationMessage);
     }
 }
 

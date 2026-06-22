@@ -80,6 +80,7 @@ public class AppManager {
                     Platform.runLater(() -> {
                         UserManager.getInstance().setCurrentUser(user);
                         EventBus.getInstance().publish(new LoggedInEvent());
+                        ClientService.getInstance().connect();
                     });
                 } else {
                     Platform.runLater(() -> TokenStorage.clear());
