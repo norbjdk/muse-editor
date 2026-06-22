@@ -24,6 +24,9 @@ public class UserService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Autowired
+    private MinioService minioService;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
@@ -48,9 +51,13 @@ public class UserService implements UserDetailsService {
 
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        return userRepository.save(user);
+        final UserEntity saved = userRepository.save(user);
+
+        minioService.createUserFolder(saved.getId());
+
+        return saved;
     }
 
     public UserEntity createUser(UserCreateRequest request) {
