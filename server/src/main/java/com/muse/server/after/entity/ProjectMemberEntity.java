@@ -72,5 +72,10 @@ public class ProjectMemberEntity {
             if ((! (o instanceof ProjectMemberId that))) return false;
             return Objects.equals(projectId, that.projectId) && Objects.equals(userId, that.userId);
         }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(projectId, userId);
+        }
     }
 }

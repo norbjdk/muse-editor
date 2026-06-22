@@ -1,6 +1,5 @@
 package com.muse.server.after.entity;
 
-import com.muse.server.before.model.entity.UserEntity;
 import jakarta.persistence.*;
 
 @Entity
