@@ -1,4 +1,9 @@
 package com.muse.editor.core.model.message;
 
-public record InvitationMessage(String type, String username, String content){
-}
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record InvitationMessage(
+        @JsonProperty("type") String type,
+        @JsonProperty("from") String username,
+        @JsonProperty("content") String content
+) {}
