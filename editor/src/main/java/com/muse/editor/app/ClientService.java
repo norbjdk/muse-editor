@@ -1,5 +1,7 @@
 package com.muse.editor.app;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.muse.editor.core.model.message.InvitationMessage;
 import com.muse.editor.core.user.TokenStorage;
 import com.muse.editor.core.user.UserManager;
@@ -38,6 +40,14 @@ public class ClientService {
     public void connect() {
         StandardWebSocketClient webSocketClient = new StandardWebSocketClient();
         WebSocketStompClient client = new WebSocketStompClient(webSocketClient);
+
+        MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        converter.setObjectMapper(objectMapper);
+        client.setMessageConverter(converter);
 
         client.setMessageConverter(new MappingJackson2MessageConverter());
 
