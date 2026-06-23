@@ -15,6 +15,8 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ClientService {
     private static final ClientService instance = new ClientService();
@@ -96,12 +98,13 @@ public class ClientService {
             return;
         }
 
-        final InvitationMessage invitationMessage = new InvitationMessage(
-                "INVITE",
-                UserManager.getInstance().currentUserProperty().get().getUsername(),
-                "Come on in");
+        final Map<String, String> payload = new HashMap<>();
+        payload.put("type", "INVITE");
+        payload.put("from", UserManager.getInstance().currentUserProperty().get().getUsername());
+        payload.put("content", "Come on in");
 
-        stompSession.send("/app/invite/" + targetUser, invitationMessage);
+        stompSession.send("/app/invite/" + targetUser, payload);
+        Debug.check("Invited " + targetUser + " as collaborator");
     }
 
     public ObjectProperty<Status> statusProperty() {

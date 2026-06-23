@@ -1,5 +1,6 @@
 package com.muse.editor.gui.view;
 
+import com.muse.editor.app.ClientService;
 import com.muse.editor.core.user.UserManager;
 import com.muse.editor.event.EventBus;
 import com.muse.editor.core.model.dto.NewProjectRequest;
@@ -329,6 +330,11 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
         createProjectBtn.setOnAction(actionEvent -> handleCreateProjectBtnClicked());
         cancelProjectBtn.setOnAction(actionEvent -> handleCancelProjectBtnClicked());
 
+        inviteCollaboratorFriend.setOnAction(actionEvent -> handleInviteCollaboratorBtnClicked());
+    }
+
+    private void handleInviteCollaboratorBtnClicked() {
+        ClientService.getInstance().sendInvitation(collaboratorInput.getText());
     }
 
     private void handleInstrumentButtonClicked(Button target) {
