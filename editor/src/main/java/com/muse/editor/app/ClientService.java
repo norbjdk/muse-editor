@@ -105,8 +105,8 @@ public class ClientService {
                     InvitationMessage message = mapper.readValue(json, InvitationMessage.class);
 
                     Platform.runLater(() -> {
-                        System.out.println("Invitation from: " + message.from());
-                        System.out.println("Content: " + message.content());
+                        System.out.println("Invitation from: " + message.getUsername());
+                        System.out.println("Content: " + message.getContent());
 
                     });
 
