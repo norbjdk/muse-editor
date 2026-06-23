@@ -23,4 +23,6 @@ module com.norbjdk.museeditor {
     opens com.muse.editor.app.window to javafx.fxml;
     exports com.muse.editor.core.api;
     opens com.muse.editor.core.api to javafx.fxml;
+    exports com.muse.editor.util;
+    opens com.muse.editor.util to javafx.fxml;
 }
