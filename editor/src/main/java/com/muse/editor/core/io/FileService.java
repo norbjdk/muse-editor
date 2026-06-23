@@ -1,16 +1,15 @@
 package com.muse.editor.core.io;
 
+import com.muse.editor.app.AppManager;
 import com.muse.editor.core.api.ApiBuilder;
 import com.muse.editor.core.api.ApiConfig;
 import com.muse.editor.core.model.music.ScorePartwise;
 import com.muse.editor.core.project.ProjectManager;
-import com.muse.editor.core.user.TokenStorage;
 import com.muse.editor.event.EventBus;
 import com.muse.editor.event.project.*;
 import javafx.application.Platform;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.xml.sax.SAXException;
@@ -19,10 +18,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
@@ -32,7 +27,7 @@ public final class FileService {
         OPEN,
         SAVE
     }
-    private Stage primaryStage;
+    private final Stage primaryStage;
 
     private static final FileService instance = new FileService();
 
@@ -41,13 +36,11 @@ public final class FileService {
     }
 
     private FileService() {
+        primaryStage = AppManager.getInstance().getPrimaryStage();
+
         EventBus.getInstance().subscribe(SaveProjectEvent.class, saveProjectEvent -> handleSaveProjectEvent());
         EventBus.getInstance().subscribe(OpenProjectEvent.class,openProjectEvent -> handleOpenProjectEvent());
         EventBus.getInstance().subscribe(DownloadProjectEvent.class, downloadProjectEvent -> handleDownloadProjectEvent(downloadProjectEvent.getId()));
-    }
-
-    public void init(Stage primaryStage) {
-        this.primaryStage = primaryStage;
     }
 
     private void handleOpenProjectEvent() {

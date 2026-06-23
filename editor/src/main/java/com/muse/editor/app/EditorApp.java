@@ -2,9 +2,9 @@ package com.muse.editor.app;
 
 import com.muse.editor.app.window.LoginWindow;
 import com.muse.editor.app.window.MainWindow;
-import com.muse.editor.core.io.FileService;
-import com.muse.editor.core.user.User;
-import com.muse.editor.core.user.UserManager;
+import com.muse.editor.event.EventBus;
+import com.muse.editor.event.view.ShowLoginWindow;
+import com.muse.editor.event.view.ShowMainWindow;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -32,39 +32,26 @@ public class EditorApp extends Application {
     private static final StringProperty titleProperty = new SimpleStringProperty("MUSE Editor");
 
     @Override
-    public void start(Stage primaryStage) throws IOException {
+    public void start(Stage primaryStage) {
+        AppManager.init(primaryStage);
+
         final MainWindow mainWindow   = new MainWindow();
         final LoginWindow loginWindow = new LoginWindow();
-        final AppManager appManager   = AppManager.getInstance();
-        final FileService fileService = FileService.getInstance();
-
-        fileService.init(primaryStage);
 
         primaryStage.setTitle(titleProperty.get());
         primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResource("/com/muse/editor/assets/images/logo.png")).toExternalForm()));
         primaryStage.setMinWidth(MIN_WIDTH);
         primaryStage.setMinHeight(MIN_HEIGHT);
-        primaryStage.setScene(loginWindow.getScene());
-        primaryStage.show();
-        primaryStage.centerOnScreen();
 
-        titleProperty.addListener(((obs, t0, t1) -> {
-            if (t1 != null && !t1.isEmpty()) primaryStage.setTitle(t1);
-        }));
-
-        UserManager.getInstance().currentUserProperty().addListener((observableValue, user, t1) -> {
-            if (t1 != null) {
-                primaryStage.setScene(mainWindow.getScene());
-                primaryStage.show();
-                primaryStage.centerOnScreen();
-            } else {
-                primaryStage.setScene(loginWindow.getScene());
-                primaryStage.show();
-                primaryStage.centerOnScreen();
-            }
+        EventBus.getInstance().subscribe(ShowLoginWindow.class, showLoginWindow -> {
+            primaryStage.setScene(loginWindow.getScene());
+        });
+        EventBus.getInstance().subscribe(ShowMainWindow.class, showMainWindow -> {
+            primaryStage.setScene(mainWindow.getScene());
         });
 
-        appManager.init();}
+        AppManager.getInstance().startApp();
+    }
 
 
     public static StringProperty getTitleProperty() {

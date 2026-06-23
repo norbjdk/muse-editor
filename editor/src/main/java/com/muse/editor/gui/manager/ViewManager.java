@@ -2,6 +2,7 @@ package com.muse.editor.gui.manager;
 
 
 import com.muse.editor.event.EventBus;
+import com.muse.editor.event.view.ChangeViewEvent;
 import com.muse.editor.event.view.ViewChangedEvent;
 import com.muse.editor.gui.model.Viewable;
 import com.muse.editor.gui.view.CollectionView;
@@ -26,7 +27,7 @@ public class ViewManager {
 
     private ViewManager() {
         views = new HashMap<>();
-
+        setupEventListeners();
         initViews();
     }
 
@@ -36,6 +37,14 @@ public class ViewManager {
         }
 
         return instance;
+    }
+
+    private void setupEventListeners() {
+        EventBus.getInstance().subscribe(ChangeViewEvent.class, changeViewEvent -> {
+            if (changeViewEvent != null && changeViewEvent.getViewName() != null) {
+                changeView(changeViewEvent.getViewName());
+            }
+        });
     }
 
     private void initViews() {

@@ -183,7 +183,7 @@ public class LoginView extends Presentable<HBox> {
     protected void setupEventListeners() {
         signInBtn.setOnAction(actionEvent -> handleSignInBtn());
 
-        AppManager.getInstance().getServerStatus().addListener(this::changed);
+        AppManager.getInstance().serverStatusProperty().addListener(this::changed);
     }
 
     @Override
