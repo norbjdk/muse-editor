@@ -17,6 +17,7 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -95,7 +96,7 @@ public class ClientService {
             public void handleFrame(StompHeaders headers, Object payload) {
                 try {
                     byte[] bytes = (byte[]) payload;
-                    String json = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
+                    String json = new String(bytes, StandardCharsets.UTF_8);
 
                     System.out.println("Raw JSON: " + json);
 
