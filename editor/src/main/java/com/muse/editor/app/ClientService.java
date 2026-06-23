@@ -3,7 +3,10 @@ package com.muse.editor.app;
 import com.muse.editor.core.model.message.InvitationMessage;
 import com.muse.editor.core.user.TokenStorage;
 import com.muse.editor.core.user.UserManager;
+import com.muse.editor.util.Debug;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.*;
@@ -20,41 +23,56 @@ public class ClientService {
         return instance;
     }
 
+    public enum Status {
+        CONNECTED,
+        DISCONNECTED
+    }
+
+    private final ObjectProperty<Status> status = new SimpleObjectProperty<>(Status.DISCONNECTED);
+    private StompSession stompSession;
+
     private ClientService() {}
 
-    private final String server = "ws://localhost:8080/ws";
-    private StompSession stompSession;
-    private String username;
-    private String token;
-
     public void connect() {
-        token = TokenStorage.getToken();
-
         StandardWebSocketClient webSocketClient = new StandardWebSocketClient();
         WebSocketStompClient client = new WebSocketStompClient(webSocketClient);
 
         client.setMessageConverter(new MappingJackson2MessageConverter());
 
         StompHeaders headers = new StompHeaders();
-        headers.add("Authorization", "Bearer " + token);
+        headers.add("Authorization", "Bearer " + TokenStorage.getToken());
 
-        client.connectAsync(server, new WebSocketHttpHeaders(), headers, new StompSessionHandlerAdapter() {
+        client.connectAsync(AppConfig.websocketUrlProperty().get(), new WebSocketHttpHeaders(), headers, new StompSessionHandlerAdapter() {
             @Override
             public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
                 stompSession = session;
-                System.out.println("Connected to the server");
+                Debug.pass("Connected to the WebSocket server");
+
+                Platform.runLater(() -> status.set(Status.CONNECTED));
+
                 subscribeToNotifications();
             }
 
             @Override
             public void handleException(StompSession session, @Nullable StompCommand command, StompHeaders headers, byte[] payload, Throwable exception) {
-                System.out.println("No connection to the server");
+                Debug.fail("Connection exception or lost link to the server");
+
+                Platform.runLater(() -> status.set(Status.DISCONNECTED));
+
                 exception.printStackTrace();
+            }
+
+            @Override
+            public void handleTransportError(StompSession session, Throwable exception) {
+                Debug.fail("Transport error encountered");
+                Platform.runLater(() -> status.set(Status.DISCONNECTED));
             }
         });
     }
 
     private void subscribeToNotifications() {
+        if (stompSession == null || !stompSession.isConnected()) return;
+
         stompSession.subscribe("/user/queue/notifications", new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
@@ -66,13 +84,18 @@ public class ClientService {
                 InvitationMessage invitationMessage = (InvitationMessage) payload;
 
                 Platform.runLater(() -> {
-                    System.out.println("Notif: " + invitationMessage.content());
+                    System.out.println("Notification received: " + invitationMessage.content());
                 });
             }
         });
     }
 
     public void sendInvitation(String targetUser) {
+        if (stompSession == null || !stompSession.isConnected()) {
+            Debug.fail("Cannot send invitation - STOMP session is offline");
+            return;
+        }
+
         final InvitationMessage invitationMessage = new InvitationMessage(
                 "INVITE",
                 UserManager.getInstance().currentUserProperty().get().getUsername(),
@@ -80,5 +103,8 @@ public class ClientService {
 
         stompSession.send("/app/invite/" + targetUser, invitationMessage);
     }
-}
 
+    public ObjectProperty<Status> statusProperty() {
+        return status;
+    }
+}
