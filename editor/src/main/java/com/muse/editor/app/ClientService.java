@@ -83,11 +83,21 @@ public class ClientService {
 
             @Override
             public void handleFrame(StompHeaders headers, Object payload) {
-                InvitationMessage invitationMessage = (InvitationMessage) payload;
+                System.out.println("Raw payload class: " + payload.getClass());
+                System.out.println("Raw payload: " + payload);
 
-                Platform.runLater(() -> {
-                    System.out.println("Notification received: " + invitationMessage.content());
-                });
+                if (payload instanceof String) {
+                    System.out.println("JSON: " + payload);
+                }
+
+                if (payload instanceof InvitationMessage invitationMessage) {
+                    Platform.runLater(() -> {
+                        System.out.println("Notification received from: " + invitationMessage.from());
+                        System.out.println("Content: " + invitationMessage.content());
+                    });
+                } else {
+                    System.out.println("Payload is NOT InvitationMessage: " + payload);
+                }
             }
         });
     }

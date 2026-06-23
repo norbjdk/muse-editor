@@ -17,6 +17,13 @@ public class MessageController {
 
     @MessageMapping("/invite/{targetUsername}")
     public void sendProjectInvitation(@DestinationVariable String targetUsername, @Payload InviteCollaboratorMessage invite) {
+        System.out.println("Received invitation: " + invite);
+        System.out.println("Target user: " + targetUsername);
+        System.out.println("Sending to: /user/" + targetUsername + "/queue/notifications");
+
+        System.out.println("Type: " + invite.type());
+        System.out.println("From: " + invite.from());
+        System.out.println("Content: " + invite.content());
 
         messagingTemplate.convertAndSendToUser(targetUsername, "/queue/notifications", invite);
     }
