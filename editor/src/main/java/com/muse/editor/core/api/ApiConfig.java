@@ -1,11 +1,12 @@
 package com.muse.editor.core.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.muse.editor.app.AppConfig;
 import com.muse.editor.core.user.TokenStorage;
 import okhttp3.OkHttpClient;
 
-public class ApiConfig {
-    private static final String BASE_URL = "http://localhost:8080";
+public final class ApiConfig {
+    private static final String BASE_URL = AppConfig.serverUrlProperty().get();
 
     private static OkHttpClient httpClient;
     private static ObjectMapper objectMapper;
