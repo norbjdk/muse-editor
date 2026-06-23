@@ -88,25 +88,31 @@ public class ClientService {
         stompSession.subscribe("/user/queue/notifications", new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
-                return InvitationMessage.class;
+                return byte[].class;
             }
 
             @Override
             public void handleFrame(StompHeaders headers, Object payload) {
-                System.out.println("Raw payload class: " + payload.getClass());
-                System.out.println("Raw payload: " + payload);
+                try {
+                    byte[] bytes = (byte[]) payload;
+                    String json = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
 
-                if (payload instanceof String) {
-                    System.out.println("JSON: " + payload);
-                }
+                    System.out.println("Raw JSON: " + json);
 
-                if (payload instanceof InvitationMessage invitationMessage) {
+                    ObjectMapper mapper = new ObjectMapper();
+                    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+                    InvitationMessage message = mapper.readValue(json, InvitationMessage.class);
+
                     Platform.runLater(() -> {
-                        System.out.println("Notification received from: " + invitationMessage.from());
-                        System.out.println("Content: " + invitationMessage.content());
+                        System.out.println("Invitation from: " + message.from());
+                        System.out.println("Content: " + message.content());
+
                     });
-                } else {
-                    System.out.println("Payload is NOT InvitationMessage: " + payload);
+
+                } catch (Exception e) {
+                    System.err.println("Error: " + e.getMessage());
+                    e.printStackTrace();
                 }
             }
         });
