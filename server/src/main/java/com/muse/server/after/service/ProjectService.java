@@ -32,6 +32,7 @@ public class ProjectService {
         project.setTitle(request.getTitle());
         project.setCreator(request.getCreator());
         project.setPublished(false);
+        project.setFilePath("");
 
         final ProjectEntity saved = projectRepository.save(project);
 

@@ -61,7 +61,7 @@ public class StorageController  {
 
     @GetMapping("/projects/{projectId}/file/get")
     public ResponseEntity<Map<String,String >> getProjectFile(
-            @AuthenticationPrincipal com.muse.server.before.model.detail.CustomUserDetails user,
+            @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long projectId
     )  {
         final String url = storageService.getProjectFileUrl(user.getId(), projectId);
@@ -71,7 +71,7 @@ public class StorageController  {
 
     @GetMapping("/projects/{projectId}/shared/get")
     public ResponseEntity<Map<String, String>> getSharedFile(
-            @AuthenticationPrincipal com.muse.server.before.model.detail.CustomUserDetails user,
+            @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long projectId
     ) {
         final String url = storageService.getSharedProjectFileUrl(user.getId(), projectId);
@@ -80,7 +80,7 @@ public class StorageController  {
 
     @PutMapping("/projects/{projectId}/shared")
     public ResponseEntity<Void> autoSave(
-            @AuthenticationPrincipal com.muse.server.before.model.detail.CustomUserDetails user,
+            @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long projectId,
             @RequestBody byte[] content
     ) {
