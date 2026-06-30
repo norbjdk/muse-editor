@@ -1,7 +1,7 @@
 {
   "appName": "MUSE",
-  "serverUrl": "http://192.168.1.4:8080",
-  "websocketUrl": "ws://192.168.1.4:8080/ws",
+  "serverUrl": "http://192.168.1.9:8080",
+  "websocketUrl": "ws://192.168.1.9:8080/ws",
   "saveLocation": "",
   "serverMonitorDelay": 5,
   "isAutoSaveEnabled": true,
