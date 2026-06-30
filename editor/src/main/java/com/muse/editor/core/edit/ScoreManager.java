@@ -6,6 +6,7 @@ import com.muse.editor.core.model.music.Note;
 import com.muse.editor.core.model.music.Part;
 import com.muse.editor.core.model.music.ScorePartwise;
 import com.muse.editor.core.project.ProjectManager;
+import com.muse.editor.util.Debug;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -62,11 +63,12 @@ public class ScoreManager {
             });
         });
 
-        System.out.println("==============");
-        System.out.println("Total parts: " + partProperties.size());
-        System.out.println("Total measures: " + measureProperties.size());
-        System.out.println("Total notes: " + noteProperties.size());
-        System.out.println("Score assigned:");
+        Debug.check(
+                "Assigned score: " + scorePartwise.getWorkTitle(),
+                "Total parts: " + partProperties.size(),
+                "Total measures: " + measureProperties.size(),
+                "Total notes: " + noteProperties.size()
+        );
     }
 
     public int nextNoteId() {
