@@ -11,12 +11,24 @@ public class Debug {
         System.out.println(muse() + PURPLE + message + RESET);
     }
 
+    public static void check(String ... messages) {
+        for (String message : messages) check(message);
+    }
+
     public static void pass(String message) {
         System.out.println(muse() + GREEN + message + RESET);
     }
 
+    public static void pass(String ... messages) {
+        for (String message : messages) pass(message);
+    }
+
     public static void fail(String message) {
         System.out.println(muse() + RED + message + RESET);
+    }
+
+    public static void fail(String ... messages) {
+        for (String message : messages) fail(message);
     }
 
     private static String muse() {
