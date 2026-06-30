@@ -13,6 +13,7 @@ import com.muse.editor.core.model.music.Measure;
 import com.muse.editor.core.model.music.Note;
 import com.muse.editor.core.model.music.Part;
 import com.muse.editor.core.model.music.ScorePartwise;
+import com.muse.editor.core.user.TokenStorage;
 import com.muse.editor.event.EventBus;
 import com.muse.editor.event.project.*;
 import com.muse.editor.event.view.ChangeViewEvent;
@@ -20,6 +21,7 @@ import com.muse.editor.gui.dialog.PublishDialog;
 import com.muse.editor.gui.model.Viewable;
 
 import com.muse.editor.gui.util.SnapshotUtil;
+import com.muse.editor.util.Debug;
 import javafx.application.Platform;
 import javafx.scene.image.WritableImage;
 
@@ -172,7 +174,8 @@ public class ProjectService {
                     CloudSyncService.getInstance().forceSave();
                 }
             } catch (IOException e) {
-                System.err.println("Server registration failed, offline mode: " + e.getMessage());
+                Debug.fail("Server registration failed, offline mode: " + e.getMessage());
+                Debug.check("Token: " + TokenStorage.getToken());
             }
         });
 
