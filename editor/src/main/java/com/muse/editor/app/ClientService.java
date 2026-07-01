@@ -3,15 +3,27 @@ package com.muse.editor.app;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.muse.editor.core.model.message.InvitationMessage;
+import com.muse.editor.core.model.message.InvitationResponse;
 import com.muse.editor.core.user.TokenStorage;
 import com.muse.editor.core.user.UserManager;
+import com.muse.editor.event.EventBus;
+import com.muse.editor.event.project.CollaboratorAnsweredEvent;
 import com.muse.editor.util.Debug;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.*;
@@ -23,6 +35,7 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ClientService {
     private static final ClientService instance = new ClientService();
@@ -141,7 +154,14 @@ public class ClientService {
                         } else {
                             System.out.println(responder + " DECLINED your invitation.");
                         }
-                        showResponseNotification(responder, accepted);
+//                        showResponseNotification(responder, accepted);
+                        final InvitationResponse response = new InvitationResponse();
+
+                        response.setAccepted(accepted);
+                        response.setFrom("me");
+                        response.setResponder(responder);
+
+                        EventBus.getInstance().publish(new CollaboratorAnsweredEvent(response));
                     });
 
                 } catch (Exception e) {
@@ -186,43 +206,68 @@ public class ClientService {
     }
 
     private void showInvitationDialog(InvitationMessage invitationMessage) {
-        final Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 
-        alert.setTitle("Invitation");
-        alert.setHeaderText("You have been invited to collaborate!");
-        alert.setContentText("From: " + invitationMessage.getUsername() + "\nMessage: " + invitationMessage.getContent());
+        Stage dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.initStyle(StageStyle.UNDECORATED);
 
-        ButtonType acceptBtn = new ButtonType("Accept", ButtonBar.ButtonData.YES);
-        ButtonType declineBtn = new ButtonType("Decline", ButtonBar.ButtonData.NO);
-        ButtonType cancelBtn = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        Label title = new Label("Collaboration Invitation");
+        title.getStyleClass().add("dialog-title");
 
-        alert.getButtonTypes().setAll(acceptBtn, declineBtn, cancelBtn);
+        Label from = new Label("From: " + invitationMessage.getUsername());
+        from.getStyleClass().add("dialog-from");
 
-        alert.showAndWait().ifPresent(response -> {
-            if (response == acceptBtn) {
-                ClientService.getInstance().sendInvitationResponse(
-                        invitationMessage.getUsername(),
-                        true
-                );
-            } else if (response == declineBtn) {
-                ClientService.getInstance().sendInvitationResponse(
-                        invitationMessage.getUsername(),
-                        false
-                );
-            }
+        Label message = new Label("Let's create beautiful music together...");
+        message.setWrapText(true);
+        message.getStyleClass().add("dialog-message");
+
+        Button accept = new Button("Accept");
+        accept.getStyleClass().add("accept-button");
+
+        Button decline = new Button("Decline");
+        decline.getStyleClass().add("decline-button");
+
+        accept.setPrefWidth(110);
+        decline.setPrefWidth(110);
+
+        accept.setOnAction(e -> {
+            ClientService.getInstance().sendInvitationResponse(
+                    invitationMessage.getUsername(), true);
+            dialog.close();
         });
-    }
 
-    private void showResponseNotification(String responder, boolean accepted) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Invitation Response");
+        decline.setOnAction(e -> {
+            ClientService.getInstance().sendInvitationResponse(
+                    invitationMessage.getUsername(), false);
+            dialog.close();
+        });
 
-        if (accepted) {
-            alert.setHeaderText(responder + " accepted your invitation!");
-        } else {
-            alert.setHeaderText(responder + " declined your invitation.");
-        }
+        HBox buttons = new HBox(15, accept, decline);
+        buttons.setAlignment(Pos.CENTER);
 
-        alert.showAndWait();
+        VBox content = new VBox(18,
+                title,
+                new Separator(),
+                from,
+                message,
+                buttons
+        );
+
+        content.setPadding(new Insets(25));
+        content.getStyleClass().add("invitation-dialog");
+
+        content.setEffect(new DropShadow(20, Color.rgb(0, 0, 0, 0.5)));
+
+        Scene scene = new Scene(new StackPane(content));
+        scene.setFill(Color.TRANSPARENT);
+
+        scene.getStylesheets().add(
+                Objects.requireNonNull(
+                        getClass().getResource("/com/muse/editor/styles/dialogs.css")
+                ).toExternalForm()
+        );
+
+        dialog.setScene(scene);
+        dialog.showAndWait();
     }
 }

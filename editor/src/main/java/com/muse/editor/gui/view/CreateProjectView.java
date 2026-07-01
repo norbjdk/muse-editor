@@ -1,9 +1,13 @@
 package com.muse.editor.gui.view;
 
 import com.muse.editor.app.ClientService;
+import com.muse.editor.core.model.message.InvitationMessage;
+import com.muse.editor.core.model.message.InvitationResponse;
 import com.muse.editor.core.user.UserManager;
 import com.muse.editor.event.EventBus;
 import com.muse.editor.core.model.dto.NewProjectRequest;
+import com.muse.editor.event.project.CollaboratorAnsweredEvent;
+import com.muse.editor.event.project.CollaboratorInvitedEvent;
 import com.muse.editor.event.project.CreateProjectEvent;
 import com.muse.editor.event.view.ChangeViewEvent;
 import com.muse.editor.gui.util.ButtonFactory;
@@ -11,7 +15,8 @@ import com.muse.editor.core.model.music.ScorePart;
 import com.muse.editor.gui.model.Presentable;
 import com.muse.editor.gui.model.Viewable;
 import com.muse.editor.gui.util.SpaceFactory;
-import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -49,6 +54,9 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
     );
 
     private final static PseudoClass ACTIVE_PSEUDO = PseudoClass.getPseudoClass("active");
+
+    private ObservableList<InvitationMessage>  collaboratorsInvited;
+    private ObservableList<InvitationResponse> collaboratorsAccepted;
 
     private VBox contentContainer;
     private VBox instrumentsBox;
@@ -106,6 +114,9 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
 
     @Override
     protected void initComponents() {
+        collaboratorsInvited  = FXCollections.observableArrayList();
+        collaboratorsAccepted = FXCollections.observableArrayList();
+
         contentContainer        = new VBox();
         instrumentsBox          = new VBox();
         resultsBox              = new VBox();
@@ -124,8 +135,8 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
         scorePreviewLabel  = new Label("Score Preview");
         collaboratorsLabel = new Label("Collaborators");
         resultsLabel       = new Label("Search results");
-        invitationsLabel   = new Label("Pending invitations (0)");
-        membersLabel       = new Label("Members (1)");
+        invitationsLabel   = new Label("Pending invitations ("  + collaboratorsInvited.size() + ")");
+        membersLabel       = new Label("Members (" + (collaboratorsAccepted.size() + 1) + ")");
 
         createProjectBtn         = ButtonFactory.createButton("Create", "create-btn", "Create new project", "new-project-btn");
         cancelProjectBtn         = ButtonFactory.createButton("Cancel", "cancel-btn", "Cancel creation", "new-project-btn");
@@ -316,6 +327,13 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
 
     @Override
     protected void setupEventListeners() {
+        EventBus.getInstance().subscribe(CollaboratorInvitedEvent.class, collaboratorInvitedEvent -> {
+            handleCollaboratorInvited(collaboratorInvitedEvent.getInvitationMessage());
+        });
+
+        EventBus.getInstance().subscribe(CollaboratorAnsweredEvent.class, collaboratorAnsweredEvent -> {
+            handleCollaboratorAccepted(collaboratorAnsweredEvent.getInvitationResponse());
+        });
     }
 
     @Override
@@ -340,6 +358,17 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
     private void handleInstrumentButtonClicked(Button target) {
         boolean isActive = target.getPseudoClassStates().contains(ACTIVE_PSEUDO);
         target.pseudoClassStateChanged(ACTIVE_PSEUDO, !isActive);
+    }
+
+    private void handleCollaboratorInvited(InvitationMessage invitationMessage) {
+        collaboratorsInvited.add(invitationMessage);
+    }
+
+    private void handleCollaboratorAccepted(InvitationResponse response) {
+        if (!response.isAccepted()) return;
+
+        collaboratorsAccepted.add(response);
+        membersBox.getChildren().add(memberCard(response.getResponder(), false));
     }
 
     private VBox previewColumn() {
@@ -537,7 +566,7 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
                 roleLabel
         );
 
-        if (!isOwner) card.getChildren().add(removeButton);
+//        if (!isOwner) card.getChildren().add(removeButton);
 
         return card;
     }
