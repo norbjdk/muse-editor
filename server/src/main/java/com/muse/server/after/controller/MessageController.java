@@ -1,5 +1,6 @@
 package com.muse.server.after.controller;
 
+import com.muse.server.after.dto.msg.InvitationResponse;
 import com.muse.server.after.dto.msg.InviteCollaboratorMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -19,7 +20,7 @@ public class MessageController {
     }
 
     @MessageMapping("/invite/{targetUsername}")
-    public void sendProjectInvitation(@DestinationVariable String targetUsername, @Payload InviteCollaboratorMessage invite) {
+    public void handleInvitationRequest(@DestinationVariable String targetUsername, @Payload InviteCollaboratorMessage invite) {
         System.out.println("Received invitation: " + invite);
         System.out.println("Target user: " + targetUsername);
         System.out.println("Sending to: /user/" + targetUsername + "/queue/notifications");
@@ -29,5 +30,10 @@ public class MessageController {
         System.out.println("Content: " + invite.content());
 
         messagingTemplate.convertAndSendToUser(targetUsername, "/queue/notifications", invite);
+    }
+
+    @MessageMapping("/invite/response/{fromUsername}")
+    public void handleInvitationResponse(@DestinationVariable String fromUsername, @Payload InvitationResponse response) {
+        messagingTemplate.convertAndSendToUser(fromUsername, "/queue/invitation-responses", response);
     }
 }

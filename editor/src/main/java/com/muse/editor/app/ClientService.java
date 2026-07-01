@@ -9,6 +9,9 @@ import com.muse.editor.util.Debug;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.*;
@@ -108,12 +111,41 @@ public class ClientService {
                     Platform.runLater(() -> {
                         System.out.println("Invitation from: " + message.getUsername());
                         System.out.println("Content: " + message.getContent());
+                        showInvitationDialog(message);
 
                     });
 
                 } catch (Exception e) {
                     System.err.println("Error: " + e.getMessage());
                     e.printStackTrace();
+                }
+            }
+        });
+
+        stompSession.subscribe("/user/queue/invitation-responses", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return Map.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                try {
+                    Map<String, Object> data = (Map<String, Object>) payload;
+                    String responder = (String) data.get("responder");
+                    boolean accepted = (boolean) data.get("accepted");
+
+                    Platform.runLater(() -> {
+                        if (accepted) {
+                            System.out.println(responder + " ACCEPTED your invitation!");
+                        } else {
+                            System.out.println(responder + " DECLINED your invitation.");
+                        }
+                        showResponseNotification(responder, accepted);
+                    });
+
+                } catch (Exception e) {
+                    System.err.println("Error processing response: " + e.getMessage());
                 }
             }
         });
@@ -134,7 +166,63 @@ public class ClientService {
         Debug.check("Invited " + targetUser + " as collaborator");
     }
 
+    public void sendInvitationResponse(String fromUser, boolean accepted) {
+        if (stompSession == null || !stompSession.isConnected()) {
+            Debug.fail("Cannot send response - STOMP session is offline");
+            return;
+        }
+
+        final Map<String, Object> response = new HashMap<>();
+        response.put("responder", UserManager.getInstance().currentUserProperty().get().getUsername());
+        response.put("from", fromUser);
+        response.put("accepted", accepted);
+
+        stompSession.send("/app/invite/response/" + fromUser, response);
+        Debug.check("Sent invitation response to " + fromUser + ": " + (accepted ? "ACCEPTED" : "DECLINED"));
+    }
+
     public ObjectProperty<Status> statusProperty() {
         return status;
+    }
+
+    private void showInvitationDialog(InvitationMessage invitationMessage) {
+        final Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+
+        alert.setTitle("Invitation");
+        alert.setHeaderText("You have been invited to collaborate!");
+        alert.setContentText("From: " + invitationMessage.getUsername() + "\nMessage: " + invitationMessage.getContent());
+
+        ButtonType acceptBtn = new ButtonType("Accept", ButtonBar.ButtonData.YES);
+        ButtonType declineBtn = new ButtonType("Decline", ButtonBar.ButtonData.NO);
+        ButtonType cancelBtn = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(acceptBtn, declineBtn, cancelBtn);
+
+        alert.showAndWait().ifPresent(response -> {
+            if (response == acceptBtn) {
+                ClientService.getInstance().sendInvitationResponse(
+                        invitationMessage.getUsername(),
+                        true
+                );
+            } else if (response == declineBtn) {
+                ClientService.getInstance().sendInvitationResponse(
+                        invitationMessage.getUsername(),
+                        false
+                );
+            }
+        });
+    }
+
+    private void showResponseNotification(String responder, boolean accepted) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Invitation Response");
+
+        if (accepted) {
+            alert.setHeaderText(responder + " accepted your invitation!");
+        } else {
+            alert.setHeaderText(responder + " declined your invitation.");
+        }
+
+        alert.showAndWait();
     }
 }
