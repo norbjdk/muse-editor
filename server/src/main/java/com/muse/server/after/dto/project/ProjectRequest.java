@@ -1,9 +1,13 @@
 package com.muse.server.after.dto.project;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ProjectRequest {
     private String  title;
     private String creator;
     private Boolean isPublic;
+    private List<Long> collaboratorsIds = new ArrayList<>();
 
     public ProjectRequest() {}
 
@@ -29,6 +33,14 @@ public class ProjectRequest {
 
     public void setPublic(Boolean aPublic) {
         isPublic = aPublic;
+    }
+
+    public List<Long> getCollaboratorsIds() {
+        return collaboratorsIds;
+    }
+
+    public void setCollaboratorsIds(List<Long> collaboratorsIds) {
+        this.collaboratorsIds = collaboratorsIds;
     }
 }
 

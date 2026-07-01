@@ -504,6 +504,10 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
         request.setTempo(tempo);
         request.setMeasures(measures);
 
+        if (!collaboratorsAccepted.isEmpty()) {
+            collaboratorsAccepted.forEach(collab -> request.getCollaboratorsId().add(collab.getResponderId()));
+        }
+
         for (Node button : instrumentsBox.getChildren())
             if (button.getPseudoClassStates().contains(ACTIVE_PSEUDO)) {
                 request.getInstruments().add(((Button) button).getText());

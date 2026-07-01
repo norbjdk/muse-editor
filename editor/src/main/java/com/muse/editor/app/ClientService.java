@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.muse.editor.core.model.message.InvitationMessage;
 import com.muse.editor.core.model.message.InvitationResponse;
 import com.muse.editor.core.user.TokenStorage;
+import com.muse.editor.core.user.User;
 import com.muse.editor.core.user.UserManager;
 import com.muse.editor.event.EventBus;
 import com.muse.editor.event.project.CollaboratorAnsweredEvent;
@@ -194,6 +195,7 @@ public class ClientService {
 
         final Map<String, Object> response = new HashMap<>();
         response.put("responder", UserManager.getInstance().currentUserProperty().get().getUsername());
+        response.put("responderId", UserManager.getInstance().currentUserProperty().get().getId());
         response.put("from", fromUser);
         response.put("accepted", accepted);
 

@@ -12,6 +12,7 @@ public class NewProjectRequest {
     private int    beatType;
     private int    tempo;
     private int    measures;
+    private List<Long> collaboratorsId = new ArrayList<>();
 
     public NewProjectRequest() {}
 
@@ -29,6 +30,14 @@ public class NewProjectRequest {
 
     public void setCreator(String creator) {
         this.creator = creator;
+    }
+
+    public List<Long> getCollaboratorsId() {
+        return collaboratorsId;
+    }
+
+    public void setCollaboratorsId(List<Long> collaboratorsId) {
+        this.collaboratorsId = collaboratorsId;
     }
 
     public int getBeats() {

@@ -2,13 +2,15 @@ package com.muse.editor.core.model.message;
 
 public class InvitationResponse {
     private String responder;
+    private Long   responderId;
     private String from;
     private boolean accepted;
 
     public InvitationResponse() {}
 
-    public InvitationResponse(String responder, String from, boolean accepted) {
+    public InvitationResponse(String responder, Long responderId, String from, boolean accepted) {
         this.responder = responder;
+        this.responderId = responderId;
         this.from = from;
         this.accepted = accepted;
     }
@@ -19,6 +21,14 @@ public class InvitationResponse {
 
     public void setResponder(String responder) {
         this.responder = responder;
+    }
+
+    public Long getResponderId() {
+        return responderId;
+    }
+
+    public void setResponderId(Long responderId) {
+        this.responderId = responderId;
     }
 
     public String getFrom() {

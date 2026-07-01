@@ -7,8 +7,6 @@ import com.muse.editor.core.io.FileService;
 import com.muse.editor.core.model.dto.NewProjectRequest;
 import com.muse.editor.core.model.dto.ProjectRequest;
 import com.muse.editor.core.model.dto.ProjectResponse;
-import com.muse.editor.core.model.dto.PublishResponse;
-import com.muse.editor.core.model.dto.internal.PublishData;
 import com.muse.editor.core.model.music.Measure;
 import com.muse.editor.core.model.music.Note;
 import com.muse.editor.core.model.music.Part;
@@ -107,7 +105,7 @@ public class ProjectService {
         CompletableFuture
                 .supplyAsync(() -> projectManager.newProject(request))
                 .thenAccept(project -> {
-                    Platform.runLater(() -> onCreateSuccess(project));
+                    Platform.runLater(() -> onCreateSuccess(project, request.getCollaboratorsId()));
                 })
                 .exceptionally(throwable -> {
                     Platform.runLater(() -> onCreateFailure(throwable));
@@ -126,6 +124,8 @@ public class ProjectService {
 
                     if (project.getServerId() != null) {
                         CloudSyncService.getInstance().attach(project);
+                    } else {
+                        System.out.println("No project id, " + project.getServerId());
                     }
 
                     EventBus.getInstance().publish(new ProjectOpenedEvent(
@@ -139,7 +139,7 @@ public class ProjectService {
         projectManager.closeProject();
     }
 
-    private void onCreateSuccess(Project project) {
+    private void onCreateSuccess(Project project, List<Long> collaborators) {
         final List<Part> partList = project.getScoreProperty().get().getParts();
 
         int noteId = 0;
@@ -162,7 +162,8 @@ public class ProjectService {
                 final ProjectRequest req = new ProjectRequest();
                 req.setTitle(project.getScoreProperty().get().getWorkTitle());
                 req.setCreator(project.getScoreProperty().get().getCreator());
-
+                req.setCollaboratorsId(collaborators);
+                
                 final ProjectResponse response = ApiBuilder.post(
                         "/api/v1/projects", ProjectResponse.class, req
                 );
