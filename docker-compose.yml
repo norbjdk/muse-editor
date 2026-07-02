@@ -1,0 +1,67 @@
+services:
+  muse_database:
+    image: postgres:17-alpine
+    container_name: muse-postgres
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  muse_file_storage:
+    image: minio/minio:RELEASE.2024-01-28T22-35-53Z
+    container_name: muse-file-storage
+    ports:
+      - "${MINIO_API_PORT}:${MINIO_API_PORT}"
+      - "${MINIO_CONSOLE_PORT}:${MINIO_CONSOLE_PORT}"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
+      
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":${MINIO_CONSOLE_PORT}"
+
+  muse_server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: muse-server
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://muse_database:${DB_PORT}/${DB_NAME}
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - MINIO_ENDPOINT=http://${IP}:${MINIO_API_PORT}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+    volumes:
+      - ./server:/app
+      - /app/target
+    depends_on:
+      - muse_database
+      - muse_file_storage
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  muse_client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: muse-client
+    ports:
+      - "${CLIENT_PORT}:${CLIENT_PORT}"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    depends_on:
+      - muse_server
+
+volumes:
+  postgres_data:
+  minio_data:
+

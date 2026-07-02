@@ -1,0 +1,47 @@
+package com.muse.editor.core.api;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.muse.editor.app.AppConfig;
+import com.muse.editor.core.user.TokenStorage;
+import okhttp3.OkHttpClient;
+
+public final class ApiConfig {
+    private static final String BASE_URL = AppConfig.serverUrlProperty().get();
+
+    private static OkHttpClient httpClient;
+    private static ObjectMapper objectMapper;
+
+    public static String getURL() {
+        return BASE_URL;
+    }
+
+    public static OkHttpClient getClient() {
+        if (httpClient == null) {
+            httpClient = new OkHttpClient.Builder()
+                    .addInterceptor(chain -> {
+                        var originalRequest = chain.request();
+                        var token = TokenStorage.getToken();
+
+                        String requestUrl = originalRequest.url().toString();
+
+                        if (token != null && !token.isEmpty() && requestUrl.startsWith(BASE_URL)) {
+                            var requestBuilder = originalRequest.newBuilder()
+                                    .header("Authorization", "Bearer " + token);
+                            return chain.proceed(requestBuilder.build());
+                        }
+                        return chain.proceed(originalRequest);
+                    })
+                    .build();
+        }
+        return httpClient;
+    }
+
+
+    public static ObjectMapper getObjectMapper() {
+        if (objectMapper == null) {
+            objectMapper  = new ObjectMapper();
+        }
+
+        return objectMapper;
+    }
+}

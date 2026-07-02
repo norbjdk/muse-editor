@@ -1,0 +1,17 @@
+{
+  "appName": "MUSE",
+  "serverUrl": "http://192.168.1.9:8080",
+  "websocketUrl": "ws://192.168.1.9:8080/ws",
+  "saveLocation": "",
+  "serverMonitorDelay": 5,
+  "isAutoSaveEnabled": true,
+  "shortcuts": {
+    "save": "Ctrl+S",
+    "inputMode": "N",
+    "closeProject": "Ctrl+C"
+  },
+  "loginWindowWidth": 800,
+  "loginWindowHeight" : 500,
+  "mainWindowMinWidth": 1380,
+  "mainWindowMinHeight": 720
+}

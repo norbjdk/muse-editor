@@ -1,115 +1,212 @@
 package com.muse.editor.core.project;
 
-import com.muse.editor.core.EventBus;
-import com.muse.editor.core.io.service.FileIOService;
-import com.muse.editor.core.model.score.ScorePartwise;
-import com.muse.editor.model.dto.internal.ViewRequest;
-import com.muse.editor.model.event.ChangeViewRequestedEvent;
-import com.muse.editor.model.event.OpenProjectRequestedEvent;
-import com.muse.editor.model.event.ProjectLoadFailedEvent;
-import com.muse.editor.model.event.ProjectLoadedEvent;
-import com.muse.editor.ui.model.ViewName;
+import com.muse.editor.core.api.ApiBuilder;
+import com.muse.editor.core.cloud.CloudSyncService;
+import com.muse.editor.core.edit.ScoreManager;
+import com.muse.editor.core.io.FileService;
+import com.muse.editor.core.model.dto.NewProjectRequest;
+import com.muse.editor.core.model.dto.ProjectRequest;
+import com.muse.editor.core.model.dto.ProjectResponse;
+import com.muse.editor.core.model.music.Measure;
+import com.muse.editor.core.model.music.Note;
+import com.muse.editor.core.model.music.Part;
+import com.muse.editor.core.model.music.ScorePartwise;
+import com.muse.editor.core.user.TokenStorage;
+import com.muse.editor.event.EventBus;
+import com.muse.editor.event.project.*;
+import com.muse.editor.event.view.ChangeViewEvent;
+import com.muse.editor.gui.dialog.PublishDialog;
+import com.muse.editor.gui.model.Viewable;
+
+import com.muse.editor.gui.util.SnapshotUtil;
+import com.muse.editor.util.Debug;
 import javafx.application.Platform;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
+import javafx.scene.image.WritableImage;
 
 import java.io.File;
-import java.nio.file.Path;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class ProjectService {
     private static final ProjectService instance = new ProjectService();
 
+    private final ProjectManager projectManager = ProjectManager.getInstance();
+
     public static ProjectService getInstance() {
         return instance;
     }
 
-    private Stage primaryStage;
-
     private ProjectService() {
-        setupEventListeners();
-    }
-
-    public void init(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-    }
-
-    private void setupEventListeners() {
-        EventBus.getInstance().subscribe(OpenProjectRequestedEvent.class, event -> handleOpenProjectRequested());
-    }
-
-    private void handleOpenProjectRequested() {
-        Platform.runLater(() -> {
-            File file = showFileChooser();
-            if (file == null) return;
-
-            loadFile(file.toPath());
+        EventBus.getInstance().subscribe(CreateProjectEvent.class, event -> {
+            handleCreateProject(event.getRequest());
+        });
+        EventBus.getInstance().subscribe(LoadProjectEvent.class, loadProjectEvent -> {
+            handleOpenProject(loadProjectEvent.getScorePartwise());
+        });
+        EventBus.getInstance().subscribe(PublishProjectEvent.class, publishProjectEvent -> {
+            handlePublishProject();
+        });
+        EventBus.getInstance().subscribe(CloseProjectEvent.class, closeProjectEvent -> {
+            handleCloseProjectEvent();
         });
     }
 
-    private File showFileChooser() {
-        final FileChooser fileChooser = new FileChooser();
+    private void handlePublishProject() {
+        final Project project = projectManager.currentProjectProperty().get();
 
-        fileChooser.setTitle("Open Music XML File");
-        fileChooser.getExtensionFilters().addAll(
-            new FileChooser.ExtensionFilter("MusicXML", "*.musicxml"),
-            new FileChooser.ExtensionFilter("All files", "*.*")
+        if (project.getServerId() == null) {
+            System.err.println("Project not registered on server");
+            return;
+        }
+
+        PublishDialog dialog = new PublishDialog(
+                ScoreManager.getInstance().scoreProperty().get().getWorkTitle(),
+                ScoreManager.getInstance().scoreProperty().get().getCreator()
         );
 
-        return fileChooser.showOpenDialog(primaryStage);
+        WritableImage scoreImg = SnapshotUtil.getInstance().snapSheet();
+        dialog.setPreviewImage(scoreImg);
+
+        dialog.showAndWait().ifPresent(result -> {
+            CompletableFuture.runAsync(() -> {
+                try {
+                    CloudSyncService.getInstance().forceSave();
+                    ApiBuilder.post(
+                            "/api/v1/projects/" + project.getServerId() + "/publish",
+                            ProjectResponse.class,
+                            new ProjectRequest()
+                    );
+
+                    if (scoreImg != null) {
+                        final File coverFile = SnapshotUtil.getInstance().saveToTempFile(scoreImg);
+                        if (coverFile != null) {
+                            ApiBuilder.post(
+                                    "/api/v1/storage/projects/" + project.getServerId() + "/cover/upload",
+                                    ProjectResponse.class,
+                                    coverFile
+                            );
+                        }
+                    }
+
+                    Platform.runLater(() -> onPublishSuccess(project));
+                } catch (IOException e) {
+                    Platform.runLater(() -> onPublushFailure(e));
+                }
+            });
+        });
     }
 
-    private void loadFile(Path path) {
+    private void handleCreateProject(final NewProjectRequest request) {
+        if (request == null) return;
+
         CompletableFuture
-                .supplyAsync(() -> FileIOService.getInstance().load(path))
-                .thenAcceptAsync(score -> onLoadSuccess(path, score), Platform::runLater)
-                .exceptionally(ex -> {
-                    Platform.runLater(() -> onLoadFailure(ex));
+                .supplyAsync(() -> projectManager.newProject(request))
+                .thenAccept(project -> {
+                    System.out.println("ID: " + request.getCollaboratorsId());
+                    Platform.runLater(() -> onCreateSuccess(project, request.getCollaboratorsId()));
+                })
+                .exceptionally(throwable -> {
+                    Platform.runLater(() -> onCreateFailure(throwable));
                     return null;
                 });
     }
 
-    private void onLoadSuccess(Path path, ScorePartwise scorePartwise) {
-        final String title = scorePartwise.getWorkTitle() != null && !scorePartwise.getWorkTitle().isBlank()
-                ? scorePartwise.getWorkTitle()
-                : path.getFileName().toString();
+    private void handleOpenProject(final ScorePartwise scorePartwise) {
+        if (scorePartwise == null) return;
 
-        final Project project = Project.createNew(title);
+        CompletableFuture
+                .supplyAsync(() -> projectManager.openProject(scorePartwise))
+                .thenAcceptAsync(project -> Platform.runLater(() -> {
+                    project.titleProperty().set(scorePartwise.getWorkTitle());
+                    ScoreManager.getInstance().assignScore(project.getScoreProperty().get());
 
-        project.getFilePath().set(path);
-        project.getScorePartwise().set(scorePartwise);
-        project.markSaved();
+                    if (project.getServerId() != null) {
+                        CloudSyncService.getInstance().attach(project);
+                    } else {
+                        System.out.println("No project id, " + project.getServerId());
+                    }
 
-        updateStatus(project, scorePartwise);
-        ProjectManager.getInstance().addDocument(project);
-
-        EventBus.getInstance().publish(new ChangeViewRequestedEvent(new ViewRequest(ViewName.PROJECT)));
-        EventBus.getInstance().publish(new ProjectLoadedEvent(project));
+                    EventBus.getInstance().publish(new ProjectOpenedEvent(
+                            project.getId(), project.titleProperty().get()
+                    ));
+                    EventBus.getInstance().publish(new ChangeViewEvent(Viewable.Name.PROJECT));
+                }));
     }
 
-    private void onLoadFailure(Throwable ex) {
-        final String reason = ex.getCause() != null
-                ? ex.getCause().getMessage()
-                : ex.getMessage();
-
-        EventBus.getInstance().publish(new ProjectLoadFailedEvent(reason));
+    private void handleCloseProjectEvent() {
+        projectManager.closeProject();
     }
 
-    private void updateStatus(Project project, ScorePartwise scorePartwise) {
-        if (scorePartwise.getParts() != null) return;
+    private void onCreateSuccess(Project project, List<Long> collaborators) {
+        final List<Part> partList = project.getScoreProperty().get().getParts();
 
-        final int measures = scorePartwise.getParts().stream()
-                .mapToInt(p -> p.getMeasures() != null ? p.getMeasures().size() : 0)
-                .sum();
+        int noteId = 0;
 
-        final int notes = scorePartwise.getParts().stream()
-                .filter(p -> p.getMeasures() != null)
-                .flatMap(p -> p.getMeasures().stream())
-                .filter(m -> m.getNotes() != null)
-                .mapToInt(m -> m.getNotes().size())
-                .sum();
+        for (Part part : partList) {
+            for (Measure measure : part.getMeasures()) {
+                measure.getNotes().add(new Note.Builder()
+                        .setId(noteId++)
+                        .isRest(true)
+                        .setDuration(2)
+                        .setType(Note.Type.Whole)
+                        .build());
+            }
+        }
 
-        project.getMeasureCount().set(measures);
-        project.getNoteCount().set(notes);
+        ScoreManager.getInstance().assignScore(project.getScoreProperty().get());
+
+        CompletableFuture.runAsync(() -> {
+            try {
+                final ProjectRequest req = new ProjectRequest();
+                req.setTitle(project.getScoreProperty().get().getWorkTitle());
+                req.setCreator(project.getScoreProperty().get().getCreator());
+                req.setCollaboratorsIds(collaborators);
+
+                Debug.check("Collaborators list size: "  + collaborators.size() + ", " +  collaborators);
+                
+                final ProjectResponse response = ApiBuilder.post(
+                        "/api/v1/projects", ProjectResponse.class, req
+                );
+
+                if (response != null) {
+                    project.setServerId(response.getId());
+                    CloudSyncService.getInstance().attach(project);
+                    System.out.println("Project registered on server: ID=" + response.getId());
+                    CloudSyncService.getInstance().forceSave();
+                }
+            } catch (IOException e) {
+                Debug.fail("Server registration failed, offline mode: " + e.getMessage());
+                Debug.check("Token: " + TokenStorage.getToken());
+            }
+        });
+
+        EventBus.getInstance().publish(new ProjectCreatedEvent(project.getId(), project.titleProperty().get()));
+        EventBus.getInstance().publish(new ChangeViewEvent(Viewable.Name.PROJECT));
+    }
+
+    private void onPublishSuccess(Project project) {
+
+    }
+
+    private void onPublushFailure(Throwable ex) {
+        ex.printStackTrace();
+    }
+
+    private void onCreateFailure(Throwable ex) {
+        ex.printStackTrace();
+    }
+
+    private File saveTempFile(Project project) {
+        try {
+            final File temp = Files.createTempFile("muse_publish", ".musicxml").toFile();
+            FileService.getInstance().save(project.getScoreProperty().get(), temp.toPath());
+
+            return temp;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

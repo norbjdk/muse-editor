@@ -1,0 +1,49 @@
+/*
+================ SHARED ================
+ */
+
+.home-scroll, .new-project-scroll, .collection-scroll {
+    -fx-background:           transparent;
+    -fx-background-color:     transparent;
+    -fx-fit-to-width:         true;
+    -fx-vbar-policy:          as-needed;
+    -fx-pannable:             false;
+}
+
+.home-scroll, .new-project-scroll, .collection-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.home-scroll, .new-project-scroll, .collection-scroll .scroll-bar:vertical,
+.home-scroll, .new-project-scroll, .collection-scroll .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+}
+
+.home-scroll, .new-project-scroll, .collection-scroll .scroll-bar:vertical .track,
+.home-scroll, .new-project-scroll, .collection-scroll .scroll-bar:horizontal .track {
+    -fx-background-color: transparent;
+    -fx-border-color:     transparent;
+}
+
+.home-scroll, .new-project-scroll, .collection-scroll .scroll-bar:vertical .thumb,
+.home-scroll, .new-project-scroll, .collection-scroll .scroll-bar:horizontal .thumb {
+    -fx-background-color:  rgba(120, 112, 100, 0.45);
+    -fx-background-radius: 10;
+}
+
+.home-scroll, .new-project-scroll, .collection-scroll .scroll-bar:vertical .thumb:hover,
+.home-scroll, .new-project-scroll, .collection-scroll .scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: rgba(90, 82, 72, 0.70);
+}
+
+.home-scroll, .new-project-scroll, .collection-scroll .increment-button,
+.home-scroll, .new-project-scroll, .collection-scroll .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding:          0;
+}
+
+.home-scroll, .new-project-scroll, .collection-scroll .increment-arrow,
+.home-scroll, .new-project-scroll, .collection-scroll .decrement-arrow {
+    -fx-background-color: transparent;
+    -fx-shape:            "";
+}

@@ -1,0 +1,16 @@
+/*
+================ PROJECT VIEW ================
+ */
+
+.project-root {
+    -fx-padding:          28 32;
+    -fx-spacing:          0;
+    -fx-alignment:        center-left;
+    -fx-background-color: linear-gradient(
+            to right,
+            rgba(255, 255, 255, 0.78),
+            rgba(255, 255, 255, 0.60)
+    );
+    -fx-background-radius: 16;
+    -fx-effect:           dropshadow(gaussian, rgba(0, 0, 0, 0.18), 14, 0.4, 0, 3);
+}

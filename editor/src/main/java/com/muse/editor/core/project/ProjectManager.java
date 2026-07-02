@@ -1,11 +1,10 @@
 package com.muse.editor.core.project;
 
+import com.muse.editor.core.model.dto.NewProjectRequest;
+import com.muse.editor.core.model.music.*;
+import com.muse.editor.core.model.music.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
-import java.util.Optional;
 
 public class ProjectManager {
     private static final ProjectManager instance = new ProjectManager();
@@ -14,84 +13,99 @@ public class ProjectManager {
         return instance;
     }
 
-    private final ObservableList<Project> openProjects = FXCollections.observableArrayList();
-
-    private final ObjectProperty<Project> currentDocument = new SimpleObjectProperty<>(null);
+    private final ObjectProperty<Project> currentProject = new SimpleObjectProperty<>(null);
 
     private ProjectManager() {}
 
-    public Project newDocument() {
-        final Project doc = Project.createNew();
+    public Project openProject(ScorePartwise scorePartwise) {
+        final Project project = Project.createNew();
 
-        openProjects.add(doc);
-        currentDocument.set(doc);
+        project.getScoreProperty().set(scorePartwise);
 
-        return doc;
+        currentProject.set(project);
+
+        return project;
     }
 
-    public Project newDocument(String title) {
-        final Project doc = Project.createNew(title);
+    public Project newProject(NewProjectRequest request) {
+        if (request == null) return null;
 
-        openProjects.add(doc);
-        currentDocument.set(doc);
+        final Project       project       = Project.createNew(request.getWorkTitle());
+        final ScorePartwise scorePartwise = new ScorePartwise();
+        final PartList partList      = new PartList();
 
-        return doc;
-    }
+        scorePartwise.setWorkTitle(request.getWorkTitle());
+        scorePartwise.setCreator(request.getCreator());
 
-    public void addDocument(Project doc) {
-        if (doc.getFilePath().get() != null) {
-            Optional<Project> existing = openProjects
-                    .stream()
-                    .filter(project -> doc.getFilePath().get().equals(project.getFilePath().get()))
-                    .findFirst();
+        int P = 0;
+        int staves = 0;
 
-            if (existing.isPresent()) {
-                currentDocument.set(existing.get());
-                return;
+
+        for (String instrument : request.getInstruments()) {
+            P++;
+
+            staves = instrument.equals("Piano") ? 2 : 1;
+
+            final ScorePart scorePart = new ScorePart.Builder()
+                    .setId("P" + P)
+                    .setPartName(ScorePart.Name.fromString(instrument))
+                    .setPartAbbreviation(ScorePart.Abbreviation.getAbbreviationForName(instrument))
+                    .setScoreInstrument(null)
+                    .build();
+
+            final Part part = new Part();
+            part.setId("P" + P);
+
+            for (int m = 0; m < request.getMeasures(); m++) {
+                final Clef clef = new Clef();
+                clef.setLine(2);
+                clef.setSign('G');
+
+                final Attributes attributes = new Attributes.Builder()
+                        .setDivisions(2)
+                        .setFifths(0)
+                        .addClef(clef)
+                        .setStaves(staves)
+                        .setBeats(request.getBeats())
+                        .setBeatType(request.getBeatType())
+                        .build();
+
+                final Measure measure = m == 0 ?
+                        new Measure.Builder()
+                                .setId(m)
+                                .setAttributes(attributes)
+                                .build()
+                        :
+                        new Measure.Builder()
+                                .setId(m)
+                                .build();
+
+                part.getMeasures().add(measure);
             }
+
+            partList.getScoreParts().add(scorePart);
+            scorePartwise.getParts().add(part);
         }
 
-        openProjects.add(doc);
-        currentDocument.set(doc);
+        scorePartwise.setPartList(partList);
+        project.getScoreProperty().set(scorePartwise);
+
+        currentProject.set(project);
+
+        return project;
     }
 
-    public boolean closeDocument(Project doc) {
-        if (!openProjects.remove(doc)) {
-            return false;
+    public void closeProject() {
+        if (currentProject.get().isSavedProperty().get()) {
+            currentProject.set(null);
         }
-
-        if (doc.equals(currentDocument.get())) {
-            if (openProjects.isEmpty()) {
-                currentDocument.set(null);
-            } else {
-                currentDocument.set(openProjects.getLast());
-            }
-        }
-
-        return true;
     }
 
-    public boolean hasUnsavedChanges() {
-        return openProjects.stream().anyMatch(d -> d.getIsSaved().get());
+    public ObjectProperty<Project> currentProjectProperty() {
+        return currentProject;
     }
 
-    public ObservableList<Project> getOpenDocuments() {
-        return openProjects;
-    }
-
-    public Project getCurrentDocument() {
-        return currentDocument.get();
-    }
-
-    public void setActiveDocument(Project doc) {
-        currentDocument.set(doc);
-    }
-
-    public boolean isEmpty() {
-        return openProjects.isEmpty();
-    }
-
-    public int size() {
-        return openProjects.size();
+    public ObjectProperty<ScorePartwise> scoreProperty() {
+        return currentProject.getValue().getScoreProperty();
     }
 }

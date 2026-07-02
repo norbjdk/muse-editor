@@ -1,0 +1,123 @@
+package com.muse.editor.core.cloud;
+
+import com.muse.editor.core.api.ApiConfig;
+import com.muse.editor.core.io.FileService;
+import com.muse.editor.core.project.Project;
+import com.muse.editor.core.user.TokenStorage;
+import okhttp3.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+public class CloudSyncService {
+    private static final CloudSyncService instance = new CloudSyncService();
+    public static CloudSyncService getInstance() { return instance; }
+
+    private static final int AUTO_SAVE_INTERVAL_SEC = 5;
+
+    private final ScheduledExecutorService scheduler =
+            Executors.newSingleThreadScheduledExecutor(r -> {
+                Thread t = new Thread(r, "cloud-auto-save");
+                System.out.println("Auto Save");
+                t.setDaemon(true);
+                return t;
+            });
+
+    private final AtomicBoolean dirty   = new AtomicBoolean(false);
+    private final AtomicBoolean syncing = new AtomicBoolean(false);
+
+    private Project activeProject;
+    private ScheduledFuture<?> autoSaveTask;
+
+    private CloudSyncService() {}
+
+    public void attach(Project project) {
+        this.activeProject = project;
+        dirty.set(false);
+
+        if (autoSaveTask != null) autoSaveTask.cancel(false);
+
+        autoSaveTask = scheduler.scheduleAtFixedRate(
+                this::autoSave,
+                AUTO_SAVE_INTERVAL_SEC,
+                AUTO_SAVE_INTERVAL_SEC,
+                TimeUnit.SECONDS
+        );
+
+        System.out.println("CloudSyncService attached to project: " + project.getServerId() + ", " +  project.getId());
+    }
+
+    public void detach() {
+        if (autoSaveTask != null) autoSaveTask.cancel(false);
+        activeProject = null;
+    }
+
+    public void markDirty() {
+        dirty.set(true);
+    }
+
+    public void forceSave() {
+        if (activeProject == null || activeProject.getServerId() == null) return;
+        performUpload();
+    }
+
+    private void autoSave() {
+        if (!dirty.get()) return;
+        if (syncing.get()) return;
+        if (activeProject == null) return;
+        if (activeProject.getServerId() == null) return;
+
+        performUpload();
+    }
+
+    private void performUpload() {
+        if (!syncing.compareAndSet(false, true)) return;
+
+        try {
+            final File tempFile = saveTempFile();
+            final byte[] bytes  = Files.readAllBytes(tempFile.toPath());
+
+            final String url = ApiConfig.getURL()
+                    + "/api/v1/storage/projects/"
+                    + activeProject.getServerId()
+                    + "/shared";
+
+            final Request request = new Request.Builder()
+                    .url(url)
+                    .put(RequestBody.create(bytes, MediaType.get("application/xml")))
+                    .addHeader("Authorization", "Bearer " + TokenStorage.getToken())
+                    .build();
+
+            try (Response response = ApiConfig.getClient().newCall(request).execute()) {
+                if (response.isSuccessful()) {
+                    dirty.set(false);
+                    System.out.println("Auto-save OK: project " + activeProject.getServerId());
+                } else {
+                    System.err.println("Auto-save failed: HTTP " + response.code());
+                }
+            }
+
+            tempFile.delete();
+
+        } catch (IOException e) {
+            System.err.println("Auto-save error: " + e.getMessage());
+        } finally {
+            syncing.set(false);
+        }
+    }
+
+    private File saveTempFile() throws IOException {
+        final File temp = Files.createTempFile("muse_autosave_", ".musicxml").toFile();
+        FileService.getInstance().save(
+                activeProject.getScoreProperty().get(),
+                temp.toPath()
+        );
+        return temp;
+    }
+}
