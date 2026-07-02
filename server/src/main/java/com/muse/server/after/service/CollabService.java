@@ -1,6 +1,7 @@
 package com.muse.server.after.service;
 
 import com.muse.server.after.dto.msg.ParticipantJoinedMessage;
+import com.muse.server.after.dto.msg.ParticipantLeftMessage;
 import com.muse.server.after.dto.session.SessionResponse;
 import com.muse.server.after.entity.CollabSessionEntity;
 import com.muse.server.after.entity.ProjectEntity;
@@ -66,6 +67,26 @@ public class CollabService {
         return toResponse(session);
     }
 
+    @Transactional
+    public void leave(Long sessionId, Long userId) {
+        final CollabSessionEntity session = collabSessionRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Session not found"));
+
+        sessionParticipantRepository.deleteBySessionIdAndUserId(sessionId, userId);
+
+        messagingTemplate.convertAndSend(
+                "/topic/session." + sessionId,
+                new ParticipantLeftMessage(sessionId, userId)
+        );
+
+        final long remaining = sessionParticipantRepository.findBySessionId(sessionId).size();
+
+        if (remaining == 0) {
+            session.setActive(false);
+            collabSessionRepository.save(session);
+        }
+    }
+
     private CollabSessionEntity createSession(ProjectEntity project) {
         final CollabSessionEntity session = new CollabSessionEntity();
 
@@ -73,6 +94,14 @@ public class CollabService {
         session.setActive(true);
 
         return collabSessionRepository.save(session);
+    }
+
+    public SessionResponse getActiveSessionForProject(Long projectId) {
+        final CollabSessionEntity session = collabSessionRepository
+                .findByProjectIdAndActiveTrue(projectId)
+                .orElse(null);
+
+        return session != null ? toResponse(session) : null;
     }
 
     private SessionResponse toResponse(CollabSessionEntity session) {
