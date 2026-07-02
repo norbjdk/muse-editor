@@ -37,6 +37,12 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
 
                     accessor.setUser(authentication);
 
+                    String collabSessionId = accessor.getFirstNativeHeader("Collab-Session-Id");
+                    if (collabSessionId != null && accessor.getSessionAttributes() != null) {
+                        accessor.getSessionAttributes().put("collabSessionId", Long.valueOf(collabSessionId));
+                        accessor.getSessionAttributes().put("username", username);
+                    }
+
                 } catch (Exception e) {
                     throw new IllegalArgumentException("Wrong or expired JWT token: " + e.getMessage());
                 }
