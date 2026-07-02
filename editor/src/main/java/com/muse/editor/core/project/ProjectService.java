@@ -105,6 +105,7 @@ public class ProjectService {
         CompletableFuture
                 .supplyAsync(() -> projectManager.newProject(request))
                 .thenAccept(project -> {
+                    System.out.println("ID: " + request.getCollaboratorsId());
                     Platform.runLater(() -> onCreateSuccess(project, request.getCollaboratorsId()));
                 })
                 .exceptionally(throwable -> {

@@ -147,6 +147,7 @@ public class ClientService {
                 try {
                     Map<String, Object> data = (Map<String, Object>) payload;
                     String responder = (String) data.get("responder");
+                    Number responderId = (Number) data.get("responderId");
                     boolean accepted = (boolean) data.get("accepted");
 
                     Platform.runLater(() -> {
@@ -155,12 +156,12 @@ public class ClientService {
                         } else {
                             System.out.println(responder + " DECLINED your invitation.");
                         }
-//                        showResponseNotification(responder, accepted);
                         final InvitationResponse response = new InvitationResponse();
 
                         response.setAccepted(accepted);
                         response.setFrom("me");
                         response.setResponder(responder);
+                        response.setResponderId(responderId.longValue());
 
                         EventBus.getInstance().publish(new CollaboratorAnsweredEvent(response));
                     });

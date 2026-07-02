@@ -15,6 +15,7 @@ import com.muse.editor.core.model.music.ScorePart;
 import com.muse.editor.gui.model.Presentable;
 import com.muse.editor.gui.model.Viewable;
 import com.muse.editor.gui.util.SpaceFactory;
+import com.muse.editor.util.Debug;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
@@ -503,6 +504,15 @@ public class CreateProjectView extends Presentable<ScrollPane> implements Viewab
         request.setBeatType(beatType);
         request.setTempo(tempo);
         request.setMeasures(measures);
+
+        collaboratorsAccepted.forEach(coll ->  {
+            Debug.check(
+                    "Collaborator Accepted" +
+                            "From: " + coll.getFrom() +
+                            "Responder: " + coll.getResponder() +
+                            "Accepted? " + coll.isAccepted()
+            );
+        });
 
         if (!collaboratorsAccepted.isEmpty()) {
             collaboratorsAccepted.forEach(collab -> request.getCollaboratorsId().add(collab.getResponderId()));
