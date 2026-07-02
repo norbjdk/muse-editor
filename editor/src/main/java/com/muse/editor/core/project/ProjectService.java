@@ -162,7 +162,9 @@ public class ProjectService {
                 final ProjectRequest req = new ProjectRequest();
                 req.setTitle(project.getScoreProperty().get().getWorkTitle());
                 req.setCreator(project.getScoreProperty().get().getCreator());
-                req.setCollaboratorsId(collaborators);
+                req.setCollaboratorsIds(collaborators);
+
+                Debug.check("Collaborators list size: "  + collaborators.size() + ", " +  collaborators);
                 
                 final ProjectResponse response = ApiBuilder.post(
                         "/api/v1/projects", ProjectResponse.class, req

@@ -14,8 +14,10 @@ public interface ProjectRepository extends JpaRepository<ProjectEntity, Long> {
 
     List<ProjectEntity> findByCollaboratorsId(ProjectMemberEntity.ProjectMemberId collaboratorsId);
 
-    @Query("SELECT DISTINCT p FROM ProjectEntity p " +
-            "LEFT JOIN p.collaborators c " +
-            "WHERE p.owner.id = :userId OR c.user.id = :userId")
+    @Query("""
+    SELECT DISTINCT p FROM ProjectEntity p
+    LEFT JOIN p.collaborators m
+    WHERE p.owner.id = :userId OR m.user.id = :userId
+    """)
     List<ProjectEntity> findAllByOwnerIdOrCollaboratorUserId(@Param("userId") Long userId);
 }

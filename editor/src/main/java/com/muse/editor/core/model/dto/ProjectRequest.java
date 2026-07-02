@@ -8,7 +8,7 @@ import java.util.List;
 public class ProjectRequest implements RequestDTO {
     private String title;
     private String creator;
-    private List<Long> collaboratorsId = new ArrayList<>();
+    private List<Long> collaboratorsIds = new ArrayList<>();
     private boolean isPublic;
 
     public String getTitle() {
@@ -27,12 +27,16 @@ public class ProjectRequest implements RequestDTO {
         this.creator = creator;
     }
 
-    public List<Long> getCollaboratorsId() {
-        return collaboratorsId;
+    public List<Long> getCollaboratorsIds() {
+        return collaboratorsIds;
     }
 
-    public void setCollaboratorsId(List<Long> collaboratorsId) {
-        this.collaboratorsId = collaboratorsId;
+    public void setCollaboratorsIds(List<Long> collaboratorsIds) {
+        this.collaboratorsIds = collaboratorsIds;
+    }
+
+    public boolean isPublic() {
+        return isPublic;
     }
 
     public void setPublic(boolean p) {
