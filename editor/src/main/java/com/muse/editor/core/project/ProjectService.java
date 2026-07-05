@@ -1,5 +1,6 @@
 package com.muse.editor.core.project;
 
+import com.muse.editor.app.ClientService;
 import com.muse.editor.core.api.ApiBuilder;
 import com.muse.editor.core.cloud.CloudSyncService;
 import com.muse.editor.core.edit.ScoreManager;
@@ -125,6 +126,7 @@ public class ProjectService {
 
                     if (project.getServerId() != null) {
                         CloudSyncService.getInstance().attach(project);
+                        ClientService.getInstance().joinSession(project.getServerId(), null);
                     } else {
                         System.out.println("No project id, " + project.getServerId());
                     }
@@ -176,6 +178,7 @@ public class ProjectService {
                     CloudSyncService.getInstance().attach(project);
                     System.out.println("Project registered on server: ID=" + response.getId());
                     CloudSyncService.getInstance().forceSave();
+                    ClientService.getInstance().joinSession(response.getId(), null);
                 }
             } catch (IOException e) {
                 Debug.fail("Server registration failed, offline mode: " + e.getMessage());

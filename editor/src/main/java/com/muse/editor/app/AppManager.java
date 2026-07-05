@@ -70,7 +70,7 @@ public final class AppManager {
             Platform.runLater(() -> {
                 Debug.pass("User successfully logged in. Switching to MainWindow.");
 
-                ClientService.getInstance().connect();
+                ClientService.getInstance().oldConnect();
 
                 showMainViewPlaceholder();
             });

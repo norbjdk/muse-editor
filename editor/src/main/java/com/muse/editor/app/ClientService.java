@@ -2,10 +2,10 @@ package com.muse.editor.app;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.muse.editor.core.api.ApiConfig;
 import com.muse.editor.core.model.message.InvitationMessage;
 import com.muse.editor.core.model.message.InvitationResponse;
 import com.muse.editor.core.user.TokenStorage;
-import com.muse.editor.core.user.User;
 import com.muse.editor.core.user.UserManager;
 import com.muse.editor.event.EventBus;
 import com.muse.editor.event.project.CollaboratorAnsweredEvent;
@@ -25,6 +25,10 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.*;
@@ -37,9 +41,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 public class ClientService {
     private static final ClientService instance = new ClientService();
+
+    private Long currentSessionId;
 
     public static ClientService getInstance() {
         return instance;
@@ -55,7 +62,112 @@ public class ClientService {
 
     private ClientService() {}
 
+    public void joinSession(Long projectId, Runnable onJoined) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                final Request request = new Request.Builder()
+                        .url(AppConfig.serverUrlProperty().get() + "/api/v1/sessions/projects/" + projectId + "/join")
+                        .post(RequestBody.create("{}", MediaType.get("application/json")))
+                        .addHeader("Authorization", "Bearer " + TokenStorage.getToken())
+                        .build();
+                try (Response response = ApiConfig.getClient().newCall(request).execute()){
+                    if (response.isSuccessful() && response.body() != null) {
+                        final ObjectMapper mapper = ApiConfig.getObjectMapper();
+                        final Map<?, ?> body = mapper.readValue(response.body().string(), Map.class);
+
+                        final Long sessionId = ((Number) body.get("sessionId")).longValue();
+
+                        currentSessionId = sessionId;
+
+                        Debug.pass("Joined session: " + currentSessionId);
+
+                        Platform.runLater(() -> {
+                            reconnectWithSession(currentSessionId);
+                            if (onJoined != null)
+                                onJoined.run();
+                        });
+                    }
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    public void leaveSession() {
+        if (currentSessionId == null) return;
+
+        CompletableFuture.runAsync(() -> {
+            try {
+                final Request request = new Request.Builder()
+                        .url(AppConfig.serverUrlProperty().get() + "/api/v1/sessions/" + currentSessionId + "/leave")
+                        .post(RequestBody.create("{}", MediaType.get("application/json")))
+                        .addHeader("Authorization", "Bearer " + TokenStorage.getToken())
+                        .build();
+
+                ApiConfig.getClient().newCall(request).execute();
+                currentSessionId = null;
+                Debug.pass("Left session");
+            } catch (Exception e) {
+                Debug.fail("Failed to leave session: ", e.getMessage());
+            }
+        });
+    }
+
+    private void connectInternal(@Nullable Long sessionId) {
+        final StandardWebSocketClient webSocketClient      = new StandardWebSocketClient();
+        final WebSocketStompClient    webSocketStompClient = new WebSocketStompClient(webSocketClient);
+
+        final MappingJackson2MessageConverter converter    = new MappingJackson2MessageConverter();
+        final ObjectMapper                    objectMapper = new ObjectMapper();
+
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        converter.setObjectMapper(objectMapper);
+        webSocketStompClient.setMessageConverter(converter);
+
+        final StompHeaders headers = new StompHeaders();
+        headers.add("Authorization", "Bearer " + TokenStorage.getToken());
+
+        if (sessionId != null)
+            headers.add("Collab-Session-Id", String.valueOf(sessionId));
+
+        webSocketStompClient.connectAsync(
+                AppConfig.websocketUrlProperty().get(),
+                new WebSocketHttpHeaders(),
+                headers,
+                new StompSessionHandlerAdapter() {
+                    @Override
+                    public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
+                        stompSession = session;
+                        Debug.pass("Connected to WS server");
+                        Platform.runLater(() -> status.set(Status.CONNECTED));
+                        subscribeToNotifications();
+
+                        if (sessionId != null) {
+                            subscribeToSession(sessionId);
+                        }
+                    }
+
+                    @Override
+                    public void handleException(StompSession session, @Nullable StompCommand command, StompHeaders headers, byte[] payload, Throwable exception) {
+                        Platform.runLater(() -> status.set(Status.DISCONNECTED));
+                        exception.printStackTrace();
+                    }
+
+                    @Override
+                    public void handleTransportError(StompSession session, Throwable exception) {
+                        Platform.runLater(() -> status.set(Status.DISCONNECTED));
+                        exception.printStackTrace();
+                    }
+                }
+        );
+    }
+
     public void connect() {
+        connectInternal(null);
+    }
+
+    public void oldConnect() {
         StandardWebSocketClient webSocketClient = new StandardWebSocketClient();
         WebSocketStompClient client = new WebSocketStompClient(webSocketClient);
 
@@ -98,6 +210,41 @@ public class ClientService {
                 Platform.runLater(() -> status.set(Status.DISCONNECTED));
             }
         });
+    }
+
+    private void reconnectWithSession(Long sessionId) {
+        if (stompSession != null && stompSession.isConnected())
+            stompSession.disconnect();
+        connectInternal(sessionId);
+    }
+
+    private void subscribeToSession(Long sessionId) {
+        if (stompSession == null || !stompSession.isConnected()) return;
+
+        stompSession.subscribe("/topic/session." + sessionId, new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return Map.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, @Nullable Object payload) {
+                try {
+                    final Map<String, Object> data = (Map<String, Object>) payload;
+                    final String type = (String) data.get("type");
+
+                    Platform.runLater(() -> {
+                        Debug.check("Session event: " + data);
+
+                        // new participant joined event
+                    });
+                } catch (Exception e) {
+                    Debug.fail("Session frame error: " + e.getMessage());
+                }
+            }
+        });
+
+        Debug.pass("Subscribed to session: " + sessionId);
     }
 
     private void subscribeToNotifications() {

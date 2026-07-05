@@ -3,7 +3,13 @@ package com.muse.editor.core.user;
 import java.util.prefs.Preferences;
 
 public class TokenStorage {
-    private static final Preferences prefs = Preferences.userNodeForPackage(TokenStorage.class);
+
+    private static final String INSTANCE =
+            System.getProperty("app.instance", "default");
+
+    private static final Preferences prefs =
+            Preferences.userRoot().node("muse-editor/" + INSTANCE);
+
     private static final String TOKEN_KEY = "auth_token";
     private static final String USER_KEY = "user_data";
 
