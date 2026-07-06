@@ -53,6 +53,10 @@ public class ScoreManager {
     public void assignScore(ScorePartwise scorePartwise) {
         scoreProperty.set(scorePartwise);
 
+        partProperties.clear();
+        measureProperties.clear();
+        noteProperties.clear();
+
         scoreProperty.get().getParts().forEach(part -> {
             partProperties.add(new SimpleObjectProperty<>(part));
             part.getMeasures().forEach(measure -> {
@@ -69,6 +73,13 @@ public class ScoreManager {
                 "Total measures: " + measureProperties.size(),
                 "Total notes: " + noteProperties.size()
         );
+    }
+
+    public void reset() {
+        scoreProperty.set(null);
+        partProperties.clear();
+        measureProperties.clear();
+        noteProperties.clear();
     }
 
     public int nextNoteId() {
@@ -102,10 +113,17 @@ public class ScoreManager {
 
         final ObservableList<Note> notes = getMeasure(partId, measureIndex).getNotes();
 
+        final Measure measure = getMeasure(partId, measureIndex);
+
+        Debug.check("Replace note in measure id: " + measure.getId());
+        measure.getNotes().forEach(note -> {
+            Debug.check("Note: " + note.getId() + ", step and octave: " + note.getStep() + ", " + note.getOctave());
+        });
+
         if (noteIndex < 0 || noteIndex >= notes.size()) return;
 
         final Note oldNote = notes.get(noteIndex);
-        noteProperties.removeIf(np -> np.get() == oldNote);
+        noteProperties.removeIf(np -> np.get().getId() == oldNote.getId());
 
         notes.set(noteIndex, newNotes.getFirst());
 
