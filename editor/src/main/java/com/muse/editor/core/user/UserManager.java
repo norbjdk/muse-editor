@@ -20,6 +20,10 @@ public class UserManager {
         return currentUser;
     }
 
+    public void reset() {
+        currentUser.set(null);
+    }
+
     public User getCurrentUser() throws IOException {
         return currentUser.get();
     }
