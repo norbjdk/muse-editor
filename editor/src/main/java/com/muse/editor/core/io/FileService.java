@@ -67,10 +67,13 @@ public final class FileService {
         new Thread(() -> {
             try {
                 File file = downloadFile(projectId);
-
                 if (file == null) return;
 
-                Platform.runLater(() -> openFile(file.toPath()));
+                final ScorePartwise scorePartwise = MXMLParser.parse(file.toPath());
+
+                Platform.runLater(() ->
+                        EventBus.getInstance().publish(new LoadProjectEvent(projectId, scorePartwise))
+                );
 
             } catch (Exception e) {
                 e.printStackTrace();

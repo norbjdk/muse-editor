@@ -96,9 +96,11 @@ public class ProjectManager {
     }
 
     public void closeProject() {
-        if (currentProject.get().isSavedProperty().get()) {
-            currentProject.set(null);
-        }
+        currentProject.set(null);
+    }
+
+    public void reset() {
+        currentProject.set(null);
     }
 
     public ObjectProperty<Project> currentProjectProperty() {

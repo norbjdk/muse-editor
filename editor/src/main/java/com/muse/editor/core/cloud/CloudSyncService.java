@@ -1,5 +1,7 @@
 package com.muse.editor.core.cloud;
 
+import com.muse.editor.app.AppConfig;
+import com.muse.editor.app.ClientService;
 import com.muse.editor.core.api.ApiConfig;
 import com.muse.editor.core.io.FileService;
 import com.muse.editor.core.project.Project;
@@ -9,6 +11,7 @@ import okhttp3.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -24,7 +27,6 @@ public class CloudSyncService {
     private final ScheduledExecutorService scheduler =
             Executors.newSingleThreadScheduledExecutor(r -> {
                 Thread t = new Thread(r, "cloud-auto-save");
-                System.out.println("Auto Save");
                 t.setDaemon(true);
                 return t;
             });
@@ -50,7 +52,7 @@ public class CloudSyncService {
                 TimeUnit.SECONDS
         );
 
-        System.out.println("CloudSyncService attached to project: " + project.getServerId() + ", " +  project.getId());
+        System.out.println("CloudSyncService attached to project: " + project.getServerId());
     }
 
     public void detach() {
@@ -64,7 +66,7 @@ public class CloudSyncService {
 
     public void forceSave() {
         if (activeProject == null || activeProject.getServerId() == null) return;
-        performUpload();
+        CompletableFuture.runAsync(this::performUpload);
     }
 
     private void autoSave() {
@@ -72,7 +74,6 @@ public class CloudSyncService {
         if (syncing.get()) return;
         if (activeProject == null) return;
         if (activeProject.getServerId() == null) return;
-
         performUpload();
     }
 
@@ -80,8 +81,8 @@ public class CloudSyncService {
         if (!syncing.compareAndSet(false, true)) return;
 
         try {
-            final File tempFile = saveTempFile();
-            final byte[] bytes  = Files.readAllBytes(tempFile.toPath());
+            final File   tempFile = saveTempFile();
+            final byte[] bytes    = Files.readAllBytes(tempFile.toPath());
 
             final String url = ApiConfig.getURL()
                     + "/api/v1/storage/projects/"
@@ -98,6 +99,8 @@ public class CloudSyncService {
                 if (response.isSuccessful()) {
                     dirty.set(false);
                     System.out.println("Auto-save OK: project " + activeProject.getServerId());
+
+                    broadcastToSession();
                 } else {
                     System.err.println("Auto-save failed: HTTP " + response.code());
                 }
@@ -109,6 +112,34 @@ public class CloudSyncService {
             System.err.println("Auto-save error: " + e.getMessage());
         } finally {
             syncing.set(false);
+        }
+    }
+
+    private void broadcastToSession() {
+        final Long sessionId = ClientService.getInstance().getCurrentSessionId();
+        if (sessionId == null) return;
+
+        try {
+            final String url = AppConfig.serverUrlProperty().get()
+                    + "/api/v1/sessions/"
+                    + sessionId
+                    + "/broadcast";
+
+            final Request request = new Request.Builder()
+                    .url(url)
+                    .post(RequestBody.create("{}", MediaType.get("application/json")))
+                    .addHeader("Authorization", "Bearer " + TokenStorage.getToken())
+                    .build();
+
+            try (Response response = ApiConfig.getClient().newCall(request).execute()) {
+                if (response.isSuccessful()) {
+                    System.out.println("Broadcast sent to session " + sessionId);
+                } else {
+                    System.err.println("Broadcast failed: HTTP " + response.code());
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Broadcast error: " + e.getMessage());
         }
     }
 

@@ -1,8 +1,14 @@
 package com.muse.editor.core.user;
 
+import com.muse.editor.app.ClientService;
 import com.muse.editor.core.api.ApiBuilder;
+import com.muse.editor.core.cloud.CloudSyncService;
+import com.muse.editor.core.edit.CursorModel;
+import com.muse.editor.core.edit.EditorState;
+import com.muse.editor.core.edit.ScoreManager;
 import com.muse.editor.core.model.dto.LoginRequest;
 import com.muse.editor.core.model.dto.LoginResponse;
+import com.muse.editor.core.project.ProjectManager;
 import com.muse.editor.event.EventBus;
 import com.muse.editor.event.user.LoggedInEvent;
 import com.muse.editor.event.user.LoggedOutEvent;
@@ -41,9 +47,18 @@ public class AuthService {
 
 
     private void handleLogoutEvent() {
-        if (TokenStorage.isLoggedIn()) {
-            logout();
-        }
+        ClientService.getInstance().leaveSession();
+
+        ClientService.getInstance().disconnect();
+
+        CloudSyncService.getInstance().detach();
+        ProjectManager.getInstance().reset();
+        ScoreManager.getInstance().reset();
+        CursorModel.getInstance().reset();
+        EditorState.getInstance().reset();
+
+        TokenStorage.clear();
+        UserManager.getInstance().reset();
     }
 
     private void login(LoginRequest request) {

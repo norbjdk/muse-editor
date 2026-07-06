@@ -3,6 +3,8 @@ package com.muse.editor.core.project;
 import com.muse.editor.app.ClientService;
 import com.muse.editor.core.api.ApiBuilder;
 import com.muse.editor.core.cloud.CloudSyncService;
+import com.muse.editor.core.edit.CursorModel;
+import com.muse.editor.core.edit.EditorState;
 import com.muse.editor.core.edit.ScoreManager;
 import com.muse.editor.core.io.FileService;
 import com.muse.editor.core.model.dto.NewProjectRequest;
@@ -44,8 +46,8 @@ public class ProjectService {
         EventBus.getInstance().subscribe(CreateProjectEvent.class, event -> {
             handleCreateProject(event.getRequest());
         });
-        EventBus.getInstance().subscribe(LoadProjectEvent.class, loadProjectEvent -> {
-            handleOpenProject(loadProjectEvent.getScorePartwise());
+        EventBus.getInstance().subscribe(LoadProjectEvent.class, event -> {
+            handleOpenProject(event.getScorePartwise(), event.getServerId());
         });
         EventBus.getInstance().subscribe(PublishProjectEvent.class, publishProjectEvent -> {
             handlePublishProject();
@@ -115,7 +117,7 @@ public class ProjectService {
                 });
     }
 
-    private void handleOpenProject(final ScorePartwise scorePartwise) {
+    private void handleOpenProject(final ScorePartwise scorePartwise, final Long serverId) {
         if (scorePartwise == null) return;
 
         CompletableFuture
@@ -124,22 +126,35 @@ public class ProjectService {
                     project.titleProperty().set(scorePartwise.getWorkTitle());
                     ScoreManager.getInstance().assignScore(project.getScoreProperty().get());
 
-                    if (project.getServerId() != null) {
+                    if (serverId != null) {
+                        project.setServerId(serverId);
                         CloudSyncService.getInstance().attach(project);
-                        ClientService.getInstance().joinSession(project.getServerId(), null);
-                    } else {
-                        System.out.println("No project id, " + project.getServerId());
+                        ClientService.getInstance().joinSession(serverId, null);
                     }
 
                     EventBus.getInstance().publish(new ProjectOpenedEvent(
                             project.getId(), project.titleProperty().get()
                     ));
+
                     EventBus.getInstance().publish(new ChangeViewEvent(Viewable.Name.PROJECT));
                 }));
     }
 
     private void handleCloseProjectEvent() {
+        CloudSyncService.getInstance().forceSave();
+
+        CloudSyncService.getInstance().detach();
+
+        ClientService.getInstance().leaveSession();
+
+        ScoreManager.getInstance().reset();
+        CursorModel.getInstance().reset();
+        EditorState.getInstance().reset();
+
         projectManager.closeProject();
+
+        EventBus.getInstance().publish(new ProjectClosedEvent());
+        EventBus.getInstance().publish(new ChangeViewEvent(Viewable.Name.HOME));
     }
 
     private void onCreateSuccess(Project project, List<Long> collaborators) {
