@@ -55,7 +55,6 @@ public class CollabService {
 
             participant.setSession(session);
             participant.setUser(user);
-            session.getParticipants().add(participant);
             sessionParticipantRepository.save(participant);
 
             messagingTemplate.convertAndSend(

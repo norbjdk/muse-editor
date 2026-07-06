@@ -1,10 +1,14 @@
 package com.muse.server.after.controller;
 
 import com.muse.server.after.detail.CustomUserDetails;
+import com.muse.server.after.dto.msg.ScoreUpdatedMessage;
 import com.muse.server.after.dto.session.SessionResponse;
+import com.muse.server.after.entity.CollabSessionEntity;
+import com.muse.server.after.repository.CollabSessionRepository;
 import com.muse.server.after.service.CollabService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,14 +17,20 @@ import org.springframework.web.bind.annotation.*;
 public class SessionController {
 
     @Autowired
-    private CollabService collabSessionService;
+    private CollabService collabService;
+
+    @Autowired
+    private CollabSessionRepository collabSessionRepository;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @PostMapping("/projects/{projectId}/join")
     public ResponseEntity<SessionResponse> join(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long projectId
     ) {
-        return ResponseEntity.ok(collabSessionService.joinOrCreate(projectId, user.getId()));
+        return ResponseEntity.ok(collabService.joinOrCreate(projectId, user.getId()));
     }
 
     @PostMapping("/{sessionId}/leave")
@@ -28,16 +38,35 @@ public class SessionController {
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long sessionId
     ) {
-        collabSessionService.leave(sessionId, user.getId());
+        collabService.leave(sessionId, user.getId());
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/projects/{projectId}/active")
     public ResponseEntity<SessionResponse> getActive(@PathVariable Long projectId) {
-        final SessionResponse response = collabSessionService.getActiveSessionForProject(projectId);
-
+        final SessionResponse response = collabService.getActiveSessionForProject(projectId);
         if (response == null) return ResponseEntity.noContent().build();
-
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{sessionId}/broadcast")
+    public ResponseEntity<Void> broadcast(
+            @AuthenticationPrincipal CustomUserDetails user,
+            @PathVariable Long sessionId
+    ) {
+        final CollabSessionEntity session = collabSessionRepository
+                .findById(sessionId)
+                .orElse(null);
+
+        if (session == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        messagingTemplate.convertAndSend(
+                "/topic/session." + sessionId,
+                new ScoreUpdatedMessage(sessionId, user.getUsername())
+        );
+
+        return ResponseEntity.ok().build();
     }
 }
