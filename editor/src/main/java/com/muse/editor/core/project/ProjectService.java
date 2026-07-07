@@ -3,6 +3,7 @@ package com.muse.editor.core.project;
 import com.muse.editor.app.ClientService;
 import com.muse.editor.core.api.ApiBuilder;
 import com.muse.editor.core.cloud.CloudSyncService;
+import com.muse.editor.core.edit.BeatCalculator;
 import com.muse.editor.core.edit.CursorModel;
 import com.muse.editor.core.edit.EditorState;
 import com.muse.editor.core.edit.ScoreManager;
@@ -167,8 +168,9 @@ public class ProjectService {
                 measure.getNotes().add(new Note.Builder()
                         .setId(noteId++)
                         .isRest(true)
-                        .setDuration(2)
+                        .setDuration(BeatCalculator.noteValue(Note.Type.Whole))
                         .setType(Note.Type.Whole)
+                        .setVoice(1)
                         .build());
             }
         }

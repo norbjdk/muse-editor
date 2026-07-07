@@ -49,6 +49,7 @@ public class EditorService {
                 .setType(type)
                 .setStep(step)
                 .setOctave(octave)
+                .setDuration(BeatCalculator.noteValue(type))
                 .build();
 
         toAdd.add(newNote);

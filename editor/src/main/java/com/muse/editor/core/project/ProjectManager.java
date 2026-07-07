@@ -62,7 +62,7 @@ public class ProjectManager {
                 clef.setSign('G');
 
                 final Attributes attributes = new Attributes.Builder()
-                        .setDivisions(2)
+                        .setDivisions(16)
                         .setFifths(0)
                         .addClef(clef)
                         .setStaves(staves)
