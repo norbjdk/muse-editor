@@ -102,6 +102,10 @@ public class MXMLWriter {
                 final Element msr = doc.createElement("measure");
                 msr.setAttribute("number", String.valueOf(mNumber));
 
+                if (measure.getAttributes() != null) {
+                    msr.appendChild(writeAttributes(doc, measure.getAttributes()));
+                }
+
                 for (Note note : measure.getNotes()) {
                     final Element nt = doc.createElement("note");
 
@@ -117,7 +121,7 @@ public class MXMLWriter {
                         step.setTextContent(clean(String.valueOf(note.getStep())));
                         octave.setTextContent(clean(String.valueOf(note.getOctave())));
                         duration.setTextContent(clean(String.valueOf(note.getDuration())));
-                        voice.setTextContent(clean(String.valueOf(note.getVoice())));
+                        voice.setTextContent(clean(String.valueOf(1)));
 
                         type.setTextContent(note.getType() != null ? clean(note.getType().getValue()) : "");
                         stem.setTextContent(clean(note.getStem()));
@@ -152,6 +156,55 @@ public class MXMLWriter {
             }
             root.appendChild(part);
         }
+    }
+
+    private static Element writeAttributes(Document doc, Attributes attrs) {
+        final Element attributes = doc.createElement("attributes");
+
+        final Element divisions = doc.createElement("divisions");
+        divisions.setTextContent(String.valueOf(attrs.getDivisions() > 0 ? attrs.getDivisions() : 1));
+        attributes.appendChild(divisions);
+
+        final Element key = doc.createElement("key");
+        final Element fifths = doc.createElement("fifths");
+        fifths.setTextContent(String.valueOf(attrs.getFifths()));
+        key.appendChild(fifths);
+        attributes.appendChild(key);
+
+        if (attrs.getBeats() > 0 && attrs.getBeatType() > 0) {
+            final Element time = doc.createElement("time");
+            final Element beats = doc.createElement("beats");
+            final Element beatType = doc.createElement("beat-type");
+            beats.setTextContent(String.valueOf(attrs.getBeats()));
+            beatType.setTextContent(String.valueOf(attrs.getBeatType()));
+            time.appendChild(beats);
+            time.appendChild(beatType);
+            attributes.appendChild(time);
+        }
+
+        if (attrs.getStaves() > 1) {
+            final Element staves = doc.createElement("staves");
+            staves.setTextContent(String.valueOf(attrs.getStaves()));
+            attributes.appendChild(staves);
+        }
+
+        if (attrs.getClefs() != null) {
+            for (Clef clef : attrs.getClefs()) {
+                final Element clefEl = doc.createElement("clef");
+                if (attrs.getStaves() > 1) {
+                    clefEl.setAttribute("number", String.valueOf(clef.getNumber()));
+                }
+                final Element sign = doc.createElement("sign");
+                final Element line = doc.createElement("line");
+                sign.setTextContent(String.valueOf(clef.getSign()));
+                line.setTextContent(String.valueOf(clef.getLine()));
+                clefEl.appendChild(sign);
+                clefEl.appendChild(line);
+                attributes.appendChild(clefEl);
+            }
+        }
+
+        return attributes;
     }
 
     private static String clean(String text) {

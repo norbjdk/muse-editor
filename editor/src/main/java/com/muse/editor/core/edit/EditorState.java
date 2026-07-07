@@ -62,6 +62,12 @@ public class EditorState {
         });
     }
 
+    public void reset() {
+        inputType = null;
+        selectedNoteType = null;
+        isRestNote = false;
+    }
+
     public void switchMode() {
         inputMode.set(!inputMode.getValue());
     }

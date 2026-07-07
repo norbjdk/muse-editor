@@ -76,7 +76,8 @@ public class StorageService {
         if (!accessGuard.isMember(project, userId) && !accessGuard.isOwner(project, userId))
             throw new RuntimeException("Access denied");
 
-        final String url = minioService.uploadSharedFileBytes(userId, projectId, content);
+        final Long ownerId = project.getOwner().getId();
+        final String url = minioService.uploadSharedFileBytes(ownerId, projectId, content);
         project.setFilePath(url);
         projectRepository.save(project);
     }

@@ -7,7 +7,9 @@ import com.muse.editor.core.model.music.ScorePart;
 import com.muse.editor.core.project.ProjectManager;
 import com.muse.editor.event.EventBus;
 import com.muse.editor.event.project.PartComponentChangedEvent;
+import com.muse.editor.event.project.ScoreReloadedEvent;
 import com.muse.editor.gui.model.Presentable;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
@@ -33,14 +35,10 @@ public class PartComponent extends Presentable<FlowPane> {
     }
 
     @Override
-    protected void initComponents() {
-
-    }
+    protected void initComponents() {}
 
     @Override
-    protected void setupComponents() {
-
-    }
+    protected void setupComponents() {}
 
     @Override
     protected void setupStyle() {
@@ -50,22 +48,25 @@ public class PartComponent extends Presentable<FlowPane> {
     }
 
     @Override
-    protected void setupLayout() {
-    }
+    protected void setupLayout() {}
 
     @Override
     protected void setupEventListeners() {
-        EventBus.getInstance().subscribe(PartComponentChangedEvent.class, partComponentChangedEvent -> {
-            if (partComponentChangedEvent.getPart() != null && partComponentChangedEvent.getPart().getId().equals(this.partID)) {
+        EventBus.getInstance().subscribe(PartComponentChangedEvent.class, event -> {
+            if (event.getPart() != null && event.getPart().getId().equals(this.partID)) {
                 redraw();
             }
+        });
+
+        EventBus.getInstance().subscribe(ScoreReloadedEvent.class, event -> {
+            Platform.runLater(() -> {
+                redraw();
+            });
         });
     }
 
     @Override
-    protected void setupEventHandlers() {
-
-    }
+    protected void setupEventHandlers() {}
 
     public void assignPart(ObjectProperty<Part> part) {
         this.partProperty.bind(part);
@@ -86,19 +87,18 @@ public class PartComponent extends Presentable<FlowPane> {
     private void redraw() {
         root.getChildren().clear();
 
-        final ObservableList<ObjectProperty<Measure>> measures = ScoreManager.getInstance().getMeasures(partID);
+        final ObservableList<ObjectProperty<Measure>> measures =
+                ScoreManager.getInstance().getMeasures(partID);
 
         for (ObjectProperty<Measure> measureProperty : measures) {
             if (!partName.equals(ScorePart.Name.Piano)) {
                 final MeasureComponent measureComponent = new MeasureComponent();
-
                 measureComponent.assignMeasure(measureProperty, 1);
-
                 root.getChildren().add(measureComponent.getRoot());
             } else {
                 final VBox measuresContainer = new VBox(40);
 
-                final MeasureComponent upperMeasureComponent = new MeasureComponent();
+                final MeasureComponent upperMeasureComponent  = new MeasureComponent();
                 final MeasureComponent bottomMeasureComponent = new MeasureComponent();
 
                 upperMeasureComponent.assignMeasure(measureProperty, 1);
@@ -111,7 +111,6 @@ public class PartComponent extends Presentable<FlowPane> {
 
                 root.getChildren().add(measuresContainer);
             }
-
         }
     }
 }

@@ -18,7 +18,7 @@ public class CollabSessionEntity {
     private ProjectEntity project;
 
     @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
+    private Boolean active = true;
 
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SessionParticipantEntity> participants = new ArrayList<>();
@@ -40,11 +40,11 @@ public class CollabSessionEntity {
     }
 
     public Boolean getActive() {
-        return isActive;
+        return active;
     }
 
     public void setActive(Boolean active) {
-        isActive = active;
+        this.active = active;
     }
 
     public List<SessionParticipantEntity> getParticipants() {

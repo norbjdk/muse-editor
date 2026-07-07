@@ -130,6 +130,7 @@ public class SheetComponent extends Presentable<ScrollPane> {
             partComponents.add(new PartComponent(scorePart.getId(), scorePart.getPartName()));
         }
 
+
         final ScoreManager scoreManager = ScoreManager.getInstance();
 
         for (PartComponent partComponent : partComponents) {

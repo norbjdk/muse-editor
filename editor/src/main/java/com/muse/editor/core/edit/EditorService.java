@@ -4,6 +4,7 @@ import com.muse.editor.core.cloud.CloudSyncService;
 import com.muse.editor.core.model.music.Note;
 import com.muse.editor.event.EventBus;
 import com.muse.editor.event.editor.AddValueEvent;
+import com.muse.editor.util.Debug;
 
 import java.util.*;
 
@@ -63,7 +64,7 @@ public class EditorService {
                     .orElseThrow();
 
             toAdd.add(new Note.Builder()
-                    .setId(current.getId() + toAdd.size())
+                    .setId(ScoreManager.getInstance().nextNoteId() + toAdd.size())
                     .isRest(true)
                     .setType(restType)
                     .setDuration(BeatCalculator.noteValue(restType))
@@ -79,6 +80,17 @@ public class EditorService {
                 toAdd
         );
 
-    CloudSyncService.getInstance().markDirty();
+        scoreManager.getMeasureProperties().forEach(
+                measure -> {
+                    Debug.check("Measure ID:" + measure.get().getId());
+                    measure.get().getNotes().forEach(note -> {
+                        Debug.check("Note id: " + note.getId());
+                        Debug.check("Note octave: " + note.getOctave() + ", step: " + note.getStep());
+                    });
+                }
+        );
+
+        CloudSyncService.getInstance().markDirty();
+        CloudSyncService.getInstance().forceSave();
     }
 }

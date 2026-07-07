@@ -3,34 +3,35 @@ import { Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
+import AdminRoute from "./components/AdminRoute";
 import MainLayout from "./layouts/MainLayout";
 
 import Home from "./views/Home";
 import Account from "./views/Account";
 import Profile from "./views/Profile";
 import User from "./views/User";
+import Admin from "./views/Admin";
 
 function App() {
-    return (
-        <AuthProvider>
-            <Routes>
-                <Route element={<MainLayout />}>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/account" element={
-                        <PublicRoute>
-                            <Account />
-                        </PublicRoute>
-                    } />
-                    <Route path="/profile" element={
-                        <PrivateRoute>
-                            <Profile />
-                        </PrivateRoute>
-                    } />
-                     <Route path="/artist/:username" element={<User />} />
-                </Route>
-            </Routes>
-        </AuthProvider>
-    );
+  return (
+    <AuthProvider>
+      <Routes>
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/account" element={
+            <PublicRoute><Account /></PublicRoute>
+          } />
+          <Route path="/profile" element={
+            <PrivateRoute><Profile /></PrivateRoute>
+          } />
+          <Route path="/artist/:username" element={<User />} />
+          <Route path="/admin" element={
+            <AdminRoute><Admin /></AdminRoute>
+          } />
+        </Route>
+      </Routes>
+    </AuthProvider>
+  );
 }
 
 export default App;
