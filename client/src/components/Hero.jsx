@@ -54,9 +54,12 @@ function Hero() {
             Docs
             <BookOpen size={32} className={`text-slate-500`}/>
         </Link>
-        <Link to="/account" className={`flex items-center justify-between gap-4 w-full sm:w-auto px-3 py-2 bg-white/50 hover:bg-white/70 text-slate-800 font-medium rounded-xl border border-stone-900/10 shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-200 cursor-pointer backdrop-blur-sm`}>
-            {user ? user.username : "Account"}
-            <User size={32} className={`text-slate-500`}/>
+        <Link
+          to={user ? "/profile" : "/account"}
+          className="flex items-center justify-between gap-4 w-full sm:w-auto px-3 py-2 bg-white/50 hover:bg-white/70 text-slate-800 font-medium rounded-xl border border-stone-900/10 shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-200 cursor-pointer backdrop-blur-sm"
+        >
+          {user ? user.username : "Account"}
+          <User size={32} className="text-slate-500" />
         </Link>
         {user && (
           <button
