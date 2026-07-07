@@ -183,9 +183,9 @@ public class ScorePalette extends Presentable<VBox> {
                 notesPane,
                 restsPane,
                 clefsPane,
-                accidentalsPane,
-                dynamicsPane,
-                metresPane
+//                accidentalsPane,
+                dynamicsPane
+//                metresPane
         );
     }
 
