@@ -3,6 +3,7 @@ package com.muse.server.after.service;
 import com.muse.server.after.dto.msg.ParticipantJoinedMessage;
 import com.muse.server.after.dto.msg.ParticipantLeftMessage;
 import com.muse.server.after.dto.session.SessionResponse;
+import com.muse.server.after.dto.user.UserResponse;
 import com.muse.server.after.entity.CollabSessionEntity;
 import com.muse.server.after.entity.ProjectEntity;
 import com.muse.server.after.entity.SessionParticipantEntity;
@@ -16,7 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class CollabService {
@@ -35,6 +39,9 @@ public class CollabService {
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    private UserService userService;
 
     @Transactional
     public SessionResponse joinOrCreate(Long projectId, Long userId) {
@@ -101,6 +108,25 @@ public class CollabService {
                 .orElse(null);
 
         return session != null ? toResponse(session) : null;
+    }
+
+    public List<UserResponse> getActiveCollaboratorsForProject(Long projectId) {
+        final CollabSessionEntity session = collabSessionRepository
+                .findByProjectIdAndActiveTrue(projectId)
+                .orElse(null);
+
+        if (session == null) return null;
+
+        return userService.getAllUsersByUsernames(
+                session.getParticipants().stream()
+                        .filter(Objects::nonNull)
+                        .map(this::toUsername)
+                        .collect(Collectors.toList())
+        );
+    }
+
+    private String toUsername(SessionParticipantEntity participant) {
+        return participant.getUser().getUsername();
     }
 
     private SessionResponse toResponse(CollabSessionEntity session) {

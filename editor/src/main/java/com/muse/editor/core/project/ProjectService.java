@@ -1,7 +1,9 @@
 package com.muse.editor.core.project;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.muse.editor.app.ClientService;
 import com.muse.editor.core.api.ApiBuilder;
+import com.muse.editor.core.api.ApiConfig;
 import com.muse.editor.core.cloud.CloudSyncService;
 import com.muse.editor.core.edit.BeatCalculator;
 import com.muse.editor.core.edit.CursorModel;
@@ -11,6 +13,7 @@ import com.muse.editor.core.io.FileService;
 import com.muse.editor.core.model.dto.NewProjectRequest;
 import com.muse.editor.core.model.dto.ProjectRequest;
 import com.muse.editor.core.model.dto.ProjectResponse;
+import com.muse.editor.core.model.dto.UserResponse;
 import com.muse.editor.core.model.music.Measure;
 import com.muse.editor.core.model.music.Note;
 import com.muse.editor.core.model.music.Part;
@@ -19,6 +22,8 @@ import com.muse.editor.core.user.TokenStorage;
 import com.muse.editor.event.EventBus;
 import com.muse.editor.event.project.*;
 import com.muse.editor.event.view.ChangeViewEvent;
+import com.muse.editor.event.view.ShowCollaboratorsEvent;
+import com.muse.editor.gui.dialog.CollaboratorsDialog;
 import com.muse.editor.gui.dialog.PublishDialog;
 import com.muse.editor.gui.model.Viewable;
 
@@ -26,6 +31,8 @@ import com.muse.editor.gui.util.SnapshotUtil;
 import com.muse.editor.util.Debug;
 import javafx.application.Platform;
 import javafx.scene.image.WritableImage;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,6 +63,46 @@ public class ProjectService {
         EventBus.getInstance().subscribe(CloseProjectEvent.class, closeProjectEvent -> {
             handleCloseProjectEvent();
         });
+        EventBus.getInstance().subscribe(ShowCollaboratorsEvent.class, showCollaboratorsEvent -> {
+            handleShowCollaborators();
+        });
+    }
+
+    private void handleShowCollaborators() {
+        final Project project = projectManager.currentProjectProperty().get();
+
+        if (project.getServerId() == null) {
+            Debug.fail("Project is not registered on server");
+            return;
+        }
+
+        final String url =
+                ApiConfig.getURL() +
+                "/api/v1/projects/" +
+                project.getServerId() +
+                "/collaborators";
+
+        final Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + TokenStorage.getToken())
+                .get()
+                .build();
+
+        try (Response response = ApiConfig.getClient().newCall(request).execute()){
+            if (response.isSuccessful()) {
+                String responseBody = response.body().string();
+
+                List<UserResponse> responses = ApiConfig.getObjectMapper()
+                        .readValue(responseBody, new TypeReference<List<UserResponse>>() {
+                        });
+
+                final CollaboratorsDialog dialog = new CollaboratorsDialog(responses);
+
+                dialog.showAndWait();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void handlePublishProject() {

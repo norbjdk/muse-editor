@@ -3,6 +3,7 @@ package com.muse.server.after.controller;
 import com.muse.server.after.detail.CustomUserDetails;
 import com.muse.server.after.dto.msg.ScoreUpdatedMessage;
 import com.muse.server.after.dto.session.SessionResponse;
+import com.muse.server.after.dto.user.UserResponse;
 import com.muse.server.after.entity.CollabSessionEntity;
 import com.muse.server.after.repository.CollabSessionRepository;
 import com.muse.server.after.service.CollabService;
@@ -11,6 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/sessions")
@@ -47,6 +51,15 @@ public class SessionController {
         final SessionResponse response = collabService.getActiveSessionForProject(projectId);
         if (response == null) return ResponseEntity.noContent().build();
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/projects/{projectId}/collaborators")
+    public ResponseEntity<List<UserResponse>> getActiveCollaborators(@PathVariable Long projectId) {
+        final List<UserResponse> responses = collabService.getActiveCollaboratorsForProject(projectId);
+
+        if (responses == null || responses.isEmpty()) return ResponseEntity.noContent().build();
+
+        return ResponseEntity.ok(responses);
     }
 
     @PostMapping("/{sessionId}/broadcast")

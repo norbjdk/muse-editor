@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,6 +81,13 @@ public class UserService implements UserDetailsService {
 
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll().stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<UserResponse> getAllUsersByUsernames(List<String> usernames) {
+        return userRepository.findAll().stream()
+                .filter(userEntity -> isMatching(userEntity, usernames))
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
@@ -153,6 +161,10 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User: " + username + " not found"));
 
         userRepository.delete(user);
+    }
+
+    private boolean isMatching(UserEntity user, List<String> usernames) {
+        return usernames.stream().anyMatch(username -> username.equals(user.getUsername()));
     }
 
     private UserResponse toResponse(UserEntity user) {
