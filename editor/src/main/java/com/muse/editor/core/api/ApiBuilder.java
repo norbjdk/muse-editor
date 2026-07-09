@@ -54,6 +54,23 @@ public class ApiBuilder {
         return executeRequest(request, responseType);
     }
 
+    public static <R extends ResponseDTO> R put(String endpoint, Class<R> responseType, File file, String mediaType) throws IOException {
+        final RequestBody fileBody = RequestBody.create(file, MediaType.parse(mediaType));
+
+        final MultipartBody body = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", file.getName(), fileBody)
+                .build();
+
+        final Request request = new Request.Builder()
+                .url(buildUrl(endpoint))
+                .put(body)
+                .addHeader("Authorization", "Bearer " + TokenStorage.getToken())
+                .build();
+
+        return executeRequest(request, responseType);
+    }
+
     public static <R extends ResponseDTO> R post(String endpoint, Class<R> responseType, File file) throws IOException {
         final RequestBody fileBody = RequestBody.create(file, MediaType.parse("application/xml"));
 
