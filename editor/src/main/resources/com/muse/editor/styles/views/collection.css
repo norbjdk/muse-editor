@@ -73,3 +73,15 @@
     -fx-font-size:   16px;
     -fx-text-fill:   #1a1714;
 }
+
+.publish-preview-container {
+    -fx-padding:           18;
+    -fx-spacing:           12;
+    -fx-alignment:         center;
+    -fx-background-color:  rgba(255, 255, 255, 0.88);
+    -fx-background-radius: 12;
+    -fx-border-color:      rgba(200, 192, 180, 0.55);
+    -fx-border-width:      1;
+    -fx-border-radius:     12;
+    -fx-effect:            dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+}

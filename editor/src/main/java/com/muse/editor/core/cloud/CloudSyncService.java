@@ -2,10 +2,15 @@ package com.muse.editor.core.cloud;
 
 import com.muse.editor.app.AppConfig;
 import com.muse.editor.app.ClientService;
+import com.muse.editor.core.api.ApiBuilder;
 import com.muse.editor.core.api.ApiConfig;
 import com.muse.editor.core.io.FileService;
 import com.muse.editor.core.project.Project;
 import com.muse.editor.core.user.TokenStorage;
+import com.muse.editor.gui.util.SnapshotUtil;
+import com.muse.editor.util.Debug;
+import javafx.application.Platform;
+import javafx.scene.image.WritableImage;
 import okhttp3.*;
 
 import java.io.File;
@@ -45,12 +50,15 @@ public class CloudSyncService {
 
         if (autoSaveTask != null) autoSaveTask.cancel(false);
 
-        autoSaveTask = scheduler.scheduleAtFixedRate(
-                this::autoSave,
-                AUTO_SAVE_INTERVAL_SEC,
-                AUTO_SAVE_INTERVAL_SEC,
-                TimeUnit.SECONDS
-        );
+        autoSaveTask = scheduler.scheduleAtFixedRate(() -> {
+            try {
+                System.out.println("Auto-save tick");
+                performUpload();
+            } catch (Throwable t) {
+                System.err.println("Auto-save tick CRASHED: " + t);
+                t.printStackTrace();
+            }
+        }, 5, AUTO_SAVE_INTERVAL_SEC, TimeUnit.SECONDS);
 
         System.out.println("CloudSyncService attached to project: " + project.getServerId());
     }
@@ -78,38 +86,69 @@ public class CloudSyncService {
     }
 
     private void performUpload() {
-        if (!syncing.compareAndSet(false, true)) return;
+        if (!syncing.compareAndSet(false, true)) {
+            System.out.println("Auto-save SKIPPED — already syncing (stuck?)");
+            return;
+        }
 
+        Platform.runLater(() -> {
+            try {
+                final WritableImage scoreImg = SnapshotUtil.getInstance().snapSheet();
+                final File coverFile = SnapshotUtil.getInstance().saveToTempFile(scoreImg);
+
+                CompletableFuture.runAsync(() -> continueUpload(coverFile));
+
+            } catch (Exception e) {
+                Debug.fail("Failed to snapshot cover image");
+                System.err.println("Snapshot error: " + e.getMessage());
+                syncing.set(false);
+            }
+        });
+    }
+
+    private void continueUpload(File coverFile) {
         try {
-            final File   tempFile = saveTempFile();
-            final byte[] bytes    = Files.readAllBytes(tempFile.toPath());
+            try {
+                final String coverEndpoint = "/api/v1/storage/projects/"
+                        + activeProject.getServerId() + "/shared/cover";
 
-            final String url = ApiConfig.getURL()
-                    + "/api/v1/storage/projects/"
-                    + activeProject.getServerId()
-                    + "/shared";
+                ApiBuilder.put(coverEndpoint, null, coverFile, "image/png");
+                Debug.pass("Updated projects cover image");
 
-            final Request request = new Request.Builder()
-                    .url(url)
-                    .put(RequestBody.create(bytes, MediaType.get("application/xml")))
-                    .addHeader("Authorization", "Bearer " + TokenStorage.getToken())
-                    .build();
-
-            try (Response response = ApiConfig.getClient().newCall(request).execute()) {
-                if (response.isSuccessful()) {
-                    dirty.set(false);
-                    System.out.println("Auto-save OK: project " + activeProject.getServerId());
-
-                    broadcastToSession();
-                } else {
-                    System.err.println("Auto-save failed: HTTP " + response.code());
-                }
+                coverFile.delete();
+            } catch (IOException e) {
+                Debug.fail("Failed to update projects cover image");
+                System.err.println("Cover upload error: " + e.getMessage());
             }
 
-            tempFile.delete();
+            try {
+                final File tempFile = saveTempFile();
+                final byte[] bytes = Files.readAllBytes(tempFile.toPath());
 
-        } catch (IOException e) {
-            System.err.println("Auto-save error: " + e.getMessage());
+                final String url = ApiConfig.getURL() + "/api/v1/storage/projects/"
+                        + activeProject.getServerId() + "/shared";
+
+                final Request request = new Request.Builder()
+                        .url(url)
+                        .put(RequestBody.create(bytes, MediaType.get("application/xml")))
+                        .addHeader("Authorization", "Bearer " + TokenStorage.getToken())
+                        .build();
+
+                try (Response response = ApiConfig.getClient().newCall(request).execute()) {
+                    if (response.isSuccessful()) {
+                        dirty.set(false);
+                        System.out.println("Auto-save OK: project " + activeProject.getServerId());
+                        broadcastToSession();
+                    } else {
+                        System.err.println("Auto-save failed: HTTP " + response.code());
+                    }
+                }
+
+                tempFile.delete();
+            } catch (IOException e) {
+                System.err.println("Auto-save error: " + e.getMessage());
+            }
+
         } finally {
             syncing.set(false);
         }

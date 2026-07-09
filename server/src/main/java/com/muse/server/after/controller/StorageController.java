@@ -78,6 +78,15 @@ public class StorageController  {
         return ResponseEntity.ok(Map.of("url", url));
     }
 
+    @GetMapping("/projects/{projectId}/shared/cover/get")
+    public ResponseEntity<Map<String, String>> getSharedCover(
+            @AuthenticationPrincipal CustomUserDetails user,
+            @PathVariable Long projectId
+    ) {
+        final String url = storageService.getSharedCoverUrl(user.getId(), projectId);
+        return ResponseEntity.ok(Map.of("url", url));
+    }
+
     @PutMapping("/projects/{projectId}/shared")
     public ResponseEntity<Void> autoSave(
             @AuthenticationPrincipal CustomUserDetails user,
@@ -85,6 +94,17 @@ public class StorageController  {
             @RequestBody byte[] content
     ) {
         storageService.autoSave(user.getId(), projectId, content);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/projects/{projectId}/shared/cover")
+    public ResponseEntity<Void> autoSave(
+            @AuthenticationPrincipal CustomUserDetails user,
+            @PathVariable Long projectId,
+            @RequestParam("file") MultipartFile file
+    ) {
+        storageService.autoSave(user.getId(), projectId, file);
+
         return ResponseEntity.ok().build();
     }
 }

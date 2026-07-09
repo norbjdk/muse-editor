@@ -10,6 +10,7 @@ public class ProjectResponse implements ResponseDTO {
     private String composer;
     private boolean isPublic;
     private String cloudFilePath;
+    private String coverPath;
 
     public Long getId() {
         return id;
@@ -49,5 +50,13 @@ public class ProjectResponse implements ResponseDTO {
 
     public void setCloudFilePath(String cloudFilePath) {
         this.cloudFilePath = cloudFilePath;
+    }
+
+    public String getCoverPath() {
+        return coverPath;
+    }
+
+    public void setCoverPath(String coverPath) {
+        this.coverPath = coverPath;
     }
 }

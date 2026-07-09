@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -159,6 +160,24 @@ public class MinioService {
         throw new RuntimeException("Project file not found. ID:" + projectId);
     }
 
+    public String uploadSharedCoverFile(Long userId, Long projectId, MultipartFile file) {
+        final String path = "/users/" + userId + "/projects/shared/" + projectId + "/cover.png";
+
+        try {
+            minioClient.putObject(
+                    PutObjectArgs.builder()
+                            .bucket(bucket)
+                            .object(path)
+                            .stream(file.getInputStream(), file.getSize(), -1)
+                            .contentType(file.getContentType())
+                            .build()
+            );
+            return buildUrl(path);
+        } catch (Exception e) {
+            throw new RuntimeException("Upload failed: " + path, e);
+        }
+    }
+
     public String uploadSharedFileBytes(Long userId, Long projectId, byte[] bytes) {
         final String path = "/users/" + userId + "/projects/shared/" + projectId + "/score.musicxml";
         try {
@@ -190,6 +209,26 @@ public class MinioService {
         } catch (Exception e) {
             throw new RuntimeException("Copy failed: " + src + " -> " + dest, e);
         }
+    }
+
+    public String extractSharedCoverUrl(Long userId, Long projectId) {
+        final String path = "/users/" + userId + "/projects/shared/" + projectId + "/cover.png";
+
+        if (fileExists(path)) {
+            try {
+                return minioClient.getPresignedObjectUrl(
+                        GetPresignedObjectUrlArgs.builder()
+                                .method(Method.GET)
+                                .bucket(bucket)
+                                .object(path)
+                                .expiry(1, TimeUnit.DAYS)
+                                .build()
+                );
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to generate presigned URL for cover", e);
+            }
+        }
+        throw new RuntimeException("Shared project cover not found. ID: " + projectId);
     }
 
     private void addFile(String path, MultipartFile file) {

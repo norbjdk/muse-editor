@@ -1,7 +1,10 @@
 package com.muse.editor.gui.view;
 
+import com.muse.editor.core.api.ApiBuilder;
+import com.muse.editor.core.api.ApiConfig;
 import com.muse.editor.core.collection.CollectionService;
 import com.muse.editor.core.model.dto.ProjectResponse;
+import com.muse.editor.core.user.TokenStorage;
 import com.muse.editor.event.EventBus;
 import com.muse.editor.event.project.DownloadProjectEvent;
 import com.muse.editor.gui.model.Presentable;
@@ -9,20 +12,28 @@ import com.muse.editor.gui.model.Viewable;
 import com.muse.editor.gui.util.ButtonFactory;
 import com.muse.editor.gui.util.SpaceFactory;
 import com.muse.editor.util.Debug;
+import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+import okhttp3.Request;
+import okhttp3.Response;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import static com.muse.editor.gui.util.SpaceFactory.createSpacer;
 
@@ -101,6 +112,7 @@ public class CollectionView extends Presentable<ScrollPane> implements Viewable 
         final VBox scoreCard = new VBox(8);
 
         Debug.check("Composer", projectResponse.getComposer());
+        Debug.check("Cover", projectResponse.getCoverPath() != null ? projectResponse.getCoverPath() : "null");
 
         scoreCard.setId(String.valueOf(projectResponse.getId()));
         scoreCard.getStyleClass().add("score-card");
@@ -111,17 +123,25 @@ public class CollectionView extends Presentable<ScrollPane> implements Viewable 
         title.getStyleClass().add("score-title-label");
         creator.getStyleClass().add("score-creator-label");
 
-        final StackPane scoreImageContainer = new StackPane();
-        final Rectangle scoreImageView      = new Rectangle();
+        final ImageView previewImageView = new ImageView();
 
-        scoreImageView.setWidth(200);
-        scoreImageView.setHeight(280);
-        scoreImageContainer.getChildren().add(scoreImageView);
-        scoreImageView.setFill(Color.WHITESMOKE);
-        scoreImageView.setStroke(Color.BLACK);
-        scoreImageView.setStrokeWidth(1);
+        previewImageView.setFitWidth(300);
+        previewImageView.setFitHeight(400);
+        previewImageView.setPreserveRatio(true);
+        previewImageView.setSmooth(true);
 
-        scoreCard.getChildren().add(scoreImageContainer);
+        CompletableFuture.supplyAsync(() -> downloadCoverImage(projectResponse.getId()))
+                .thenAccept(image -> Platform.runLater(() -> previewImageView.setImage(image)))
+                .exceptionally(ex -> {
+                    System.err.println("Failed to load cover: " + ex.getMessage());
+                    return null;
+                });
+
+        VBox imageContainer = new VBox();
+        imageContainer.getStyleClass().add("publish-preview-container");
+        imageContainer.getChildren().addAll(previewImageView);
+
+        scoreCard.getChildren().add(imageContainer);
         scoreCard.getChildren().add(title);
         scoreCard.getChildren().add(creator);
 
@@ -130,5 +150,55 @@ public class CollectionView extends Presentable<ScrollPane> implements Viewable 
         });
 
         return scoreCard;
+    }
+
+    private Image downloadCoverImage(Long projectId) {
+        try {
+            final String getUrlEndpoint = ApiConfig.getURL()
+                    + "/api/v1/storage/projects/"
+                    + projectId
+                    + "/shared/cover/get";
+
+            final Request metaRequest = new Request.Builder()
+                    .url(getUrlEndpoint)
+                    .get()
+                    .addHeader("Authorization", "Bearer " + TokenStorage.getToken())
+                    .build();
+
+            final String coverUrl;
+
+            try (Response metaResponse = ApiConfig.getClient().newCall(metaRequest).execute()) {
+                if (!metaResponse.isSuccessful()) {
+                    throw new IOException("Failed to fetch cover URL, code: " + metaResponse.code());
+                }
+
+                final String body = metaResponse.body().string();
+                System.out.println("DEBUG: raw response from /shared/cover/get: " + body);
+
+                final Map<?, ?> parsed = ApiConfig.getObjectMapper().readValue(body, Map.class);
+                coverUrl = (String) parsed.get("url");
+            }
+
+            if (coverUrl == null) {
+                throw new IOException("Cover URL was null in response");
+            }
+
+            System.out.println("DEBUG: Wygenerowany URL okładki z serwera: " + coverUrl);
+
+            final Request fileRequest = new Request.Builder()
+                    .url(coverUrl)
+                    .get()
+                    .build();
+
+            try (Response fileResponse = ApiConfig.getClient().newCall(fileRequest).execute()) {
+                if (!fileResponse.isSuccessful()) {
+                    throw new IOException("Cover download failed: " + fileResponse.code());
+                }
+                return new Image(fileResponse.body().byteStream());
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

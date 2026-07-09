@@ -98,6 +98,7 @@ public class ProjectService {
         response.setComposer(entity.getCreator());
         response.setPublic(entity.getPublished());
         response.setFilePath(entity.getFilePath());
+        response.setCoverPath(entity.getCoverPath());
 
         return response;
     }
