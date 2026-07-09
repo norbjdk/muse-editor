@@ -8,6 +8,7 @@ import com.muse.editor.gui.model.Presentable;
 import com.muse.editor.gui.model.Viewable;
 import com.muse.editor.gui.util.ButtonFactory;
 import com.muse.editor.gui.util.SpaceFactory;
+import com.muse.editor.util.Debug;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -98,6 +99,8 @@ public class CollectionView extends Presentable<ScrollPane> implements Viewable 
 
     private VBox buildScoreCard(ProjectResponse projectResponse) {
         final VBox scoreCard = new VBox(8);
+
+        Debug.check("Composer", projectResponse.getComposer());
 
         scoreCard.setId(String.valueOf(projectResponse.getId()));
         scoreCard.getStyleClass().add("score-card");

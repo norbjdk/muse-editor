@@ -12,7 +12,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -96,7 +95,7 @@ public class ProjectService {
 
         response.setId(entity.getId());
         response.setTitle(entity.getTitle());
-        response.setCreator(entity.getCreator());
+        response.setComposer(entity.getCreator());
         response.setPublic(entity.getPublished());
         response.setFilePath(entity.getFilePath());
 

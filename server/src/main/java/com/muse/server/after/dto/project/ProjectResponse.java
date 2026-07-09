@@ -4,7 +4,7 @@ public class ProjectResponse {
     private Long    id;
     private Long    ownerId;
     private String  title;
-    private String  creator;
+    private String  composer;
     private String  filePath;
     private String  coverPath;
     private Boolean isPublic;
@@ -35,12 +35,12 @@ public class ProjectResponse {
         this.title = title;
     }
 
-    public String getCreator() {
-        return creator;
+    public String getComposer() {
+        return composer;
     }
 
-    public void setCreator(String creator) {
-        this.creator = creator;
+    public void setComposer(String composer) {
+        this.composer = composer;
     }
 
     public String getFilePath() {
