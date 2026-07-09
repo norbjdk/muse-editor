@@ -97,12 +97,14 @@ public class ApiBuilder {
 
     private static <R extends ResponseDTO> R executeRequest(Request request, Class<R> responseType) throws IOException {
         try (Response response = client.newCall(request).execute()) {
-            if (response.isSuccessful() && response.body() != null) {
-                String responseBody = response.body().string();
-                return mapper.readValue(responseBody, responseType);
-            } else {
+            if (!response.isSuccessful()) {
                 throw new IOException("API request failed, code: " + response.code());
             }
+            if (responseType == null || response.body() == null) {
+                return null;
+            }
+            String responseBody = response.body().string();
+            return mapper.readValue(responseBody, responseType);
         }
     }
 
