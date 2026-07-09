@@ -1,6 +1,6 @@
 .score-palette {
     -fx-spacing:          16;
-    -fx-padding:          12;
+    -fx-padding:          24;
     -fx-background-color: rgba(255, 255, 255, 0.88);
     -fx-background-radius: 12;
     -fx-border-color:     rgba(200, 192, 180, 0.55);
@@ -9,11 +9,71 @@
     -fx-effect:           dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
 }
 
-.note-btn {
-    -fx-padding:           4;
+.titled-pane {
+    -fx-font-size: 14px;
+    -fx-text-fill: #2c3e50;
+    -fx-animated: true;
+    -fx-effect:            dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+}
+
+.titled-pane > .title {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 10 15 10 15;
+}
+
+.titled-pane > .title:hover {
+    -fx-background-color: #f9f9f9;
+}
+
+.titled-pane > .title > .text {
+    -fx-font-weight: bold;
+    -fx-fill: #2c3e50;
+}
+
+.titled-pane > .title > .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 10 0 0;
+}
+
+.titled-pane > .title > .arrow-button > .arrow {
+    -fx-background-color: #7f8c8d;
+    -fx-background-insets: 0;
+}
+
+.titled-pane > .title:hover > .arrow-button > .arrow {
+    -fx-background-color: #2980b9;
+}
+
+.titled-pane > .content {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0;
+    -fx-padding: 15;
+}
+
+.note-btn,
+.dynamic-btn {
+    -fx-padding:           0 3 0 10;
     -fx-font-family:       "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
     -fx-font-size:         10px;
     -fx-alignment:         center;
+    -fx-text-alignment:    center;
+    -fx-text-fill:         #4a4540;
+    -fx-background-color:  #f3f3f3;
+    -fx-background-radius: 50%;
+    -fx-border-color:      rgba(200, 192, 180, 0.55);
+    -fx-border-width:      1;
+    -fx-border-radius:     50%;
+    -fx-effect:            dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
+}
+
+.clef-btn {
+    -fx-padding:           1 4 16 4;
+    -fx-font-family:       "David Libre", "Segoe UI Variable Display", "Segoe UI Bold";
+    -fx-font-size:         10px;
+    -fx-alignment:         top-center;
     -fx-text-fill:         #4a4540;
     -fx-background-color:  #f3f3f3;
     -fx-background-radius: 8;
@@ -23,7 +83,9 @@
     -fx-effect:            dropshadow(gaussian, rgba(0, 0, 0, 0.13), 12, 0.35, 0, 2);
 }
 
-.note-btn:hover {
+.note-btn:hover,
+.dynamic-btn:hover,
+.clef-btn:hover {
     -fx-cursor:           hand;
     -fx-background-color: #dddcdc;
 }

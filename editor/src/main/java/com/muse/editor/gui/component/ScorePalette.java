@@ -14,6 +14,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 
+import java.util.List;
 import java.util.Objects;
 
 public class ScorePalette extends Presentable<VBox> {
@@ -25,6 +26,8 @@ public class ScorePalette extends Presentable<VBox> {
     private TitledPane dynamicsPane;
     private TitledPane metresPane;
     private TitledPane accidentalsPane;
+
+    private List<TitledPane> scorePanes;
 
     private TilePane notesContainer;
     private TilePane restsContainer;
@@ -78,6 +81,13 @@ public class ScorePalette extends Presentable<VBox> {
         dynamicsPane    = new TitledPane();
         metresPane      = new TitledPane();
         accidentalsPane = new TitledPane();
+
+        scorePanes = List.of(
+                notesPane,
+                restsPane,
+                clefsPane,
+                dynamicsPane
+        );
 
         notesContainer       = new TilePane();
         restsContainer       = new TilePane();
@@ -198,7 +208,6 @@ public class ScorePalette extends Presentable<VBox> {
                 }
                 t1.setStyle("-fx-background-color: #efefa8");
             }
-
         });
     }
 
