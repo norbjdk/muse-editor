@@ -5,6 +5,7 @@ import com.muse.editor.core.model.music.ScorePart;
 import com.muse.editor.core.project.ProjectManager;
 import com.muse.editor.event.EventBus;
 import com.muse.editor.event.project.*;
+import com.muse.editor.event.view.ShowCollaboratorsEvent;
 import com.muse.editor.gui.model.Presentable;
 import com.muse.editor.gui.util.ButtonFactory;
 import com.muse.editor.gui.util.SpaceFactory;
@@ -110,5 +111,6 @@ public class ToolBar extends Presentable<HBox> {
         saveBtn.setOnAction(actionEvent -> EventBus.getInstance().publish(new SaveProjectEvent()));
         publishBtn.setOnAction(actionEvent -> EventBus.getInstance().publish(new PublishProjectEvent()));
         closeBtn.setOnAction(actionEvent -> EventBus.getInstance().publish(new CloseProjectEvent()));
+        collaboratorsBtn.setOnAction(actionEvent -> EventBus.getInstance().publish(new ShowCollaboratorsEvent()));
     }
 }
