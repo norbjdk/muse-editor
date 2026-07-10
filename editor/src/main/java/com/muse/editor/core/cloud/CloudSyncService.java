@@ -50,15 +50,12 @@ public class CloudSyncService {
 
         if (autoSaveTask != null) autoSaveTask.cancel(false);
 
-        autoSaveTask = scheduler.scheduleAtFixedRate(() -> {
-            try {
-                System.out.println("Auto-save tick");
-                performUpload();
-            } catch (Throwable t) {
-                System.err.println("Auto-save tick CRASHED: " + t);
-                t.printStackTrace();
-            }
-        }, 5, AUTO_SAVE_INTERVAL_SEC, TimeUnit.SECONDS);
+//        autoSaveTask = scheduler.scheduleAtFixedRate(
+//                this::autoSave,
+//                AUTO_SAVE_INTERVAL_SEC,
+//                AUTO_SAVE_INTERVAL_SEC,
+//                TimeUnit.SECONDS
+//        );
 
         System.out.println("CloudSyncService attached to project: " + project.getServerId());
     }
