@@ -1,10 +1,13 @@
 package com.muse.editor.gui.component.music;
 
 import com.muse.editor.core.edit.ScoreManager;
+import com.muse.editor.core.midi.MidiService;
 import com.muse.editor.core.model.music.PartList;
 import com.muse.editor.core.model.music.ScorePart;
 import com.muse.editor.core.model.music.ScorePartwise;
+import com.muse.editor.core.project.Project;
 import com.muse.editor.core.project.ProjectManager;
+import com.muse.editor.core.project.ProjectService;
 import com.muse.editor.event.EventBus;
 import com.muse.editor.event.editor.ChangeInputModeEvent;
 import com.muse.editor.event.project.ChangePartComponentEvent;
@@ -118,6 +121,12 @@ public class SheetComponent extends Presentable<ScrollPane> {
             switch (keyEvent.getCode()) {
                 case N -> EventBus.getInstance().publish(new ChangeInputModeEvent());
                 case P -> System.out.println("Switch part!");
+                case M -> {
+                    MidiService.getInstance().run(
+                            MidiService.MIDI_RUNNER.MUSESCORE_STUDIO,
+                            ProjectService.saveTempFile(ProjectManager.getInstance().currentProjectProperty().get())
+                    );
+                }
             }
         });
     }
