@@ -38,7 +38,7 @@ public class ProjectService {
         project.setTitle(request.getTitle());
         project.setCreator(request.getCreator());
         project.setPublished(false);
-        project.setFilePath("");
+        project.setFilePath(null);
 
         final ProjectMemberEntity ownerMember = new ProjectMemberEntity();
         ownerMember.setProject(project);

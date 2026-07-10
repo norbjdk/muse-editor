@@ -22,7 +22,7 @@ public class ProjectEntity {
     @Column(nullable = false)
     private String creator;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = true)
     private String filePath;
 
     @Column(nullable = true)
