@@ -266,7 +266,7 @@ public class ProjectService {
         ex.printStackTrace();
     }
 
-    private File saveTempFile(Project project) {
+    public static File saveTempFile(Project project) {
         try {
             final File temp = Files.createTempFile("muse_publish", ".musicxml").toFile();
             FileService.getInstance().save(project.getScoreProperty().get(), temp.toPath());
