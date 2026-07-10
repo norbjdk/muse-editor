@@ -3,6 +3,7 @@ package com.muse.editor.gui.component;
 import com.muse.editor.core.project.ProjectManager;
 import com.muse.editor.event.EventBus;
 import com.muse.editor.event.project.OpenProjectEvent;
+import com.muse.editor.event.project.ProjectClosedEvent;
 import com.muse.editor.event.project.ProjectCreatedEvent;
 import com.muse.editor.event.project.ProjectOpenedEvent;
 import com.muse.editor.event.user.LogoutEvent;
@@ -122,6 +123,16 @@ public class NavigationBar extends Presentable<VBox> implements Viewable {
 
                 createProjectBtn.setDisable(true);
                 openProjectBtn.setDisable(true);
+            });
+        });
+        EventBus.getInstance().subscribe(ProjectClosedEvent.class, projectClosedEvent -> {
+            Platform.runLater(() -> {
+                currentProjectBtn.setText("");
+                currentProjectBtn.setVisible(false);
+                currentProjectBtn.setManaged(false);
+
+                createProjectBtn.setDisable(false);
+                openProjectBtn.setDisable(false);
             });
         });
     }
