@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api';
+const API_URL = 'http://192.168.1.8:8080/api';
 
 const api = axios.create({ baseURL: API_URL });
 
@@ -50,10 +50,12 @@ export const socialsAPI = {
 };
 
 export const projectsAPI = {
-  getMyProjects: () => api.get('/v1/projects/my'),
-  getPublishedByUser: (username) =>
-    api.get(`/v1/projects/published/${username}`),
-  getAllProjects: () => api.get('/v1/projects/all'),
-  deleteProject: (id) => api.delete(`/v1/projects/${id}`),
-  unpublishProject: (id) => api.put(`/v1/projects/${id}/unpublish`),
+    getMyProjects: () => api.get('/v1/projects/my'),
+    getPublishedByUser: (username) =>
+        api.get(`/v1/projects/published/${username}`),
+    getAllProjects: () => api.get('/v1/projects/all'),
+    deleteProject: (id) => api.delete(`/v1/projects/${id}`),
+    unpublishProject: (id) => api.put(`/v1/projects/${id}/unpublish`),
+    getProjectCover: (projectId) =>
+        api.get(`/v1/storage/projects/${projectId}/published/cover/get`),
 };

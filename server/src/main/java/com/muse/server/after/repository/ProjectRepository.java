@@ -20,4 +20,5 @@ public interface ProjectRepository extends JpaRepository<ProjectEntity, Long> {
     WHERE p.owner.id = :userId OR m.user.id = :userId
     """)
     List<ProjectEntity> findAllByOwnerIdOrCollaboratorUserId(@Param("userId") Long userId);
+    List<ProjectEntity> findAllByOwnerIdAndPublishedTrue(Long ownerId);
 }

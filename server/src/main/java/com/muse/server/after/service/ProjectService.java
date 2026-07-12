@@ -90,6 +90,27 @@ public class ProjectService {
                 .toList();
     }
 
+    public ProjectEntity getProject(Long projectId) {
+        return projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+    }
+
+    public List<ProjectResponse> getPublishedProjects(String username) {
+        final UserEntity user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return projectRepository.findAllByOwnerIdAndPublishedTrue(user.getId())
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    public boolean canPublish(Long userId, Long projectId) {
+        final ProjectEntity project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+        return project.getOwner().getId().equals(userId);
+    }
+
     private ProjectResponse toResponse(ProjectEntity entity) {
         final ProjectResponse response = new ProjectResponse();
 

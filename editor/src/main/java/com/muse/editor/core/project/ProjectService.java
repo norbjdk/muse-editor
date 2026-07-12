@@ -30,6 +30,7 @@ import com.muse.editor.gui.model.Viewable;
 import com.muse.editor.gui.util.SnapshotUtil;
 import com.muse.editor.util.Debug;
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
 import javafx.scene.image.WritableImage;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -113,6 +114,65 @@ public class ProjectService {
             return;
         }
 
+        Long currentUserId = null;
+        try {
+            final Request meRequest = new Request.Builder()
+                    .url(ApiConfig.getURL() + "/api/v1/users/me")
+                    .addHeader("Authorization", "Bearer " + TokenStorage.getToken())
+                    .get()
+                    .build();
+
+            try (Response response = ApiConfig.getClient().newCall(meRequest).execute()) {
+                if (response.isSuccessful()) {
+                    String body = response.body().string();
+                    Map<String, Object> userData = ApiConfig.getObjectMapper().readValue(body, Map.class);
+                    currentUserId = ((Number) userData.get("id")).longValue();
+
+                    TokenStorage.saveUserId(currentUserId);
+                    System.out.println("Updated user ID from /me: " + currentUserId);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to get user ID: " + e.getMessage());
+        }
+
+        if (currentUserId == null) {
+            currentUserId = TokenStorage.getUserId();
+        }
+
+        try {
+            final Request ownerRequest = new Request.Builder()
+                    .url(ApiConfig.getURL() + "/api/v1/projects/" + project.getServerId() + "/owner")
+                    .addHeader("Authorization", "Bearer " + TokenStorage.getToken())
+                    .get()
+                    .build();
+
+            try (Response response = ApiConfig.getClient().newCall(ownerRequest).execute()) {
+                if (response.isSuccessful()) {
+                    String body = response.body().string();
+                    Map<String, Object> ownerData = ApiConfig.getObjectMapper().readValue(body, Map.class);
+                    Long ownerId = ((Number) ownerData.get("ownerId")).longValue();
+
+                    System.out.println("=== PUBLISH CHECK ===");
+                    System.out.println("Owner ID: " + ownerId);
+                    System.out.println("Current User ID: " + currentUserId);
+
+                    if (!ownerId.equals(currentUserId)) {
+                        Platform.runLater(() -> {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Cannot Publish");
+                            alert.setHeaderText("Only the project owner can publish");
+                            alert.setContentText("You are not the owner of this project.");
+                            alert.showAndWait();
+                        });
+                        return;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to check project owner: " + e.getMessage());
+        }
+
         PublishDialog dialog = new PublishDialog(
                 ScoreManager.getInstance().scoreProperty().get().getWorkTitle(),
                 ScoreManager.getInstance().scoreProperty().get().getCreator()
@@ -125,20 +185,16 @@ public class ProjectService {
             CompletableFuture.runAsync(() -> {
                 try {
                     CloudSyncService.getInstance().forceSave();
-                    ApiBuilder.post(
-                            "/api/v1/projects/" + project.getServerId() + "/publish",
-                            ProjectResponse.class,
-                            new ProjectRequest()
-                    );
 
-                    if (scoreImg != null) {
-                        final File coverFile = SnapshotUtil.getInstance().saveToTempFile(scoreImg);
-                        if (coverFile != null) {
-                            ApiBuilder.post(
-                                    "/api/v1/storage/projects/" + project.getServerId() + "/cover/upload",
-                                    ProjectResponse.class,
-                                    coverFile
-                            );
+                    final Request publishRequest = new Request.Builder()
+                            .url(ApiConfig.getURL() + "/api/v1/projects/" + project.getServerId() + "/publish")
+                            .post(okhttp3.RequestBody.create("{}", okhttp3.MediaType.get("application/json")))
+                            .addHeader("Authorization", "Bearer " + TokenStorage.getToken())
+                            .build();
+
+                    try (Response publishResponse = ApiConfig.getClient().newCall(publishRequest).execute()) {
+                        if (!publishResponse.isSuccessful()) {
+                            throw new IOException("Publish failed: " + publishResponse.code());
                         }
                     }
 
