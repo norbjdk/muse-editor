@@ -33,7 +33,7 @@ public class StorageController  {
             @RequestParam("file") MultipartFile file,
             @RequestParam(value = "toPublish", defaultValue = "false") boolean toPublish
     ) {
-        final String url = storageService.uploadProjectCover(
+        final String url = storageService.uploadProjectFile(
                 user.getId(),
                 projectId,
                 file,
@@ -42,7 +42,7 @@ public class StorageController  {
         return ResponseEntity.ok(Map.of("url", url));
     }
 
-    @PostMapping("/project/{projectId}/cover/upload")
+    @PostMapping("/projects/{projectId}/cover/upload")
     public ResponseEntity<Map<String, String>> uploadProjectCover(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long projectId,

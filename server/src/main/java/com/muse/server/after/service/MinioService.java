@@ -49,8 +49,8 @@ public class MinioService {
     }
 
     public void createProjectFolders(Long userId, Long projectId) {
-        createFolder(userId + "/projects/shared/" + projectId + "/.keep");
-        createFolder(userId + "/projects/published/" + projectId + "/.keep");
+        createFolder("/users/" + userId + "/projects/shared/" + projectId + "/.keep");
+        createFolder("/users/" + userId + "/projects/published/" + projectId + "/.keep");
     }
 
     public void createFolder(String path) {
