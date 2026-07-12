@@ -14,6 +14,7 @@ import com.muse.editor.event.user.LoggedInEvent;
 import com.muse.editor.event.user.LoggedOutEvent;
 import com.muse.editor.event.user.LoginEvent;
 import com.muse.editor.event.user.LogoutEvent;
+import com.muse.editor.util.Debug;
 
 import java.io.IOException;
 
@@ -63,11 +64,15 @@ public class AuthService {
 
     private void login(LoginRequest request) {
         try {
+            TokenStorage.clear();
+
             final LoginResponse response = ApiBuilder.post("/api/v1/auth/login", LoginResponse.class, request);
 
             if (response == null) return;
 
-            TokenStorage.saveToken(response.getToken());
+            TokenStorage.saveLoginResponse(response);
+
+            Debug.pass("Logged in as: " + TokenStorage.getUsername() + " (ID: " + TokenStorage.getUserId() + ")");
 
             final User user = new User.Builder()
                     .setId(response.getId())
