@@ -196,8 +196,22 @@ public class MinioService {
     }
 
     public void copySharedToPublished(Long userId, Long projectId) {
-        final String src  = "/users/" + userId + "/projects/shared/"    + projectId + "/score.musicxml";
-        final String dest = "/users/" + userId + "/projects/published/" + projectId + "/score.musicxml";
+        copyFile(
+                "/users/" + userId + "/projects/shared/"    + projectId + "/score.musicxml",
+                "/users/" + userId + "/projects/published/" + projectId + "/score.musicxml"
+        );
+
+        final String coverSrc = "/users/" + userId + "/projects/shared/" + projectId + "/cover.png";
+
+        if (fileExists(coverSrc)) {
+            copyFile(
+                    coverSrc,
+                    "/users/" + userId + "/projects/published/" + projectId + "/cover.png"
+            );
+        }
+    }
+
+    private void copyFile(String src, String dest) {
         try {
             minioClient.copyObject(
                     CopyObjectArgs.builder()

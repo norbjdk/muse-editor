@@ -10,6 +10,7 @@ import com.muse.editor.core.project.ProjectManager;
 import com.muse.editor.core.project.ProjectService;
 import com.muse.editor.event.EventBus;
 import com.muse.editor.event.editor.ChangeInputModeEvent;
+import com.muse.editor.event.editor.DeleteValueEvent;
 import com.muse.editor.event.project.ChangePartComponentEvent;
 import com.muse.editor.event.project.PartComponentChangedEvent;
 import com.muse.editor.event.project.PartComponentsCreatedEvent;
@@ -127,6 +128,7 @@ public class SheetComponent extends Presentable<ScrollPane> {
                             ProjectService.saveTempFile(ProjectManager.getInstance().currentProjectProperty().get())
                     );
                 }
+                case DELETE -> EventBus.getInstance().publish(new DeleteValueEvent());
             }
         });
     }

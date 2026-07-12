@@ -4,6 +4,7 @@ import com.muse.editor.core.cloud.CloudSyncService;
 import com.muse.editor.core.model.music.Note;
 import com.muse.editor.event.EventBus;
 import com.muse.editor.event.editor.AddValueEvent;
+import com.muse.editor.event.editor.DeleteValueEvent;
 import com.muse.editor.util.Debug;
 
 import java.util.*;
@@ -29,6 +30,49 @@ public class EditorService {
             if (!editorState.inputModeProperty().get()) return;
             addNote(event.getStep(), event.getOctave());
         });
+        EventBus.getInstance().subscribe(DeleteValueEvent.class, deleteValueEvent -> {
+            if (!editorState.inputModeProperty().get()) return;
+            removeNote();
+        });
+    }
+
+    private void removeNote() {
+        final Note current = scoreManager.getNote(
+                cursorModel.getPartId(),
+                cursorModel.getMeasureIndex(),
+                cursorModel.getNoteIndex()
+        );
+
+        if (current == null || current.isRest()) {
+            System.out.println("Cannot remove: not a note");
+            return;
+        }
+
+        final Note.Type type = current.getType();
+        final int duration = BeatCalculator.noteValue(type);
+
+        final Note restNote = new Note.Builder()
+                .setId(ScoreManager.getInstance().nextNoteId())
+                .isRest(true)
+                .setType(type)
+                .setDuration(duration)
+                .setStep(current.getStep())
+                .setOctave(current.getOctave())
+                .build();
+
+        scoreManager.replaceNote(
+                cursorModel.getPartId(),
+                cursorModel.getMeasureIndex(),
+                cursorModel.getNoteIndex(),
+                List.of(restNote)
+        );
+
+        System.out.println("Removed note at position: " + cursorModel.getNoteIndex());
+        System.out.println("Replaced with rest of type: " + type);
+
+
+        CloudSyncService.getInstance().markDirty();
+        CloudSyncService.getInstance().forceSave();
     }
 
     private void addNote(char step, int octave) {
