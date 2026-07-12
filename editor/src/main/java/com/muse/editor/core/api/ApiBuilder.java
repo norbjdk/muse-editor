@@ -2,6 +2,7 @@ package com.muse.editor.core.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.muse.editor.core.user.TokenStorage;
+import com.muse.editor.util.Debug;
 import okhttp3.*;
 
 import java.io.File;
@@ -96,14 +97,29 @@ public class ApiBuilder {
     }
 
     private static <R extends ResponseDTO> R executeRequest(Request request, Class<R> responseType) throws IOException {
+        Debug.check("=== API REQUEST ===");
+        Debug.check("URL: " + request.url());
+        Debug.check("Method: " + request.method());
+        Debug.check("Headers: " + request.headers());
+
+        String token = TokenStorage.getToken();
+        Debug.check("Token exists: " + (token != null && !token.isEmpty()));
+        Debug.check("Token length: " + (token != null ? token.length() : 0));
+
         try (Response response = client.newCall(request).execute()) {
+            Debug.check("Response code: " + response.code());
+            Debug.check("Response message: " + response.message());
+
             if (!response.isSuccessful()) {
-                throw new IOException("API request failed, code: " + response.code());
+                String errorBody = response.body() != null ? response.body().string() : "null";
+                Debug.fail("Error body: " + errorBody);
+                throw new IOException("API request failed, code: " + response.code() + ", body: " + errorBody);
             }
             if (responseType == null || response.body() == null) {
                 return null;
             }
             String responseBody = response.body().string();
+            Debug.pass("Response body: " + responseBody);
             return mapper.readValue(responseBody, responseType);
         }
     }
